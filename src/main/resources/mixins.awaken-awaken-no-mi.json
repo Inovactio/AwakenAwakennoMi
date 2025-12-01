@@ -6,7 +6,8 @@
   "mixins": [
     "ModAbilitiesMixin",
     "BlockModelRendererMixin",
-    "AbstractBlockStateMixin"
+    "AbstractBlockStateMixin",
+    "TileEntityRendererDispatcherMixin"
   ],
   "injectors": {
     "defaultRequire": 1
