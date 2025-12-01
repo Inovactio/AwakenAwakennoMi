@@ -4,6 +4,7 @@ import com.inovactio.awakenawakennomi.api.abilities.BlockUseAbility;
 import com.inovactio.awakenawakennomi.api.abilities.components.BlockTriggerComponent;
 import com.inovactio.awakenawakennomi.init.ModAbilityKeys;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -37,15 +38,15 @@ public class AbilitiesEvents {
             BlockUseAbility blockAbility = (BlockUseAbility) ability;
             if (!blockAbility.isActive()) continue;
 
-            if (!blockAbility.GetAllowBlockActivation()) {
+            ItemStack heldItem = player.getMainHandItem();
+            if (!blockAbility.GetAllowBlockActivation() && heldItem.isEmpty()) {
                 event.setCanceled(true);
             }
 
             ability.getComponent(ModAbilityKeys.BLOCK_TRIGGER).ifPresent(comp -> {
-                BlockTriggerComponent blockComp = (BlockTriggerComponent) comp;
-                BlockTriggerComponent.HitResult result = blockComp.tryHit(player, pos, world);
+                BlockTriggerComponent.HitResult result = comp.tryHit(player, pos, world);
                 if (result == BlockTriggerComponent.HitResult.HIT) {
-                    blockComp.onHit(player, pos, world);
+                    comp.onHit(player, pos, world);
                 }
             });
         }

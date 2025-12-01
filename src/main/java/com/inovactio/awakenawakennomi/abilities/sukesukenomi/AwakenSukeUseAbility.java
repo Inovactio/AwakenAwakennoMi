@@ -92,7 +92,7 @@ public class AwakenSukeUseAbility extends BlockUseAbility implements IAwakenable
     }
 
     static {
-        INSTANCE = (new AbilityCore.Builder("AwakenSukePunch", AbilityCategory.DEVIL_FRUITS, AwakenSukeUseAbility::new)).setUnlockCheck(AwakenSukeUseAbility::canUnlock).addDescriptionLine(DESCRIPTION).addAdvancedDescriptionLine(new AbilityDescriptionLine.IDescriptionLine[]{AbilityDescriptionLine.NEW_LINE, ContinuousComponent.getTooltip()}).setSourceHakiNature(SourceHakiNature.HARDENING).setSourceType(new SourceType[]{SourceType.FIST}).build();
+        INSTANCE = (new AbilityCore.Builder("AwakenSukePunch", AbilityCategory.DEVIL_FRUITS, AwakenSukeUseAbility::new)).setUnlockCheck(AwakenSukeUseAbility::canUnlock).addDescriptionLine(DESCRIPTION).addAdvancedDescriptionLine(new AbilityDescriptionLine.IDescriptionLine[]{AbilityDescriptionLine.NEW_LINE, ContinuousComponent.getTooltip()}).build();
         INSTANCE.setIcon(new ResourceLocation("awakenawakennomi", "textures/abilities/awaken_suke_punch.png"));
     }
 }
