@@ -14,13 +14,14 @@ import xyz.pixelatedw.mineminenomi.api.abilities.AbilityCore;
 import xyz.pixelatedw.mineminenomi.api.abilities.components.ChangeStatsComponent;
 import xyz.pixelatedw.mineminenomi.api.abilities.components.ContinuousComponent;
 
-/**
- * Ability that triggers when the user punches a block.
- * Works similarly to PunchAbility2 but uses LEFT_CLICK_BLOCK events instead of entity hit events.
- */
 @Mod.EventBusSubscriber
 public abstract class BlockUseAbility extends Ability {
-    protected final ContinuousComponent continuousComponent = (new ContinuousComponent(this, this.isParallel())).addStartEvent(90, this::onStart).addTickEvent(90, this::onTick).addEndEvent(90, this::onEnd);
+    protected final ContinuousComponent continuousComponent =
+            (new ContinuousComponent(this, this.isParallel()))
+                    .addStartEvent(90, this::onStart)
+                    .addTickEvent(90, this::onTick)
+                    .addEndEvent(90, this::onEnd);
+
     protected final ChangeStatsComponent statsComponent = new ChangeStatsComponent(this);
     protected final BlockTriggerComponent blockTriggerComponent =
             new BlockTriggerComponent(this)
@@ -29,6 +30,7 @@ public abstract class BlockUseAbility extends Ability {
 
     private int uses = 0;
     private boolean markForStopping;
+
 
     public BlockUseAbility(AbilityCore<? extends BlockUseAbility> core) {
         super(core);
@@ -95,4 +97,10 @@ public abstract class BlockUseAbility extends Ability {
     public abstract Predicate<LivingEntity> canActivate();
 
     public abstract int getUseLimit();
+
+    public abstract boolean GetAllowBlockActivation();
+
+    public boolean isActive() {
+        return this.isContinuous() || this.isCharging();
+    }
 }

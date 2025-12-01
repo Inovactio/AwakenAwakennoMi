@@ -85,6 +85,12 @@ public class AwakenSukeUseAbility extends BlockUseAbility implements IAwakenable
         return DevilFruitCapability.get(user).hasAwakenedFruit() && DevilFruitCapability.get(user).hasDevilFruit(ModAbilities.SUKE_SUKE_NO_MI);
     }
 
+    @Override
+    public boolean GetAllowBlockActivation()
+    {
+        return false;
+    }
+
     static {
         INSTANCE = (new AbilityCore.Builder("AwakenSukePunch", AbilityCategory.DEVIL_FRUITS, AwakenSukeUseAbility::new)).setUnlockCheck(AwakenSukeUseAbility::canUnlock).addDescriptionLine(DESCRIPTION).addAdvancedDescriptionLine(new AbilityDescriptionLine.IDescriptionLine[]{AbilityDescriptionLine.NEW_LINE, ContinuousComponent.getTooltip()}).setSourceHakiNature(SourceHakiNature.HARDENING).setSourceType(new SourceType[]{SourceType.FIST}).build();
         INSTANCE.setIcon(new ResourceLocation("awakenawakennomi", "textures/abilities/awaken_suke_punch.png"));
