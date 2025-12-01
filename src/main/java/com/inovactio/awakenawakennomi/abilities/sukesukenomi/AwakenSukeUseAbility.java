@@ -6,9 +6,13 @@ import com.inovactio.awakenawakennomi.api.common.InvisibleBlockManager;
 import com.inovactio.awakenawakennomi.network.ModNetwork;
 import com.inovactio.awakenawakennomi.network.ToggleInvisiblePacket;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.particles.ParticleTypes;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.network.PacketDistributor;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -47,10 +51,28 @@ public class AwakenSukeUseAbility extends BlockUseAbility implements IAwakenable
 
     @Override
     public boolean onBlockPunched(LivingEntity entity, BlockPos pos, World world) {
-        boolean invisible = !InvisibleBlockManager.isInvisible(pos);
-        InvisibleBlockManager.setInvisible(pos, invisible);
+        boolean invisible = !InvisibleBlockManager.isInvisible(world, pos);
+        InvisibleBlockManager.setInvisible(world, pos, invisible);
         ModNetwork.CHANNEL.send(PacketDistributor.ALL.noArg(),
-        new ToggleInvisiblePacket(pos, invisible));
+                new ToggleInvisiblePacket(pos, invisible));
+
+        ((ServerWorld) world).sendParticles(
+                ParticleTypes.AMBIENT_ENTITY_EFFECT, // particules d’invisibilité vanilla
+                pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, // centre du bloc
+                20,        // nombre de particules
+                0.3, 0.3, 0.3, // zone de dispersion
+                0.0        // vitesse
+        );
+
+        // 👉 Son magique
+        world.playSound(
+                null, // null = tous les joueurs proches entendent
+                pos,
+                SoundEvents.ENDERMAN_TELEPORT, // choisis ton son ici
+                SoundCategory.BLOCKS,
+                1.0F, // volume
+                1.0F  // pitch
+        );
         return true;
     }
 

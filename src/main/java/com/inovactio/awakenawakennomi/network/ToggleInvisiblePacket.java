@@ -31,19 +31,22 @@ public class ToggleInvisiblePacket {
         return new ToggleInvisiblePacket(pos, invisible);
     }
 
-    // Handler côté client
     public static void handle(ToggleInvisiblePacket msg, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
+            // Mets à jour le cache client (version 2 arguments de setInvisible)
             InvisibleBlockManager.setInvisible(msg.pos, msg.invisible);
 
-            BlockPos pos = msg.pos;
             // Rafraîchit le rendu du bloc côté client
-            BlockState state = Minecraft.getInstance().level.getBlockState(pos);
-            Minecraft.getInstance().levelRenderer.setBlocksDirty(
-                    pos.getX(), pos.getY(), pos.getZ(),
-                    pos.getX(), pos.getY(), pos.getZ()
-            );
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.level != null) {
+                BlockPos pos = msg.pos;
+                BlockState state = mc.level.getBlockState(pos);
+
+                // Force la mise à jour du rendu
+                mc.level.sendBlockUpdated(pos, state, state, 3);
+            }
         });
         ctx.get().setPacketHandled(true);
     }
+
 }
