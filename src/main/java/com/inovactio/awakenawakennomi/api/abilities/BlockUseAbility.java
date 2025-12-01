@@ -52,7 +52,7 @@ public abstract class BlockUseAbility extends Ability {
             return true;
         }
         this.increaseUses();
-        return this.onBlockPunched(entity, pos, world);
+        return this.onBlockUsed(entity, pos, world);
     }
 
     private void onStart(LivingEntity entity, IAbility ability) {
@@ -82,7 +82,7 @@ public abstract class BlockUseAbility extends Ability {
         }
     }
 
-    public abstract boolean onBlockPunched(LivingEntity entity, BlockPos pos, World world);
+    public abstract boolean onBlockUsed(LivingEntity entity, BlockPos pos, World world);
 
     public abstract float getPunchCooldown();
 

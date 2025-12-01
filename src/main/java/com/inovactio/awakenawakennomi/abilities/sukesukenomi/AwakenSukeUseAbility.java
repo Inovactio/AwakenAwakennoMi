@@ -50,7 +50,7 @@ public class AwakenSukeUseAbility extends BlockUseAbility implements IAwakenable
     }
 
     @Override
-    public boolean onBlockPunched(LivingEntity entity, BlockPos pos, World world) {
+    public boolean onBlockUsed(LivingEntity entity, BlockPos pos, World world) {
         boolean invisible = !InvisibleBlockManager.isInvisible(world, pos);
         InvisibleBlockManager.setInvisible(world, pos, invisible);
         ModNetwork.CHANNEL.send(PacketDistributor.ALL.noArg(),
