@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "com.inovactio.awakenawakennomi.mixins",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "mixins.awaken-awaken-no-mi.refmap.json",
+  "mixins": [
+    "ModAbilitiesMixin",
+    "BlockModelRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
