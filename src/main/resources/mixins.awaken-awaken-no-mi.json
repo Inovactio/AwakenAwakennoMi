@@ -5,7 +5,8 @@
   "refmap": "mixins.awaken-awaken-no-mi.refmap.json",
   "mixins": [
     "ModAbilitiesMixin",
-    "BlockModelRendererMixin"
+    "BlockModelRendererMixin",
+    "AbstractBlockStateMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -8,8 +8,6 @@ import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.block.BlockState;
 import net.minecraft.world.IBlockDisplayReader;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -27,7 +25,7 @@ public class BlockModelRendererMixin {
                                int combinedOverlayIn, net.minecraftforge.client.model.data.IModelData modelData,
                                CallbackInfoReturnable<Boolean> cir) {
         if (posIn != null && InvisibleBlockManager.isInvisible(posIn)) {
-            cir.setReturnValue(false);
+            cir.setReturnValue(true);
         }
     }
 }
