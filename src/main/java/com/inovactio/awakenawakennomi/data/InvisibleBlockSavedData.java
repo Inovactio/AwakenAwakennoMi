@@ -1,15 +1,18 @@
 package com.inovactio.awakenawakennomi.data;
 
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.world.storage.WorldSavedData;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.StringNBT;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.storage.WorldSavedData;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.UUID;
 
 public class InvisibleBlockSavedData extends WorldSavedData {
-    private static final String NAME = "invisible_blocks";
-    private final Set<Long> invisibleBlocks = new HashSet<>();
+
+    private final Map<Long, UUID> map = new HashMap<>();
+    public static final String NAME = "invisible_blocks";
 
     public InvisibleBlockSavedData() {
         super(NAME);
@@ -17,36 +20,91 @@ public class InvisibleBlockSavedData extends WorldSavedData {
 
     @Override
     public void load(CompoundNBT nbt) {
-        long[] arr = nbt.getLongArray("Blocks");
-        invisibleBlocks.clear();
-        for (long l : arr) {
-            invisibleBlocks.add(l);
+        map.clear();
+        if (nbt == null) return;
+        ListNBT list = nbt.getList("entries", 8);
+        for (int i = 0; i < list.size(); i++) {
+            String s = list.getString(i);
+            String[] parts = s.split(":");
+            if (parts.length == 2) {
+                try {
+                    long posLong = Long.parseLong(parts[0]);
+                    UUID uuid = UUID.fromString(parts[1]);
+                    map.put(posLong, uuid);
+                } catch (Exception ignored) { }
+            }
         }
     }
 
     @Override
     public CompoundNBT save(CompoundNBT nbt) {
-        long[] arr = invisibleBlocks.stream().mapToLong(Long::longValue).toArray();
-        nbt.putLongArray("Blocks", arr);
+        ListNBT list = new ListNBT();
+        for (Map.Entry<Long, UUID> e : map.entrySet()) {
+            list.add(StringNBT.valueOf(e.getKey() + ":" + e.getValue().toString()));
+        }
+        nbt.put("entries", list);
         return nbt;
     }
 
-    public void setInvisible(BlockPos pos, boolean invisible) {
+    public Map<Long, UUID> getMap() {
+        return Collections.unmodifiableMap(map);
+    }
+
+    /**
+     * Définit l'état invisible d'une position pour un propriétaire donné.
+     * Si invisible == true, ajoute ou met à jour l'entrée; sinon supprime l'entrée.
+     * Appelle setDirty() si un changement a eu lieu afin que les données soient persistées.
+     */
+    public void setInvisible(BlockPos pos, boolean invisible, UUID owner) {
+        if (pos == null) return;
         long key = pos.asLong();
         if (invisible) {
-            invisibleBlocks.add(key);
+            UUID previous = map.put(key, owner);
+            if (!Objects.equals(previous, owner)) this.setDirty();
         } else {
-            invisibleBlocks.remove(key);
+            if (map.remove(key) != null) this.setDirty();
         }
-        this.setDirty(); // important pour que Forge sache qu’il faut sauvegarder
     }
 
+    /**
+     * Retourne true si la position est marquée invisible (quel que soit le propriétaire).
+     */
     public boolean isInvisible(BlockPos pos) {
-        return invisibleBlocks.contains(pos.asLong());
+        if (pos == null) return false;
+        return map.containsKey(pos.asLong());
     }
 
-    public Set<Long> getInvisibleBlocks() {
-        return invisibleBlocks;
+    /**
+     * Optionnel : vérifie si la position est invisible pour un joueur spécifique.
+     */
+    public boolean isInvisibleForOwner(BlockPos pos, UUID owner) {
+        if (pos == null || owner == null) return false;
+        UUID u = map.get(pos.asLong());
+        return owner.equals(u);
     }
 
+    public List<Long> removeEntriesForPlayer(UUID owner) {
+        List<Long> removed = new ArrayList<>();
+        Iterator<Map.Entry<Long, UUID>> it = map.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<Long, UUID> e = it.next();
+            if (owner.equals(e.getValue())) {
+                removed.add(e.getKey());
+                it.remove();
+            }
+        }
+        if (!removed.isEmpty()) {
+            this.setDirty();
+        }
+        return removed;
+    }
+
+    public void put(long posLong, UUID owner) {
+        map.put(posLong, owner);
+        this.setDirty();
+    }
+
+    public void remove(long posLong) {
+        if (map.remove(posLong) != null) this.setDirty();
+    }
 }

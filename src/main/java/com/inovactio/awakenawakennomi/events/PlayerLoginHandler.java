@@ -11,6 +11,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.network.PacketDistributor;
 
+import java.util.UUID;
+
 @Mod.EventBusSubscriber
 public class PlayerLoginHandler {
 
@@ -23,14 +25,15 @@ public class PlayerLoginHandler {
 
         // Récupère les données persistées
         InvisibleBlockSavedData data = world.getDataStorage()
-                .computeIfAbsent(() -> new InvisibleBlockSavedData(), "invisible_blocks");
+                .computeIfAbsent(InvisibleBlockSavedData::new, "invisible_blocks");
 
-        // Envoie un packet pour chaque bloc invisible au joueur
-        for (long key : data.getInvisibleBlocks()) {
+        // Envoie un packet pour chaque bloc invisible au joueur (nouvelle signature : pos, playerUUID, invisible)
+        UUID playerUuid = player.getUUID();
+        for (long key : data.getMap().keySet()) {
             BlockPos pos = BlockPos.of(key);
             ModNetwork.CHANNEL.send(
                     PacketDistributor.PLAYER.with(() -> player),
-                    new ToggleInvisiblePacket(pos, true)
+                    new ToggleInvisiblePacket(pos, playerUuid, true)
             );
         }
     }

@@ -21,6 +21,10 @@ public class ModNetwork {
                 ToggleInvisiblePacket::encode,
                 ToggleInvisiblePacket::decode,
                 ToggleInvisiblePacket::handle);
+
+        CHANNEL.registerMessage(id++, RemovePlayerInvisibleBlocksPacket.class,
+                RemovePlayerInvisibleBlocksPacket::encode,
+                RemovePlayerInvisibleBlocksPacket::decode,
+                RemovePlayerInvisibleBlocksPacket::handle);
     }
 }
-

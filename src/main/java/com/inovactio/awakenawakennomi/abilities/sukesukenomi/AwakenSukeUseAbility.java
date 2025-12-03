@@ -2,8 +2,6 @@ package com.inovactio.awakenawakennomi.abilities.sukesukenomi;
 
 import com.inovactio.awakenawakennomi.api.abilities.BlockUseAbility;
 import com.inovactio.awakenawakennomi.api.abilities.IAwakenable;
-import com.inovactio.awakenawakennomi.network.ModNetwork;
-import com.inovactio.awakenawakennomi.network.ToggleInvisiblePacket;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.SoundCategory;
@@ -13,7 +11,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import xyz.pixelatedw.mineminenomi.api.abilities.*;
 import xyz.pixelatedw.mineminenomi.api.abilities.components.AbilityComponent;
 import xyz.pixelatedw.mineminenomi.api.abilities.components.ContinuousComponent;
@@ -75,7 +72,7 @@ public class AwakenSukeUseAbility extends BlockUseAbility implements IAwakenable
 
     @Override
     public boolean onBlockUsed(LivingEntity entity, BlockPos pos, World world) {
-        SukeHelper.toggleBlockInvisibility(pos, world);
+        SukeHelper.toggleBlockInvisibility(pos, world, entity.getUUID());
         spawnParticlesAndSound(world, pos);
         return true;
     }
