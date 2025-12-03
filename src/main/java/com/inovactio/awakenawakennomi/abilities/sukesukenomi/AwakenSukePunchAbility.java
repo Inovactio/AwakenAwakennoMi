@@ -40,11 +40,11 @@ public class AwakenSukePunchAbility extends BlockUseAbility implements IAwakenab
 
     public AwakenSukePunchAbility(AbilityCore<AwakenSukePunchAbility> core) {
         super(core);
-        this.skinOverlayComponent = new SkinOverlayComponent(this, OVERLAY, new AbilityOverlay[0]);
+        this.skinOverlayComponent = new SkinOverlayComponent(this, OVERLAY);
         super.continuousComponent
                 .addStartEvent(100, this::applyOverlay)
                 .addEndEvent(100, this::removeOverlay);
-        super.addComponents(new AbilityComponent[]{this.skinOverlayComponent});
+        super.addComponents(this.skinOverlayComponent);
     }
 
     private void applyOverlay(LivingEntity entity, IAbility ability) {
