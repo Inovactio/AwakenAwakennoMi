@@ -3,9 +3,12 @@ package com.inovactio.awakenawakennomi.network;
 import com.inovactio.awakenawakennomi.api.common.InvisibleBlockManager;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -21,14 +24,12 @@ public class ToggleInvisiblePacket {
         this.invisible = invisible;
     }
 
-    // Encode vers le buffer
     public static void encode(ToggleInvisiblePacket msg, PacketBuffer buf) {
         buf.writeBlockPos(msg.pos);
         buf.writeUUID(msg.player);
         buf.writeBoolean(msg.invisible);
     }
 
-    // Decode depuis le buffer
     public static ToggleInvisiblePacket decode(PacketBuffer buf) {
         BlockPos pos = buf.readBlockPos();
         UUID player = buf.readUUID();
@@ -36,22 +37,32 @@ public class ToggleInvisiblePacket {
         return new ToggleInvisiblePacket(pos, player, invisible);
     }
 
-    public static void handle(ToggleInvisiblePacket msg, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            // Mets à jour le cache client (version avec UUID du joueur)
-            InvisibleBlockManager.setInvisible(msg.pos, msg.player, msg.invisible);
+    public static void handle(ToggleInvisiblePacket msg, Supplier<NetworkEvent.Context> ctxSupplier) {
+        NetworkEvent.Context ctx = ctxSupplier.get();
+        ctx.enqueueWork(() -> {
+            // Si le paquet est reçu côté serveur -> appliquer le toggle côté serveur de manière authoritative
+            if (ctx.getDirection().getReceptionSide().isServer()) {
+                ServerPlayerEntity sender = ctx.getSender();
+                if (sender == null) return;
+                ServerWorld serverWorld = sender.getLevel();
+                if (serverWorld == null) return;
 
-            // Rafraîchit le rendu du bloc côté client
-            Minecraft mc = Minecraft.getInstance();
-            if (mc.level != null) {
-                BlockPos pos = msg.pos;
-                BlockState state = mc.level.getBlockState(pos);
+                // compute authoritative state and save
+                boolean newInvisible = !InvisibleBlockManager.isInvisible(serverWorld, msg.pos);
+                InvisibleBlockManager.setInvisible(serverWorld, msg.pos, newInvisible, msg.player);
 
-                // Force la mise à jour du rendu
-                mc.level.sendBlockUpdated(pos, state, state, 3);
+                // broadcast résultat aux clients
+                ModNetwork.CHANNEL.send(PacketDistributor.ALL.noArg(), new ToggleInvisiblePacket(msg.pos, msg.player, newInvisible));
+            } else {
+                // Réception côté client : mettre à jour cache client et rafraîchir rendu
+                InvisibleBlockManager.setInvisible(msg.pos, msg.player, msg.invisible);
+                Minecraft mc = Minecraft.getInstance();
+                if (mc != null && mc.level != null) {
+                    BlockState state = mc.level.getBlockState(msg.pos);
+                    mc.level.sendBlockUpdated(msg.pos, state, state, 3);
+                }
             }
         });
-        ctx.get().setPacketHandled(true);
+        ctx.setPacketHandled(true);
     }
-
 }
