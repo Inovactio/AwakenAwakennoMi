@@ -28,7 +28,7 @@ public class AwakenSukePunchAbility extends BlockUseAbility implements IAwakenab
             AbilityHelper.registerDescriptionText("awakenawakennomi", "awaken_suke_punch",
                     ImmutablePair.of("Turns a block invisible after hitting it.", null));
 
-    public static final AbilityCore INSTANCE;
+    public static final AbilityCore<AwakenSukePunchAbility> INSTANCE;
 
     private static final AbilityOverlay OVERLAY =
             new AbilityOverlay.Builder()
@@ -108,15 +108,14 @@ public class AwakenSukePunchAbility extends BlockUseAbility implements IAwakenab
     }
 
     static {
-        INSTANCE = new AbilityCore.Builder("AwakenSukePunch", AbilityCategory.DEVIL_FRUITS, AwakenSukePunchAbility::new)
+        INSTANCE = new AbilityCore.Builder<AwakenSukePunchAbility>("AwakenSukePunch", AbilityCategory.DEVIL_FRUITS, AwakenSukePunchAbility::new)
                 .setUnlockCheck(AwakenSukePunchAbility::canUnlock)
                 .addDescriptionLine(DESCRIPTION)
                 .addAdvancedDescriptionLine(new AbilityDescriptionLine.IDescriptionLine[]{
                         AbilityDescriptionLine.NEW_LINE,
                         ContinuousComponent.getTooltip()
                 })
+                .setIcon(new ResourceLocation("awakenawakennomi", "textures/abilities/awaken_suke_punch.png"))
                 .build();
-
-        INSTANCE.setIcon(new ResourceLocation("awakenawakennomi", "textures/abilities/awaken_suke_punch.png"));
     }
 }
