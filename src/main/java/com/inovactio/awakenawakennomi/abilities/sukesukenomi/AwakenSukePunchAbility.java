@@ -22,7 +22,7 @@ import net.minecraft.util.ResourceLocation;
 
 import java.util.function.Predicate;
 
-public class AwakenSukeUseAbility extends BlockUseAbility implements IAwakenable {
+public class AwakenSukePunchAbility extends BlockUseAbility implements IAwakenable {
 
     private static final ITextComponent[] DESCRIPTION =
             AbilityHelper.registerDescriptionText("awakenawakennomi", "awaken_suke_punch",
@@ -38,7 +38,7 @@ public class AwakenSukeUseAbility extends BlockUseAbility implements IAwakenable
 
     private final SkinOverlayComponent skinOverlayComponent;
 
-    public AwakenSukeUseAbility(AbilityCore<AwakenSukeUseAbility> core) {
+    public AwakenSukePunchAbility(AbilityCore<AwakenSukePunchAbility> core) {
         super(core);
         this.skinOverlayComponent = new SkinOverlayComponent(this, OVERLAY, new AbilityOverlay[0]);
         super.continuousComponent
@@ -108,8 +108,8 @@ public class AwakenSukeUseAbility extends BlockUseAbility implements IAwakenable
     }
 
     static {
-        INSTANCE = new AbilityCore.Builder("AwakenSukePunch", AbilityCategory.DEVIL_FRUITS, AwakenSukeUseAbility::new)
-                .setUnlockCheck(AwakenSukeUseAbility::canUnlock)
+        INSTANCE = new AbilityCore.Builder("AwakenSukePunch", AbilityCategory.DEVIL_FRUITS, AwakenSukePunchAbility::new)
+                .setUnlockCheck(AwakenSukePunchAbility::canUnlock)
                 .addDescriptionLine(DESCRIPTION)
                 .addAdvancedDescriptionLine(new AbilityDescriptionLine.IDescriptionLine[]{
                         AbilityDescriptionLine.NEW_LINE,

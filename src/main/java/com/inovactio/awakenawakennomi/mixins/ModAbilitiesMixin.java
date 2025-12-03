@@ -1,6 +1,6 @@
 package com.inovactio.awakenawakennomi.mixins;
 
-import com.inovactio.awakenawakennomi.abilities.sukesukenomi.AwakenSukeUseAbility;
+import com.inovactio.awakenawakennomi.abilities.sukesukenomi.AwakenSukePunchAbility;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -30,7 +30,7 @@ public class ModAbilitiesMixin {
 
             // Étendre le tableau
             AbilityCore<?>[] extended = Arrays.copyOf(original, original.length + 1);
-            extended[original.length] = AwakenSukeUseAbility.INSTANCE;
+            extended[original.length] = AwakenSukePunchAbility.INSTANCE;
 
             // Réinjecter
             fruit.setAbilities(extended);
