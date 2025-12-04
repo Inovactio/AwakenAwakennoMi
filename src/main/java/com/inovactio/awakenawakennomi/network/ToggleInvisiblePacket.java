@@ -1,3 +1,4 @@
+// java
 package com.inovactio.awakenawakennomi.network;
 
 import com.inovactio.awakenawakennomi.api.common.InvisibleBlockManager;
@@ -40,19 +41,20 @@ public class ToggleInvisiblePacket {
     public static void handle(ToggleInvisiblePacket msg, Supplier<NetworkEvent.Context> ctxSupplier) {
         NetworkEvent.Context ctx = ctxSupplier.get();
         ctx.enqueueWork(() -> {
-            // Si le paquet est reçu côté serveur -> appliquer le toggle côté serveur de manière authoritative
+            // Si le paquet est reçu côté serveur -> appliquer l'état demandé mais enregistrer l'auteur réel (sender)
             if (ctx.getDirection().getReceptionSide().isServer()) {
                 ServerPlayerEntity sender = ctx.getSender();
                 if (sender == null) return;
                 ServerWorld serverWorld = sender.getLevel();
                 if (serverWorld == null) return;
 
-                // compute authoritative state and save
-                boolean newInvisible = !InvisibleBlockManager.isInvisible(serverWorld, msg.pos);
-                InvisibleBlockManager.setInvisible(serverWorld, msg.pos, newInvisible, msg.player);
+                // Appliquer l'état demandé par le client, mais utiliser l'UUID du sender comme propriétaire
+                boolean newInvisible = msg.invisible;
+                UUID owner = sender.getUUID();
+                InvisibleBlockManager.setInvisible(serverWorld, msg.pos, newInvisible, owner);
 
-                // broadcast résultat aux clients
-                ModNetwork.CHANNEL.send(PacketDistributor.ALL.noArg(), new ToggleInvisiblePacket(msg.pos, msg.player, newInvisible));
+                // broadcast résultat aux clients avec l'UUID réel du propriétaire
+                ModNetwork.CHANNEL.send(PacketDistributor.ALL.noArg(), new ToggleInvisiblePacket(msg.pos, owner, newInvisible));
             } else {
                 // Réception côté client : mettre à jour cache client et rafraîchir rendu
                 InvisibleBlockManager.setInvisible(msg.pos, msg.player, msg.invisible);

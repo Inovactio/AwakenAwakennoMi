@@ -1,3 +1,4 @@
+// java
 package com.inovactio.awakenawakennomi.api.common;
 
 import com.inovactio.awakenawakennomi.data.InvisibleBlockSavedData;
@@ -45,7 +46,7 @@ public class InvisibleBlockManager {
         DimensionSavedDataManager storage = serverWorld.getDataStorage();
         InvisibleBlockSavedData data = storage.computeIfAbsent(
                 InvisibleBlockSavedData::new,
-                "invisible_blocks"
+                InvisibleBlockSavedData.NAME
         );
         data.setInvisible(pos, invisible, owner);
     }
@@ -56,7 +57,7 @@ public class InvisibleBlockManager {
         DimensionSavedDataManager storage = serverWorld.getDataStorage();
         InvisibleBlockSavedData data = storage.computeIfAbsent(
                 InvisibleBlockSavedData::new,
-                "invisible_blocks"
+                InvisibleBlockSavedData.NAME
         );
         return data.isInvisible(pos);
     }
