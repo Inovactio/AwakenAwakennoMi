@@ -1,7 +1,6 @@
 package com.inovactio.awakenawakennomi.abilities.sukesukenomi;
 
 import com.inovactio.awakenawakennomi.api.abilities.IAwakenable;
-import com.inovactio.awakenawakennomi.util.PropagationHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.SoundCategory;
@@ -17,12 +16,15 @@ import xyz.pixelatedw.mineminenomi.api.abilities.*;
 import xyz.pixelatedw.mineminenomi.api.abilities.components.AbilityComponent;
 import xyz.pixelatedw.mineminenomi.api.abilities.components.ChargeComponent;
 import xyz.pixelatedw.mineminenomi.api.abilities.components.ContinuousComponent;
+import xyz.pixelatedw.mineminenomi.api.abilities.components.AnimationComponent;
 import xyz.pixelatedw.mineminenomi.api.helpers.AbilityHelper;
 import xyz.pixelatedw.mineminenomi.data.entity.devilfruit.DevilFruitCapability;
-import xyz.pixelatedw.mineminenomi.init.ModAbilities;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.server.ServerWorld;
 import xyz.pixelatedw.mineminenomi.init.ModEffects;
+import xyz.pixelatedw.mineminenomi.init.ModAbilities;
+import com.inovactio.awakenawakennomi.util.PropagationHelper;
+import com.inovactio.awakenawakennomi.abilities.sukesukenomi.SukeHelper;
+import com.inovactio.awakenawakennomi.init.ModAnimations;
+import net.minecraft.world.server.ServerWorld;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,12 +39,9 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
 
     public static final AbilityCore<AwakenSukeInvisibleZoneAbility> INSTANCE;
 
-    // 30 secondes = 600 ticks
     private static final int CHARGE_TIME = 600;
     private static final int COOLDOWN = 200;
     private static final int RADIUS = 48;
-
-    // courbe d'easing (utilisée comme exposant dans Math.pow)
     private static final double PROPAGATION_EASE = 0.35;
 
     private final ChargeComponent chargeComponent = (new ChargeComponent(this, comp -> comp.getChargePercentage() > 0.5F))
@@ -54,25 +53,26 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
             .addTickEvent(100, this::onContinuityTick)
             .addEndEvent(100, this::onEndContinuity);
 
-    // Utilisation du helper générique
+    // Ajout de l'AnimationComponent
+    private final AnimationComponent animationComponent = new AnimationComponent(this);
+
     private final List<PropagationHelper.PropagationEntry> affectedEntries = new ArrayList<>();
     private BlockPos zoneCenter = null;
     private int lastProgress = 0;
 
-    // Flags :
     private boolean requestedStartContinuity = false;
     private boolean requestedKeepPartial = false;
 
     public AwakenSukeInvisibleZoneAbility(AbilityCore<AwakenSukeInvisibleZoneAbility> core) {
         super(core);
         this.isNew = true;
-        this.addComponents(new AbilityComponent[]{this.chargeComponent, this.continuousComponent});
+        // ajouter animationComponent aux composants
+        this.addComponents(new AbilityComponent[]{this.chargeComponent, this.continuousComponent, this.animationComponent});
         this.addUseEvent(this::onUseEvent);
     }
 
     private void onUseEvent(LivingEntity entity, IAbility ability) {
         if (this.chargeComponent.isCharging()) {
-            // réactivation pendant chargement -> démarrer continuité plus tard et garder la portion déjà masquée
             this.requestedStartContinuity = true;
             this.requestedKeepPartial = true;
             this.chargeComponent.stopCharging(entity);
@@ -91,17 +91,13 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
         zoneCenter = entity.blockPosition();
         World world = entity.level;
 
-        // calcul des entrées via le helper générique (sphère, voisinage 6-directions)
         List<PropagationHelper.PropagationEntry> entries =
                 PropagationHelper.computePropagationEntries(zoneCenter, RADIUS, CHARGE_TIME,
                         frac -> Math.pow(frac, PROPAGATION_EASE), true, null);
 
-        // Optionnel : si on veut stabiliser l'ordre avec un seed (comme avant), on peut shuffle de façon déterministe
-        // ici on conserve l'ordre fourni par le helper
         affectedEntries.addAll(entries);
 
         if (!world.isClientSide) {
-            // appliquer l'effet custom d'immobilisation côté serveur
             entity.addEffect(new EffectInstance((Effect) ModEffects.MOVEMENT_BLOCKED.get(), CHARGE_TIME + 10, 1, false, false));
             entity.setDeltaMovement(Vector3d.ZERO);
 
@@ -111,27 +107,27 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
                         40, 2.5, 2.5, 2.5, 0.0);
             }
             world.playSound(null, zoneCenter, SoundEvents.ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1.0F, 1.0F);
+
+            // Lancer l'animation KNEEL côté serveur (AnimationComponent gère la propagation)
+            this.animationComponent.start(entity, ModAnimations.KNEEL_PUNCH_GROUND, CHARGE_TIME);
         }
     }
 
     private void onTickCharge(LivingEntity entity, IAbility ability) {
         if (entity.level.isClientSide) return;
-        // maintenir immobilisation en réinitialisant la vélocité
         entity.setDeltaMovement(Vector3d.ZERO);
 
-        float percent = this.chargeComponent.getChargePercentage(); // 0.0 - 1.0
+        float percent = this.chargeComponent.getChargePercentage();
         int elapsed = Math.min(CHARGE_TIME, Math.round(percent * CHARGE_TIME));
 
-        // cacher tous les blocs dont tickToApply <= elapsed
         if (lastProgress < affectedEntries.size()) {
             UUID owner = entity.getUUID();
-            Random rng = new Random(); // petites particules aléatoires
+            Random rng = new Random();
             int i = lastProgress;
             while (i < affectedEntries.size() && affectedEntries.get(i).tickToApply <= elapsed) {
                 BlockPos pos = affectedEntries.get(i).pos;
                 SukeHelper.forceHideBlock(pos, entity.level, owner);
 
-                // petits effets visuels par groupe pour lisibilité
                 if (i % 8 == 0 && entity.level instanceof ServerWorld) {
                     ((ServerWorld) entity.level).sendParticles(ParticleTypes.AMBIENT_ENTITY_EFFECT,
                             pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
@@ -145,11 +141,8 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
 
     private void onEndCharge(LivingEntity entity, IAbility ability) {
         boolean isServer = !entity.level.isClientSide;
-
-        // considérer la charge complète uniquement si tous les blocs ont déjà été masqués
         boolean chargeCompleted = (lastProgress >= affectedEntries.size() && !affectedEntries.isEmpty());
 
-        // Serveur : masquer les restants ou tronquer la liste si demandé
         if (isServer) {
             if (!requestedKeepPartial) {
                 if (lastProgress < affectedEntries.size()) {
@@ -167,7 +160,6 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
                 }
             }
         } else {
-            // Client : tronquer localement si nécessaire
             if (requestedKeepPartial && lastProgress < affectedEntries.size()) {
                 List<PropagationHelper.PropagationEntry> kept = new ArrayList<>(affectedEntries.subList(0, lastProgress));
                 affectedEntries.clear();
@@ -177,12 +169,15 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
 
         boolean wantContinuity = requestedStartContinuity || chargeCompleted;
 
-        // reset flags
         requestedKeepPartial = false;
         requestedStartContinuity = false;
 
-        // Toujours retirer l'effet d'immobilisation localement (client + serveur) pour permettre au joueur de bouger
         entity.removeEffect((Effect) ModEffects.MOVEMENT_BLOCKED.get());
+
+        // Arrêter l'animation côté serveur dès la fin de la charge
+        if (isServer) {
+            this.animationComponent.stop(entity);
+        }
 
         if (wantContinuity) {
             if (isServer) {
@@ -210,6 +205,9 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
 
     private void onEndContinuity(LivingEntity entity, IAbility ability) {
         if (!entity.level.isClientSide) {
+            // arrêter l'animation côté clients via AnimationComponent
+            this.animationComponent.stop(entity);
+
             UUID owner = entity.getUUID();
             for (PropagationHelper.PropagationEntry e : affectedEntries) {
                 SukeHelper.forceRevealBlock(e.pos, entity.level, owner);
@@ -236,7 +234,7 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
                 "AwakenSukeInvisibleZone", AbilityCategory.DEVIL_FRUITS, AwakenSukeInvisibleZoneAbility::new)
                 .setUnlockCheck(AwakenSukeInvisibleZoneAbility::canUnlock)
                 .addDescriptionLine(DESCRIPTION)
-                .setIcon(new ResourceLocation("awakenawakennomi", "textures/abilities/awaken_suke_invisible_zone.png"))
+                .setIcon(new net.minecraft.util.ResourceLocation("awakenawakennomi", "textures/abilities/awaken_suke_invisible_zone.png"))
                 .build();
     }
 }
