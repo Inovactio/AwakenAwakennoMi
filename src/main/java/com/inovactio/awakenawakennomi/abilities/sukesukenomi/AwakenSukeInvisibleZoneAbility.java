@@ -1,4 +1,3 @@
-// java
 package com.inovactio.awakenawakennomi.abilities.sukesukenomi;
 
 import com.inovactio.awakenawakennomi.api.abilities.IAwakenable;
@@ -11,6 +10,8 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Vector3d;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import xyz.pixelatedw.mineminenomi.api.abilities.*;
@@ -19,6 +20,7 @@ import xyz.pixelatedw.mineminenomi.api.abilities.components.ChargeComponent;
 import xyz.pixelatedw.mineminenomi.api.abilities.components.ContinuousComponent;
 import xyz.pixelatedw.mineminenomi.api.abilities.components.AnimationComponent;
 import xyz.pixelatedw.mineminenomi.api.helpers.AbilityHelper;
+import xyz.pixelatedw.mineminenomi.api.util.TargetsPredicate;
 import xyz.pixelatedw.mineminenomi.data.entity.devilfruit.DevilFruitCapability;
 import xyz.pixelatedw.mineminenomi.init.ModEffects;
 import xyz.pixelatedw.mineminenomi.init.ModAbilities;
@@ -28,8 +30,10 @@ import com.inovactio.awakenawakennomi.init.ModAnimations;
 import net.minecraft.world.server.ServerWorld;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 
 public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenable {
@@ -39,7 +43,7 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
                     ImmutablePair.of("Crée une zone sphérique où les blocs deviennent invisibles progressivement.", null));
 
     public static final AbilityCore<AwakenSukeInvisibleZoneAbility> INSTANCE;
-
+    private static final TargetsPredicate TARGETS_CHECK = (new TargetsPredicate()).testFriendlyFaction();
     private static final int CHARGE_TIME = 600;
     private static final int COOLDOWN_BASE = 200;            // cooldown minimal
     private static final int COOLDOWN_PER_8_BLOCKS = 50;    // ajout par tranche de 8 blocs
@@ -62,6 +66,9 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
     private final List<PropagationHelper.PropagationEntry> affectedEntries = new ArrayList<>();
     private BlockPos zoneCenter = null;
     private int lastProgress = 0;
+
+    // stocker UUIDs si besoin (non strictement nécessaire ici, utilisé si on souhaite tracking)
+    private final Set<UUID> slowedEntities = new HashSet<>();
 
     private boolean requestedStartContinuity = false;
     private boolean requestedKeepPartial = false;
@@ -114,6 +121,11 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
             // Lancer l'animation KNEEL côté serveur (AnimationComponent gère la propagation)
             this.animationComponent.start(entity, ModAnimations.KNEEL_PUNCH_GROUND, CHARGE_TIME);
         }
+
+        // appliquer ralentissement initial si besoin (sera régulièrement rafraîchi pendant le chargement)
+        if (!entity.level.isClientSide) {
+            updateSlowness(entity);
+        }
     }
 
     private void onTickCharge(LivingEntity entity, IAbility ability) {
@@ -140,6 +152,9 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
             }
             lastProgress = i;
         }
+
+        // rafraîchir le malus de ralentissement pendant la charge
+        updateSlowness(entity);
     }
 
     private void onEndCharge(LivingEntity entity, IAbility ability) {
@@ -196,12 +211,19 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
                 affectedEntries.clear();
                 zoneCenter = null;
                 this.cooldownComponent.startCooldown(entity, cd);
+
+                // on ne rafraîchira plus le slow -> il expirera naturellement (durée courte)
+                slowedEntities.clear();
             }
         }
     }
 
     private void onContinuityTick(LivingEntity entity, IAbility ability) {
         if (zoneCenter == null) return;
+
+        // rafraîchir le malus de ralentissement pendant la continuité
+        updateSlowness(entity);
+
         double distSq = entity.blockPosition().distSqr(zoneCenter);
         if (distSq > (RADIUS * RADIUS)) {
             if (!entity.level.isClientSide) {
@@ -228,7 +250,58 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
         affectedEntries.clear();
         zoneCenter = null;
         this.cooldownComponent.startCooldown(entity, cd);
+
+        // laisser le malus expirer naturellement -> on stoppe le tracking
+        slowedEntities.clear();
     }
+
+
+    private void updateSlowness(LivingEntity owner) {
+        if (zoneCenter == null) return;
+        if (owner == null || owner.level == null || owner.level.isClientSide) return;
+
+        World world = owner.level;
+        double r = RADIUS;
+        AxisAlignedBB box = new AxisAlignedBB(
+                zoneCenter.getX() - r, zoneCenter.getY() - r, zoneCenter.getZ() - r,
+                zoneCenter.getX() + r, zoneCenter.getY() + r, zoneCenter.getZ() + r
+        );
+
+        List<LivingEntity> list = world.getEntitiesOfClass(LivingEntity.class, box,
+                e -> !e.equals(owner) && e.isAlive() && !TARGETS_CHECK.test(owner, e));
+
+        for (LivingEntity target : list) {
+            // applique Slowness I (amplifier 0) pour 40 ticks et rafraîchit
+            target.addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, 40, 0, true, false, true));
+
+            // détecte si l'entité venait d'être ajoutée au tracking (nouvelle application)
+            boolean isNew = slowedEntities.add(target.getUUID());
+
+            if (world instanceof ServerWorld) {
+                ServerWorld sw = (ServerWorld) world;
+                // Effet principal : particules identiques à celles utilisées lors du punch pour cohérence
+                if (isNew) {
+                    // burst plus visible à la première application
+                    sw.sendParticles(ParticleTypes.AMBIENT_ENTITY_EFFECT,
+                            target.getX(), target.getY() + 0.5, target.getZ(),
+                            18, 0.35, 0.6, 0.35, 0.0);
+                    sw.sendParticles(ParticleTypes.CLOUD,
+                            target.getX(), target.getY() + 0.3, target.getZ(),
+                            6, 0.35, 0.25, 0.35, 0.01);
+                } else {
+                    // rafraîchissement discret pour éviter le spam visuel
+                    sw.sendParticles(ParticleTypes.AMBIENT_ENTITY_EFFECT,
+                            target.getX(), target.getY() + 0.5, target.getZ(),
+                            6, 0.2, 0.35, 0.2, 0.0);
+                }
+            }
+        }
+
+        // Note : on ne retire pas immédiatement le malus aux entités quittant la zone,
+        // l'effet expirera naturellement peu après (40 ticks) si non rafraîchi.
+    }
+
+
 
     protected static boolean canUnlock(LivingEntity user) {
         return DevilFruitCapability.get(user).hasAwakenedFruit()
