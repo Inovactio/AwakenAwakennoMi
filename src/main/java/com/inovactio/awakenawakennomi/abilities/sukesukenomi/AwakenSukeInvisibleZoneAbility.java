@@ -1,3 +1,4 @@
+// java
 package com.inovactio.awakenawakennomi.abilities.sukesukenomi;
 
 import com.inovactio.awakenawakennomi.api.abilities.IAwakenable;
@@ -40,7 +41,9 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
     public static final AbilityCore<AwakenSukeInvisibleZoneAbility> INSTANCE;
 
     private static final int CHARGE_TIME = 600;
-    private static final int COOLDOWN = 200;
+    private static final int COOLDOWN_BASE = 200;            // cooldown minimal
+    private static final int COOLDOWN_PER_8_BLOCKS = 50;    // ajout par tranche de 8 blocs
+    private static final int COOLDOWN_MAX = 1200;           // cap du cooldown
     private static final int RADIUS = 48;
     private static final double PROPAGATION_EASE = 0.35;
 
@@ -186,9 +189,13 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
             }
         } else {
             if (isServer) {
+                // calculer le cooldown AVANT de vider la liste d'entrées affectées
+                int cdBase = computeCooldown(affectedEntries.size());
+                // s'assurer d'un cooldown minimal correspondant au temps d'incantation
+                int cd = Math.max(cdBase, CHARGE_TIME);
                 affectedEntries.clear();
                 zoneCenter = null;
-                this.cooldownComponent.startCooldown(entity, COOLDOWN);
+                this.cooldownComponent.startCooldown(entity, cd);
             }
         }
     }
@@ -214,9 +221,13 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
             }
             entity.removeEffect((Effect) ModEffects.MOVEMENT_BLOCKED.get());
         }
+        // calculer le cooldown AVANT de vider la liste
+        int cdBase = computeCooldown(affectedEntries.size());
+        // s'assurer d'un cooldown minimal correspondant au temps d'incantation
+        int cd = Math.max(cdBase, CHARGE_TIME);
         affectedEntries.clear();
         zoneCenter = null;
-        this.cooldownComponent.startCooldown(entity, COOLDOWN);
+        this.cooldownComponent.startCooldown(entity, cd);
     }
 
     protected static boolean canUnlock(LivingEntity user) {
@@ -227,6 +238,24 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
     @Override
     public boolean AwakenUnlock(LivingEntity user) {
         return canUnlock(user);
+    }
+
+    /**
+     * Calcule un cooldown dynamique basé sur le nombre de blocs affectés.
+     * Permet d'équilibrer l'impact d'une grande zone tout en limitant le cooldown maximal.
+     */
+    private int computeCooldown(int blocks) {
+        int b = Math.max(0, blocks);
+        int extraChunks = b / 8;
+        int cd = COOLDOWN_BASE + extraChunks * COOLDOWN_PER_8_BLOCKS;
+        return Math.min(cd, COOLDOWN_MAX);
+    }
+
+    /**
+     * Surcharge pour compatibilité : utilise le nombre actuel d'entrées affectées.
+     */
+    private int computeCooldown() {
+        return computeCooldown(affectedEntries.size());
     }
 
     static {
