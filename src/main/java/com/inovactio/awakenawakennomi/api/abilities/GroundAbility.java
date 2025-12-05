@@ -1,4 +1,4 @@
-package com.inovactio.awakenawakennomi.abilities;
+package com.inovactio.awakenawakennomi.api.abilities;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;

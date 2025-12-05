@@ -1,6 +1,6 @@
 package com.inovactio.awakenawakennomi.abilities.sukesukenomi;
 
-import com.inovactio.awakenawakennomi.abilities.GroundAbility;
+import com.inovactio.awakenawakennomi.api.abilities.GroundAbility;
 import com.inovactio.awakenawakennomi.api.abilities.IAwakenable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.particles.ParticleTypes;
@@ -70,6 +70,9 @@ public class AwakenSukeInvisibleZoneAbility extends GroundAbility implements IAw
     // rayon effectif des blocs déjà rendus invisibles (en blocs)
     private double currentInvisibleRadius = 0.0;
 
+    // garder le maximum de la distance au carré pour éviter des recalculs coûteux
+    private double maxInvisibleSq = 0.0;
+
     private boolean requestedStartContinuity = false;
     private boolean requestedKeepPartial = false;
 
@@ -102,6 +105,7 @@ public class AwakenSukeInvisibleZoneAbility extends GroundAbility implements IAw
         requestedKeepPartial = false;
         zoneCenter = entity.blockPosition();
         currentInvisibleRadius = 0.0;
+        maxInvisibleSq = 0.0;
         World world = entity.level;
 
         List<PropagationHelper.PropagationEntry> entries =
@@ -145,6 +149,13 @@ public class AwakenSukeInvisibleZoneAbility extends GroundAbility implements IAw
                 BlockPos pos = affectedEntries.get(i).pos;
                 SukeHelper.forceHideBlock(pos, entity.level, owner);
 
+                // mettre à jour incrémentale du carré de la distance maximale
+                double dx = (pos.getX() + 0.5) - (zoneCenter.getX() + 0.5);
+                double dy = (pos.getY() + 0.5) - (zoneCenter.getY() + 0.5);
+                double dz = (pos.getZ() + 0.5) - (zoneCenter.getZ() + 0.5);
+                double dsq = dx * dx + dy * dy + dz * dz;
+                if (dsq > maxInvisibleSq) maxInvisibleSq = dsq;
+
                 if (i % 8 == 0 && entity.level instanceof ServerWorld) {
                     ((ServerWorld) entity.level).sendParticles(ParticleTypes.AMBIENT_ENTITY_EFFECT,
                             pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
@@ -154,8 +165,8 @@ public class AwakenSukeInvisibleZoneAbility extends GroundAbility implements IAw
             }
             lastProgress = i;
 
-            // recalculer le rayon effectif en fonction des blocs déjà appliqués
-            currentInvisibleRadius = computeCurrentInvisibleRadius(lastProgress);
+            // recalculer le rayon effectif en fonction du max calculé
+            currentInvisibleRadius = Math.sqrt(maxInvisibleSq);
         }
 
         // rafraîchir le malus de ralentissement pendant la charge
@@ -171,7 +182,15 @@ public class AwakenSukeInvisibleZoneAbility extends GroundAbility implements IAw
                 if (lastProgress < affectedEntries.size()) {
                     UUID owner = entity.getUUID();
                     for (int i = lastProgress; i < affectedEntries.size(); i++) {
-                        SukeHelper.forceHideBlock(affectedEntries.get(i).pos, entity.level, owner);
+                        BlockPos pos = affectedEntries.get(i).pos;
+                        SukeHelper.forceHideBlock(pos, entity.level, owner);
+
+                        // mettre à jour maxInvisibleSq pour les blocs forcés
+                        double dx = (pos.getX() + 0.5) - (zoneCenter.getX() + 0.5);
+                        double dy = (pos.getY() + 0.5) - (zoneCenter.getY() + 0.5);
+                        double dz = (pos.getZ() + 0.5) - (zoneCenter.getZ() + 0.5);
+                        double dsq = dx * dx + dy * dy + dz * dz;
+                        if (dsq > maxInvisibleSq) maxInvisibleSq = dsq;
                     }
                     lastProgress = affectedEntries.size();
                 }
@@ -180,6 +199,8 @@ public class AwakenSukeInvisibleZoneAbility extends GroundAbility implements IAw
                     List<PropagationHelper.PropagationEntry> kept = new ArrayList<>(affectedEntries.subList(0, lastProgress));
                     affectedEntries.clear();
                     affectedEntries.addAll(kept);
+                    // recalculer le max à partir des entrées conservées
+                    recomputeMaxInvisibleSq(lastProgress);
                 }
             }
         } else {
@@ -187,11 +208,12 @@ public class AwakenSukeInvisibleZoneAbility extends GroundAbility implements IAw
                 List<PropagationHelper.PropagationEntry> kept = new ArrayList<>(affectedEntries.subList(0, lastProgress));
                 affectedEntries.clear();
                 affectedEntries.addAll(kept);
+                recomputeMaxInvisibleSq(lastProgress);
             }
         }
 
         // mettre à jour le rayon effectif final après la fin de l'incantation / trimming
-        currentInvisibleRadius = computeCurrentInvisibleRadius(lastProgress > 0 ? lastProgress : affectedEntries.size());
+        currentInvisibleRadius = Math.sqrt(maxInvisibleSq);
 
         boolean wantContinuity = requestedStartContinuity || chargeCompleted;
 
@@ -219,6 +241,7 @@ public class AwakenSukeInvisibleZoneAbility extends GroundAbility implements IAw
                 affectedEntries.clear();
                 zoneCenter = null;
                 currentInvisibleRadius = 0.0;
+                maxInvisibleSq = 0.0;
                 this.cooldownComponent.startCooldown(entity, cd);
 
                 // on ne rafraîchira plus le slow -> il expirera naturellement (durée courte)
@@ -267,6 +290,7 @@ public class AwakenSukeInvisibleZoneAbility extends GroundAbility implements IAw
         affectedEntries.clear();
         zoneCenter = null;
         currentInvisibleRadius = 0.0;
+        maxInvisibleSq = 0.0;
         this.cooldownComponent.startCooldown(entity, cd);
 
         // laisser le malus expirer naturellement -> on stoppe le tracking
@@ -289,6 +313,9 @@ public class AwakenSukeInvisibleZoneAbility extends GroundAbility implements IAw
                 zoneCenter.getX() + r, zoneCenter.getY() + r, zoneCenter.getZ() + r
         );
 
+        // comparer avec le carré pour éviter sqrt
+        double rSq = r * r;
+
         List<LivingEntity> list = world.getEntitiesOfClass(LivingEntity.class, box,
                 e -> !e.equals(owner) && e.isAlive() && !TARGETS_CHECK.test(owner, e));
 
@@ -297,8 +324,8 @@ public class AwakenSukeInvisibleZoneAbility extends GroundAbility implements IAw
             double dx = target.getX() - (zoneCenter.getX() + 0.5);
             double dy = target.getY() - (zoneCenter.getY() + 0.5);
             double dz = target.getZ() - (zoneCenter.getZ() + 0.5);
-            double dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
-            if (dist > r) continue;
+            double distSq = dx * dx + dy * dy + dz * dz;
+            if (distSq > rSq) continue;
 
             // applique Slowness I (amplifier 0) pour 40 ticks et rafraîchit
             target.addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, 40, 0, true, false, true));
@@ -331,22 +358,20 @@ public class AwakenSukeInvisibleZoneAbility extends GroundAbility implements IAw
     }
 
     /**
-     * Calcule le rayon effectif (en blocs) pour les premières "count" entrées d'affectedEntries.
-     * Si count <= 0, renvoie 0.
+     * Recompute the maximum squared distance (maxInvisibleSq) using the first 'count' entries
+     * or all entries if count <= 0.
      */
-    private double computeCurrentInvisibleRadius(int count) {
-        if (zoneCenter == null || affectedEntries.isEmpty() || count <= 0) return 0.0;
-        int capped = Math.min(count, affectedEntries.size());
-        double maxSq = 0.0;
+    private void recomputeMaxInvisibleSq(int count) {
+        maxInvisibleSq = 0.0;
+        int capped = (count <= 0) ? affectedEntries.size() : Math.min(count, affectedEntries.size());
         for (int i = 0; i < capped; i++) {
             BlockPos p = affectedEntries.get(i).pos;
             double dx = (p.getX() + 0.5) - (zoneCenter.getX() + 0.5);
             double dy = (p.getY() + 0.5) - (zoneCenter.getY() + 0.5);
             double dz = (p.getZ() + 0.5) - (zoneCenter.getZ() + 0.5);
             double dsq = dx * dx + dy * dy + dz * dz;
-            if (dsq > maxSq) maxSq = dsq;
+            if (dsq > maxInvisibleSq) maxInvisibleSq = dsq;
         }
-        return Math.sqrt(maxSq);
     }
 
 
