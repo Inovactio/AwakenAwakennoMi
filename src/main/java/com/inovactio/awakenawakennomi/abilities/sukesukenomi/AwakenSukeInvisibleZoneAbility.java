@@ -28,11 +28,12 @@ import com.inovactio.awakenawakennomi.util.PropagationHelper;
 import com.inovactio.awakenawakennomi.abilities.sukesukenomi.SukeHelper;
 import com.inovactio.awakenawakennomi.init.ModAnimations;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.text.StringTextComponent;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
@@ -70,6 +71,9 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
     // stocker UUIDs si besoin (non strictement nécessaire ici, utilisé si on souhaite tracking)
     private final Set<UUID> slowedEntities = new HashSet<>();
 
+    // rayon effectif des blocs déjà rendus invisibles (en blocs)
+    private double currentInvisibleRadius = 0.0;
+
     private boolean requestedStartContinuity = false;
     private boolean requestedKeepPartial = false;
 
@@ -89,6 +93,13 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
         } else if (this.continuousComponent.isContinuous()) {
             this.continuousComponent.stopContinuity(entity);
         } else {
+            // Ne démarrer la charge que si l'entité est sur le sol
+            if (!entity.isOnGround()) {
+                if (entity instanceof PlayerEntity && !entity.level.isClientSide) {
+                    ((PlayerEntity) entity).sendMessage(new StringTextComponent("La compétence ne peut être lancée que depuis le sol."), entity.getUUID());
+                }
+                return;
+            }
             this.chargeComponent.startCharging(entity, CHARGE_TIME);
         }
     }
@@ -99,6 +110,7 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
         requestedStartContinuity = false;
         requestedKeepPartial = false;
         zoneCenter = entity.blockPosition();
+        currentInvisibleRadius = 0.0;
         World world = entity.level;
 
         List<PropagationHelper.PropagationEntry> entries =
@@ -137,7 +149,6 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
 
         if (lastProgress < affectedEntries.size()) {
             UUID owner = entity.getUUID();
-            Random rng = new Random();
             int i = lastProgress;
             while (i < affectedEntries.size() && affectedEntries.get(i).tickToApply <= elapsed) {
                 BlockPos pos = affectedEntries.get(i).pos;
@@ -151,6 +162,9 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
                 i++;
             }
             lastProgress = i;
+
+            // recalculer le rayon effectif en fonction des blocs déjà appliqués
+            currentInvisibleRadius = computeCurrentInvisibleRadius(lastProgress);
         }
 
         // rafraîchir le malus de ralentissement pendant la charge
@@ -185,12 +199,15 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
             }
         }
 
+        // mettre à jour le rayon effectif final après la fin de l'incantation / trimming
+        currentInvisibleRadius = computeCurrentInvisibleRadius(lastProgress > 0 ? lastProgress : affectedEntries.size());
+
         boolean wantContinuity = requestedStartContinuity || chargeCompleted;
 
         requestedKeepPartial = false;
         requestedStartContinuity = false;
 
-        entity.removeEffect((Effect) ModEffects.MOVEMENT_BLOCKED.get());
+        entity.removeEffect(ModEffects.MOVEMENT_BLOCKED.get());
 
         // Arrêter l'animation côté serveur dès la fin de la charge
         if (isServer) {
@@ -210,6 +227,7 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
                 int cd = Math.max(cdBase, CHARGE_TIME);
                 affectedEntries.clear();
                 zoneCenter = null;
+                currentInvisibleRadius = 0.0;
                 this.cooldownComponent.startCooldown(entity, cd);
 
                 // on ne rafraîchira plus le slow -> il expirera naturellement (durée courte)
@@ -224,8 +242,16 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
         // rafraîchir le malus de ralentissement pendant la continuité
         updateSlowness(entity);
 
+        // si aucun bloc n'est rendu invisible, on stoppe immédiatement la continuité
+        if (currentInvisibleRadius <= 0.0) {
+            if (!entity.level.isClientSide) {
+                this.continuousComponent.stopContinuity(entity);
+            }
+            return;
+        }
+
         double distSq = entity.blockPosition().distSqr(zoneCenter);
-        if (distSq > (RADIUS * RADIUS)) {
+        if (distSq > (currentInvisibleRadius * currentInvisibleRadius)) {
             if (!entity.level.isClientSide) {
                 this.continuousComponent.stopContinuity(entity);
             }
@@ -241,7 +267,7 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
             for (PropagationHelper.PropagationEntry e : affectedEntries) {
                 SukeHelper.forceRevealBlock(e.pos, entity.level, owner);
             }
-            entity.removeEffect((Effect) ModEffects.MOVEMENT_BLOCKED.get());
+            entity.removeEffect(ModEffects.MOVEMENT_BLOCKED.get());
         }
         // calculer le cooldown AVANT de vider la liste
         int cdBase = computeCooldown(affectedEntries.size());
@@ -249,6 +275,7 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
         int cd = Math.max(cdBase, CHARGE_TIME);
         affectedEntries.clear();
         zoneCenter = null;
+        currentInvisibleRadius = 0.0;
         this.cooldownComponent.startCooldown(entity, cd);
 
         // laisser le malus expirer naturellement -> on stoppe le tracking
@@ -261,7 +288,11 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
         if (owner == null || owner.level == null || owner.level.isClientSide) return;
 
         World world = owner.level;
-        double r = RADIUS;
+
+        // n'appliquer le slow que si le rayon visible > 0
+        double r = currentInvisibleRadius;
+        if (r <= 0.0) return;
+
         AxisAlignedBB box = new AxisAlignedBB(
                 zoneCenter.getX() - r, zoneCenter.getY() - r, zoneCenter.getZ() - r,
                 zoneCenter.getX() + r, zoneCenter.getY() + r, zoneCenter.getZ() + r
@@ -271,6 +302,13 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
                 e -> !e.equals(owner) && e.isAlive() && !TARGETS_CHECK.test(owner, e));
 
         for (LivingEntity target : list) {
+            // vérifier que la cible est réellement à l'intérieur du rayon des blocs invisibles (distance euclidienne)
+            double dx = target.getX() - (zoneCenter.getX() + 0.5);
+            double dy = target.getY() - (zoneCenter.getY() + 0.5);
+            double dz = target.getZ() - (zoneCenter.getZ() + 0.5);
+            double dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+            if (dist > r) continue;
+
             // applique Slowness I (amplifier 0) pour 40 ticks et rafraîchit
             target.addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, 40, 0, true, false, true));
 
@@ -301,6 +339,31 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
         // l'effet expirera naturellement peu après (40 ticks) si non rafraîchi.
     }
 
+    /**
+     * Calcule le rayon effectif (en blocs) pour les premières "count" entrées d'affectedEntries.
+     * Si count <= 0, renvoie 0.
+     */
+    private double computeCurrentInvisibleRadius(int count) {
+        if (zoneCenter == null || affectedEntries.isEmpty() || count <= 0) return 0.0;
+        int capped = Math.min(count, affectedEntries.size());
+        double maxSq = 0.0;
+        for (int i = 0; i < capped; i++) {
+            BlockPos p = affectedEntries.get(i).pos;
+            double dx = (p.getX() + 0.5) - (zoneCenter.getX() + 0.5);
+            double dy = (p.getY() + 0.5) - (zoneCenter.getY() + 0.5);
+            double dz = (p.getZ() + 0.5) - (zoneCenter.getZ() + 0.5);
+            double dsq = dx * dx + dy * dy + dz * dz;
+            if (dsq > maxSq) maxSq = dsq;
+        }
+        return Math.sqrt(maxSq);
+    }
+
+    /**
+     * Calcule le rayon effectif basé sur toutes les entrées actuellement présentes dans affectedEntries.
+     */
+    private double computeMaxInvisibleRadius() {
+        return computeCurrentInvisibleRadius(affectedEntries.size());
+    }
 
 
     protected static boolean canUnlock(LivingEntity user) {
