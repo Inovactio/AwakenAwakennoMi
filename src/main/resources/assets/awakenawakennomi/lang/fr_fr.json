@@ -1,0 +1,5 @@
+{
+  "awakenawakennomi.ability.ground_only": "La compétence ne peut être lancée que depuis le sol.",
+  "awakenawakennomi.ability.awaken_suke_punch": "Frappe un bloc pour basculer son invisibilité ; effet visuel et sonore.",
+  "awakenawakennomi.ability.awaken_suke_invisible_zone": "Crée une zone sphérique où les blocs deviennent invisibles progressivement ; la charge augmente le rayon et peut être maintenue."
+}

@@ -1,5 +1,6 @@
 package com.inovactio.awakenawakennomi.abilities.sukesukenomi;
 
+import com.inovactio.awakenawakennomi.abilities.GroundAbility;
 import com.inovactio.awakenawakennomi.api.abilities.IAwakenable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.particles.ParticleTypes;
@@ -8,14 +9,12 @@ import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
-import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Vector3d;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import xyz.pixelatedw.mineminenomi.api.abilities.*;
-import xyz.pixelatedw.mineminenomi.api.abilities.components.AbilityComponent;
 import xyz.pixelatedw.mineminenomi.api.abilities.components.ChargeComponent;
 import xyz.pixelatedw.mineminenomi.api.abilities.components.ContinuousComponent;
 import xyz.pixelatedw.mineminenomi.api.abilities.components.AnimationComponent;
@@ -25,11 +24,8 @@ import xyz.pixelatedw.mineminenomi.data.entity.devilfruit.DevilFruitCapability;
 import xyz.pixelatedw.mineminenomi.init.ModEffects;
 import xyz.pixelatedw.mineminenomi.init.ModAbilities;
 import com.inovactio.awakenawakennomi.util.PropagationHelper;
-import com.inovactio.awakenawakennomi.abilities.sukesukenomi.SukeHelper;
 import com.inovactio.awakenawakennomi.init.ModAnimations;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.text.StringTextComponent;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -37,7 +33,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenable {
+public class AwakenSukeInvisibleZoneAbility extends GroundAbility implements IAwakenable {
 
     private static final ITextComponent[] DESCRIPTION =
             AbilityHelper.registerDescriptionText("awakenawakennomi", "awaken_suke_invisible_zone",
@@ -81,7 +77,7 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
         super(core);
         this.isNew = true;
         // ajouter animationComponent aux composants
-        this.addComponents(new AbilityComponent[]{this.chargeComponent, this.continuousComponent, this.animationComponent});
+        this.addComponents(this.chargeComponent, this.continuousComponent, this.animationComponent);
         this.addUseEvent(this::onUseEvent);
     }
 
@@ -93,13 +89,8 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
         } else if (this.continuousComponent.isContinuous()) {
             this.continuousComponent.stopContinuity(entity);
         } else {
-            // Ne démarrer la charge que si l'entité est sur le sol
-            if (!entity.isOnGround()) {
-                if (entity instanceof PlayerEntity && !entity.level.isClientSide) {
-                    ((PlayerEntity) entity).sendMessage(new StringTextComponent("La compétence ne peut être lancée que depuis le sol."), entity.getUUID());
-                }
-                return;
-            }
+            // vérifier via la super-classe GroundAbility
+            if (!ensureOnGroundOrNotify(entity)) return;
             this.chargeComponent.startCharging(entity, CHARGE_TIME);
         }
     }
@@ -120,7 +111,7 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
         affectedEntries.addAll(entries);
 
         if (!world.isClientSide) {
-            entity.addEffect(new EffectInstance((Effect) ModEffects.MOVEMENT_BLOCKED.get(), CHARGE_TIME + 10, 1, false, false));
+            entity.addEffect(new EffectInstance(ModEffects.MOVEMENT_BLOCKED.get(), CHARGE_TIME + 10, 1, false, false));
             entity.setDeltaMovement(Vector3d.ZERO);
 
             if (world instanceof ServerWorld) {
@@ -358,13 +349,6 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
         return Math.sqrt(maxSq);
     }
 
-    /**
-     * Calcule le rayon effectif basé sur toutes les entrées actuellement présentes dans affectedEntries.
-     */
-    private double computeMaxInvisibleRadius() {
-        return computeCurrentInvisibleRadius(affectedEntries.size());
-    }
-
 
     protected static boolean canUnlock(LivingEntity user) {
         return DevilFruitCapability.get(user).hasAwakenedFruit()
@@ -387,15 +371,8 @@ public class AwakenSukeInvisibleZoneAbility extends Ability implements IAwakenab
         return Math.min(cd, COOLDOWN_MAX);
     }
 
-    /**
-     * Surcharge pour compatibilité : utilise le nombre actuel d'entrées affectées.
-     */
-    private int computeCooldown() {
-        return computeCooldown(affectedEntries.size());
-    }
-
     static {
-        INSTANCE = new AbilityCore.Builder<AwakenSukeInvisibleZoneAbility>(
+        INSTANCE = new AbilityCore.Builder<>(
                 "AwakenSukeInvisibleZone", AbilityCategory.DEVIL_FRUITS, AwakenSukeInvisibleZoneAbility::new)
                 .setUnlockCheck(AwakenSukeInvisibleZoneAbility::canUnlock)
                 .addDescriptionLine(DESCRIPTION)
