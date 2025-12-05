@@ -1,3 +1,4 @@
+// java
 package com.inovactio.awakenawakennomi.events;
 
 import com.inovactio.awakenawakennomi.data.InvisibleBlockSavedData;
@@ -11,9 +12,10 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.network.PacketDistributor;
 
+import java.util.Map;
 import java.util.UUID;
 
-@Mod.EventBusSubscriber
+@Mod.EventBusSubscriber(modid = "awakenawakennomi")
 public class PlayerLoginHandler {
 
     @SubscribeEvent
@@ -25,16 +27,18 @@ public class PlayerLoginHandler {
 
         // Récupère les données persistées
         InvisibleBlockSavedData data = world.getDataStorage()
-                .computeIfAbsent(InvisibleBlockSavedData::new, "invisible_blocks");
+                .computeIfAbsent(InvisibleBlockSavedData::new, InvisibleBlockSavedData.NAME);
 
-        // Envoie un packet pour chaque bloc invisible au joueur (nouvelle signature : pos, playerUUID, invisible)
-        UUID playerUuid = player.getUUID();
-        for (long key : data.getMap().keySet()) {
-            BlockPos pos = BlockPos.of(key);
-            ModNetwork.CHANNEL.send(
-                    PacketDistributor.PLAYER.with(() -> player),
-                    new ToggleInvisiblePacket(pos, playerUuid, true)
-            );
+        // Envoie un packet pour chaque bloc invisible au joueur (avec l'UUID du propriétaire réel)
+        for (Map.Entry<Long, UUID> e : data.getMap().entrySet()) {
+            BlockPos pos = BlockPos.of(e.getKey());
+            UUID owner = e.getValue();
+            if (owner != null) {
+                ModNetwork.CHANNEL.send(
+                        PacketDistributor.PLAYER.with(() -> player),
+                        new ToggleInvisiblePacket(pos, owner, true)
+                );
+            }
         }
     }
 }

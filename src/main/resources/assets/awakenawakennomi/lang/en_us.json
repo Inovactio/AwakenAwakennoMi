@@ -1,1 +1,7 @@
-{"ability.mineminenomi.awakensukepunch":"Awaken Suke Punch"}
+{
+  "awakenawakennomi.ability.ground_only": "This ability can only be used while on the ground.",
+  "ability.mineminenomi.awakensukepunch": "Awaken Suke: Punch",
+  "ability.mineminenomi.awakensukeinvisiblezone": "Awaken Suke: Invisible Zone",
+  "ability.awakenawakennomi.awaken_suke_punch.description.0": "Turns a block invisible after hitting it.",
+  "ability.awakenawakennomi.awaken_suke_invisible_zone.description.0": "Create a spherical zone that progressively hides blocks."
+}
