@@ -2,6 +2,7 @@ package com.inovactio.awakenawakennomi.mixins;
 
 import com.inovactio.awakenawakennomi.abilities.sukesukenomi.AwakenSukeInvisibleZoneAbility;
 import com.inovactio.awakenawakennomi.abilities.sukesukenomi.AwakenSukePunchAbility;
+import com.inovactio.awakenawakennomi.abilities.bomubomunomi.AwakenBomuAirburstAbility;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -11,6 +12,7 @@ import xyz.pixelatedw.mineminenomi.init.ModAbilities;
 import xyz.pixelatedw.mineminenomi.items.AkumaNoMiItem;
 
 import java.util.Arrays;
+import java.util.ArrayList;
 
 @Mixin({ModAbilities.class})
 public class ModAbilitiesMixin {
@@ -24,19 +26,56 @@ public class ModAbilitiesMixin {
     )
     private static <T extends AkumaNoMiItem> void addAbilities(T fruit, CallbackInfoReturnable<T> info) {
         System.out.println("[AwakenAwakenNoMi] Injection appelée pour le fruit : " + fruit.getDevilFruitName());
-        if (fruit.getDevilFruitName().equals("Suke Suke no Mi"))
-        {
-            // Récupérer les abilities existantes
-            AbilityCore<?>[] original = fruit.getAbilities();
 
-            // Étendre le tableau
-            AbilityCore<?>[] extended = Arrays.copyOf(original, original.length + 2);
-            extended[original.length] = AwakenSukePunchAbility.INSTANCE;
-            extended[original.length+1] = AwakenSukeInvisibleZoneAbility.INSTANCE;
+        switch (fruit.getDevilFruitName()) {
+            case "Suke Suke no Mi":
+                appendAbilities(fruit, AwakenSukePunchAbility.INSTANCE, AwakenSukeInvisibleZoneAbility.INSTANCE);
+                break;
 
-            // Réinjecter
-            fruit.setAbilities(extended);
-            System.out.println("[AwakenAwakenNoMi] Injection de l'ability");
+            case "Bomu Bomu no Mi":
+                appendAbilities(fruit, AwakenBomuAirburstAbility.INSTANCE);
+                break;
+
+            default:
+                // Aucun ajout particulier pour les autres fruits
+                break;
         }
+    }
+
+    // Méthode utilitaire : ajoute des AbilityCore à un AkumaNoMiItem en évitant les doublons et en gérant les null
+    private static void appendAbilities(AkumaNoMiItem fruit, AbilityCore<?>... abilities) {
+        if (fruit == null || abilities == null || abilities.length == 0) return;
+
+        AbilityCore<?>[] original = fruit.getAbilities();
+        if (original == null) original = new AbilityCore<?>[0];
+
+        ArrayList<AbilityCore<?>> toAdd = new ArrayList<>();
+        for (AbilityCore<?> a : abilities) {
+            if (a == null) continue;
+            boolean present = false;
+            for (AbilityCore<?> o : original) {
+                if (o == a) { present = true; break; }
+            }
+            if (!present) toAdd.add(a);
+        }
+
+        if (toAdd.isEmpty()) return;
+
+        AbilityCore<?>[] extended = Arrays.copyOf(original, original.length + toAdd.size());
+        for (int i = 0; i < toAdd.size(); i++) {
+            extended[original.length + i] = toAdd.get(i);
+        }
+
+        fruit.setAbilities(extended);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("[AwakenAwakenNoMi] Abilities ajoutées pour ").append(fruit.getDevilFruitName()).append(" : ");
+        for (int i = 0; i < toAdd.size(); i++) {
+            AbilityCore<?> a = toAdd.get(i);
+            String name = a.getClass().getSimpleName();
+            sb.append(name);
+            if (i < toAdd.size() - 1) sb.append(", ");
+        }
+        System.out.println(sb.toString());
     }
 }

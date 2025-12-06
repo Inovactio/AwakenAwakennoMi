@@ -1,7 +1,15 @@
 {
-  "awakenawakennomi.ability.ground_only": "La compétence ne peut être lancée que depuis le sol.",
-  "ability.mineminenomi.awakensukepunch": "Coup Awaken Suke",
-  "ability.mineminenomi.awakensukeinvisiblezone": "Zone invisible Awaken Suke",
-  "ability.awakenawakennomi.awaken_suke_punch.description.0": "Frappe un bloc pour le rendre invisible.",
-  "ability.awakenawakennomi.awaken_suke_invisible_zone.description.0": "Crée une zone sphérique qui rend progressivement les blocs invisibles."
+  "ability.awakenawakennomi.awaken_bomu_airburst": "Déflagration aérienne",
+  "ability.awakenawakennomi.awaken_bomu_airburst.desc": "Crée des déflagrations d'air autour de l'utilisateur pendant 30 secondes. N'endommage pas les blocs.",
+  "ability.awakenawakennomi.awaken_bomu_airburst.tooltip": "Temps de recharge : 30s · Dégâts : 30",
+
+  "ability.mineminenomi.awakensukeinvisiblezone": "Awaken Suke Zone Invisible",
+  "ability.mineminenomi.awakensukepunch": "Awaken Suke Coup",
+  "ability.mineminenomi.awakenbomuairburst": "Awaken Bomu Déflagration Aérienne",
+
+  "ability.awakenawakennomi.awaken_suke_invisible_zone.description.0": "Crée une zone sphérique où les blocs deviennent progressivement invisibles pour les observateurs à proximité.",
+  "ability.awakenawakennomi.awaken_suke_punch.description.0": "Rend un bloc ciblé invisible après l'avoir frappé.",
+  "ability.awakenawakennomi.awaken_bomu_airburst.description.0": "Crée des déflagrations d'air autour de l'utilisateur pendant 30 secondes ; n'endommage pas les blocs.",
+
+  "awakenawakennomi.ability.ground_only": "Vous devez être au sol pour utiliser cette capacité."
 }
