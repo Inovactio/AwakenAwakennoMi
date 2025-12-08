@@ -11,9 +11,13 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import java.awt.*;
 import java.util.UUID;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class SukeHelper {
 
     public static Color SUKE_COLOR = new Color(162, 229, 229, 152);
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public static void toggleBlockInvisibility(BlockPos pos, World world, UUID player) {
         boolean invisible;
@@ -24,6 +28,7 @@ public class SukeHelper {
             InvisibleBlockManager.setInvisible(world, pos, invisible, player);
             // broadcast aux clients la nouvelle valeur
             ModNetwork.CHANNEL.send(PacketDistributor.ALL.noArg(), new ToggleInvisiblePacket(pos, player, invisible));
+            LOGGER.info("[SukeHelper] toggle (server) pos={} invisible={} owner={}", pos, invisible, player);
         } else {
             // client-side: utiliser le cache client (signature différente)
             invisible = !InvisibleBlockManager.isInvisible(pos, player);
@@ -31,6 +36,7 @@ public class SukeHelper {
             // ne pas envoyer de broadcast "ALL" depuis le client (le client doit normalement envoyer une requête au serveur).
             // ici on envoie vers le serveur pour demander la modification (le serveur décidera / autorisera)
             ModNetwork.CHANNEL.sendToServer(new ToggleInvisiblePacket(pos, player, invisible));
+            LOGGER.info("[SukeHelper] toggle (client) pos={} invisible={} requestedBy={}", pos, invisible, player);
         }
     }
 
@@ -55,12 +61,14 @@ public class SukeHelper {
             // Appliquer côté serveur et informer tous les clients du nouvel état
             InvisibleBlockManager.setInvisible(world, pos, invisible, player);
             ModNetwork.CHANNEL.send(PacketDistributor.ALL.noArg(), new ToggleInvisiblePacket(pos, player, invisible));
+            LOGGER.info("[SukeHelper] forceSetInvisible (server) pos={} invisible={} owner={}", pos, invisible, player);
         } else {
             // Côté client : mise à jour locale seulement (cache client)
             InvisibleBlockManager.setInvisible(pos, player, invisible);
             // Ne pas envoyer directement un broadcast ALL depuis le client :
             // si on veut que le serveur applique l'état de force, il faut envoyer un paquet dédié au serveur.
             // Ici on n'envoie rien pour éviter d'avoir le serveur qui *toggle* (comportement actuel du ToggleInvisiblePacket).
+            LOGGER.info("[SukeHelper] forceSetInvisible (client cache) pos={} invisible={} owner={}", pos, invisible, player);
         }
     }
 }

@@ -27,7 +27,7 @@ public class InvisibleBlockManager {
         return CLIENT_INVISIBLE.get(pos.asLong());
     }
 
-    // Vérifier si le bloc est invisible pour un joueur donné
+    // Vérifier si le bloc est invisible pour un joueur donné (client-side)
     public static boolean isInvisible(BlockPos pos, UUID player) {
         UUID owner = CLIENT_INVISIBLE.get(pos.asLong());
         return player != null && player.equals(owner);
@@ -52,13 +52,18 @@ public class InvisibleBlockManager {
     }
 
     public static boolean isInvisible(World world, BlockPos pos) {
-        if (!(world instanceof ServerWorld)) return false;
-        ServerWorld serverWorld = (ServerWorld) world;
-        DimensionSavedDataManager storage = serverWorld.getDataStorage();
-        InvisibleBlockSavedData data = storage.computeIfAbsent(
-                InvisibleBlockSavedData::new,
-                InvisibleBlockSavedData.NAME
-        );
-        return data.isInvisible(pos);
+        // Si on est côté serveur, lire les données persistantes
+        if (world instanceof ServerWorld) {
+            ServerWorld serverWorld = (ServerWorld) world;
+            DimensionSavedDataManager storage = serverWorld.getDataStorage();
+            InvisibleBlockSavedData data = storage.computeIfAbsent(
+                    InvisibleBlockSavedData::new,
+                    InvisibleBlockSavedData.NAME
+            );
+            return data.isInvisible(pos);
+        }
+
+        // Côté client (ou autres environnements), se baser sur le cache client mis à jour par les paquets
+        return CLIENT_INVISIBLE.containsKey(pos.asLong());
     }
 }

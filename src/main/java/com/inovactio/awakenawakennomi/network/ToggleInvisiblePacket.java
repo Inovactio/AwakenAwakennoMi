@@ -14,10 +14,15 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import java.util.UUID;
 import java.util.function.Supplier;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class ToggleInvisiblePacket {
     private final BlockPos pos;
     private final boolean invisible;
     private final UUID player;
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public ToggleInvisiblePacket(BlockPos pos, UUID player, boolean invisible) {
         this.pos = pos;
@@ -44,14 +49,22 @@ public class ToggleInvisiblePacket {
             // Si le paquet est reçu côté serveur -> appliquer l'état demandé mais enregistrer l'auteur réel (sender)
             if (ctx.getDirection().getReceptionSide().isServer()) {
                 ServerPlayerEntity sender = ctx.getSender();
-                if (sender == null) return;
+                if (sender == null) {
+                    LOGGER.warn("[ToggleInvisiblePacket] received on server but sender==null for pos={}", msg.pos);
+                    return;
+                }
                 ServerWorld serverWorld = sender.getLevel();
-                if (serverWorld == null) return;
+                if (serverWorld == null) {
+                    LOGGER.warn("[ToggleInvisiblePacket] server sender level null for pos={}", msg.pos);
+                    return;
+                }
 
                 // Appliquer l'état demandé par le client, mais utiliser l'UUID du sender comme propriétaire
                 boolean newInvisible = msg.invisible;
                 UUID owner = sender.getUUID();
                 InvisibleBlockManager.setInvisible(serverWorld, msg.pos, newInvisible, owner);
+
+                LOGGER.info("[ToggleInvisiblePacket] applied server pos={} invisible={} owner={}", msg.pos, newInvisible, owner);
 
                 // broadcast résultat aux clients avec l'UUID réel du propriétaire
                 ModNetwork.CHANNEL.send(PacketDistributor.ALL.noArg(), new ToggleInvisiblePacket(msg.pos, owner, newInvisible));
@@ -63,6 +76,7 @@ public class ToggleInvisiblePacket {
                     BlockState state = mc.level.getBlockState(msg.pos);
                     mc.level.sendBlockUpdated(msg.pos, state, state, 3);
                 }
+                LOGGER.info("[ToggleInvisiblePacket] client received pos={} invisible={} owner={}", msg.pos, msg.invisible, msg.player);
             }
         });
         ctx.setPacketHandled(true);
