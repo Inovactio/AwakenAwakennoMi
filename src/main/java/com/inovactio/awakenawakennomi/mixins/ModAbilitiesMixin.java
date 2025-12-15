@@ -1,5 +1,6 @@
 package com.inovactio.awakenawakennomi.mixins;
 
+import com.inovactio.awakenawakennomi.abilities.sukesukenomi.AwakenSukeDiffractionAbility;
 import com.inovactio.awakenawakennomi.abilities.sukesukenomi.AwakenSukeInvisibleZoneAbility;
 import com.inovactio.awakenawakennomi.abilities.sukesukenomi.AwakenSukePunchAbility;
 import com.inovactio.awakenawakennomi.abilities.bomubomunomi.AwakenBomuAirburstAbility;
@@ -29,7 +30,7 @@ public class ModAbilitiesMixin {
 
         switch (fruit.getDevilFruitName()) {
             case "Suke Suke no Mi":
-                appendAbilities(fruit, AwakenSukePunchAbility.INSTANCE, AwakenSukeInvisibleZoneAbility.INSTANCE);
+                appendAbilities(fruit, AwakenSukePunchAbility.INSTANCE, AwakenSukeInvisibleZoneAbility.INSTANCE, AwakenSukeDiffractionAbility.INSTANCE);
                 break;
 
             case "Bomu Bomu no Mi":
