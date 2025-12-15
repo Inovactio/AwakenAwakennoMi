@@ -1,9 +1,13 @@
 package com.inovactio.awakenawakennomi.abilities.sukesukenomi;
 
 import com.inovactio.awakenawakennomi.api.common.InvisibleBlockManager;
+import com.inovactio.awakenawakennomi.init.ModI18n;
 import com.inovactio.awakenawakennomi.network.ModNetwork;
 import com.inovactio.awakenawakennomi.network.ToggleInvisiblePacket;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.potion.Effect;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.network.PacketDistributor;
@@ -13,11 +17,19 @@ import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import xyz.pixelatedw.mineminenomi.api.abilities.AbilityUseResult;
+import xyz.pixelatedw.mineminenomi.api.abilities.IAbility;
+import xyz.pixelatedw.mineminenomi.init.ModEffects;
 
 public class SukeHelper {
 
     public static Color SUKE_COLOR = new Color(162, 229, 229, 152);
     private static final Logger LOGGER = LogManager.getLogger();
+
+
+    public static AbilityUseResult canUseInvisibleAbility(LivingEntity entity, IAbility ability) {
+        return entity.hasEffect((Effect) ModEffects.SUKE_INVISIBILITY.get()) ? AbilityUseResult.success() : AbilityUseResult.fail(new TranslationTextComponent(ModI18n.ABILITY_MESSAGE_NEED_SUKE_INVISIBLE, new Object[]{ability.getDisplayName()}));
+    }
 
     public static void toggleBlockInvisibility(BlockPos pos, World world, UUID player) {
         boolean invisible;
