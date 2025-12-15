@@ -9,5 +9,7 @@
   "ability.awakenawakennomi.awaken_suke_diffraction.description.0": "Diffract light to fire seven powerful rainbow explosions after a 5s channel.",
   "ability.awakenawakennomi.awaken_bomu_airburst.description.0": "Creates explosive bursts of air around the user for 30 seconds; non-destructive to blocks.",
 
-  "awakenawakennomi.ability.ground_only": "You must be on the ground to use this ability."
+  "awakenawakennomi.ability.ground_only": "You must be on the ground to use this ability.",
+
+  "ability.message.need_suke_invisible": "You need Suke Invisible to use this ability."
 }

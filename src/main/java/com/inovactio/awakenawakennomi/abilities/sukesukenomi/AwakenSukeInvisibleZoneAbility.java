@@ -401,6 +401,7 @@ public class AwakenSukeInvisibleZoneAbility extends GroundAbility implements IAw
                 "AwakenSukeInvisibleZone", AbilityCategory.DEVIL_FRUITS, AwakenSukeInvisibleZoneAbility::new)
                 .setUnlockCheck(AwakenSukeInvisibleZoneAbility::canUnlock)
                 .addDescriptionLine(DESCRIPTION)
+                .addAdvancedDescriptionLine()
                 .setIcon(new net.minecraft.util.ResourceLocation("awakenawakennomi", "textures/abilities/awaken_suke_invisible_zone.png"))
                 .build();
     }

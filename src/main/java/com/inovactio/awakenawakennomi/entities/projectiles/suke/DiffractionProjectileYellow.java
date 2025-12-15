@@ -10,20 +10,13 @@ import xyz.pixelatedw.mineminenomi.entities.projectiles.AbilityProjectileEntity;
 import xyz.pixelatedw.mineminenomi.particles.effects.CommonExplosionParticleEffect;
 
 public class DiffractionProjectileYellow extends DiffractionProjectile {
+    public static final float DAMAGE = 55.0F;
     public DiffractionProjectileYellow(EntityType type, World world) {
         super(type, world);
     }
 
     public DiffractionProjectileYellow(World world, LivingEntity player, Ability ability) {
         super(SukeProjectiles.DIFFRACTION_YELLOW.get(), world, player, ability);
-        this.setDamage(18.0F);
-        this.onBlockImpactEvent = this::onBlockImpactEvent;
-    }
-
-    private void onBlockImpactEvent(BlockPos hit) {
-        ExplosionAbility explosion = super.createExplosion(this.getThrower(), this.level, (double)hit.getX(), (double)hit.getY(), (double)hit.getZ(), 3.0F);
-        explosion.setStaticDamage(8.0F);
-        explosion.setSmokeParticles(new CommonExplosionParticleEffect(2));
-        explosion.doExplosion();
+        this.setDamage(DAMAGE);
     }
 }

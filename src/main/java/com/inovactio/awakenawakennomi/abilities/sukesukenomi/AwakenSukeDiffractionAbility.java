@@ -2,16 +2,30 @@ package com.inovactio.awakenawakennomi.abilities.sukesukenomi;
 
 import com.inovactio.awakenawakennomi.entities.projectiles.suke.*;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import xyz.pixelatedw.mineminenomi.abilities.goro.ElThorAbility;
 import xyz.pixelatedw.mineminenomi.api.abilities.*;
 import com.inovactio.awakenawakennomi.api.abilities.IAwakenable;
 import xyz.pixelatedw.mineminenomi.api.abilities.components.*;
+import xyz.pixelatedw.mineminenomi.api.damagesource.SourceElement;
+import xyz.pixelatedw.mineminenomi.api.damagesource.SourceHakiNature;
 import xyz.pixelatedw.mineminenomi.api.helpers.AbilityHelper;
+import xyz.pixelatedw.mineminenomi.api.math.VectorHelper;
 import xyz.pixelatedw.mineminenomi.data.entity.devilfruit.DevilFruitCapability;
+import xyz.pixelatedw.mineminenomi.entities.projectiles.goro.LightningEntity;
 import xyz.pixelatedw.mineminenomi.init.ModAbilities;
 import xyz.pixelatedw.mineminenomi.init.ModAnimations;
+import xyz.pixelatedw.mineminenomi.init.ModParticleEffects;
+import xyz.pixelatedw.mineminenomi.init.ModSounds;
+import xyz.pixelatedw.mineminenomi.particles.effects.ParticleEffect;
+import xyz.pixelatedw.mineminenomi.wypi.WyHelper;
 
 /**
  * Minimal Awaken ability placeholder for Suke Suke no Mi (diffraction).
@@ -22,12 +36,13 @@ public class AwakenSukeDiffractionAbility extends Ability implements IAwakenable
 
     private static final ITextComponent[] DESCRIPTION = AbilityHelper.registerDescriptionText("awakenawakennomi", "awaken_suke_diffraction",
             new ImmutablePair[]{ImmutablePair.of("Awaken Diffraction (placeholder)", (Object)null)});
-    private static final float COOLDOWN = 160.0F;
-    private static final float PROJECTILE_SPEED = 2.0F;
-    private static final float PROJECTILE_INACCURACY = 1.0F;
+    private static final float COOLDOWN = 200.0F;
+    private static final float PROJECTILE_SPEED = 3.0F;
+    private static final float PROJECTILE_INACCURACY = 0.25F;
+    private static final int CHARGE_TIME = 25;
     public static final AbilityCore<AwakenSukeDiffractionAbility> INSTANCE;
+    private final ChargeComponent chargeComponent = (new ChargeComponent(this)).addEndEvent(this::stopChargeEvent);
     private final ContinuousComponent continuousComponent = (new ContinuousComponent(this, true)).addStartEvent(this::onContinuityStart);
-    private final AnimationComponent animationComponent = new AnimationComponent(this);
     private final RepeaterComponent repeaterComponent = (new RepeaterComponent(this)).addTriggerEvent(this::onRepeaterTrigger).addStopEvent(this::onRepeaterStop);
     private final ProjectileComponent projectileComponent = new ProjectileComponent(this, this::createProjectile);
     private int ProjectileCount = 0;
@@ -35,23 +50,26 @@ public class AwakenSukeDiffractionAbility extends Ability implements IAwakenable
     public AwakenSukeDiffractionAbility(AbilityCore<AwakenSukeDiffractionAbility> core) {
         super(core);
         this.isNew = true;
-        this.addComponents(new AbilityComponent[]{this.continuousComponent, this.repeaterComponent,this.animationComponent, this.projectileComponent});
+        this.addComponents(new AbilityComponent[]{this.chargeComponent,this.continuousComponent, this.repeaterComponent, this.projectileComponent});
+        this.addCanUseCheck(SukeHelper::canUseInvisibleAbility);
         this.addUseEvent(this::useEvent);
     }
 
     private void useEvent(LivingEntity entity, IAbility ability) {
-        this.animationComponent.start(entity, ModAnimations.AIM_SNIPER, 6);
         if(this.continuousComponent.isContinuous())
         {
             this.repeaterComponent.stop(entity);
-        }else{
-            this.continuousComponent.triggerContinuity(entity);
         }
+        this.chargeComponent.startCharging(entity, CHARGE_TIME);
+
+    }
+
+    private void stopChargeEvent(LivingEntity entity, IAbility ability) {
+            this.continuousComponent.triggerContinuity(entity);
     }
 
     private void onContinuityStart(LivingEntity entity, IAbility ability) {
         if (!entity.level.isClientSide) {
-            this.animationComponent.start(entity, ModAnimations.POINT_RIGHT_ARM);
             this.repeaterComponent.start(entity, 7, 10);
         }
     }
@@ -60,14 +78,13 @@ public class AwakenSukeDiffractionAbility extends Ability implements IAwakenable
         if (super.canUse(entity).isFail()) {
             this.repeaterComponent.stop(entity);
         }
-
+        entity.level.playSound((PlayerEntity)null, entity.blockPosition(), (SoundEvent) ModSounds.PIKA_SFX.get(), SoundCategory.PLAYERS, 2.0F, 1.0F);
         this.projectileComponent.shoot(entity, PROJECTILE_SPEED, PROJECTILE_INACCURACY);
     }
 
     private void onRepeaterStop(LivingEntity entity, IAbility ability) {
         ProjectileCount = 0;
         this.continuousComponent.stopContinuity(entity);
-        this.animationComponent.stop(entity);
         super.cooldownComponent.startCooldown(entity, COOLDOWN);
     }
 
@@ -115,7 +132,11 @@ public class AwakenSukeDiffractionAbility extends Ability implements IAwakenable
         INSTANCE = new AbilityCore.Builder<>("Awaken Suke Diffraction", AbilityCategory.DEVIL_FRUITS, AwakenSukeDiffractionAbility::new)
                 .setUnlockCheck(AwakenSukePunchAbility::canUnlock)
                 .addDescriptionLine(DESCRIPTION)
-                .addAdvancedDescriptionLine(new AbilityDescriptionLine.IDescriptionLine[]{AbilityDescriptionLine.NEW_LINE})
+                .addAdvancedDescriptionLine(new AbilityDescriptionLine.IDescriptionLine[]{AbilityDescriptionLine.NEW_LINE, CooldownComponent.getTooltip(COOLDOWN)})
+                .addAdvancedDescriptionLine(ChargeComponent.getTooltip(CHARGE_TIME))
+                .addAdvancedDescriptionLine(ProjectileComponent.getProjectileTooltips())
+                .setSourceHakiNature(SourceHakiNature.SPECIAL)
+                .setSourceElement(SourceElement.LIGHT)
                 .setIcon(new ResourceLocation("awakenawakennomi", "textures/abilities/awaken_suke_diffraction.png"))
                 .build();
     }

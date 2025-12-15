@@ -9,5 +9,7 @@
   "ability.awakenawakennomi.awaken_suke_diffraction.description.0": "Diffraction de la lumière : envoie sept explosions arc-en-ciel puissantes après 5s de canalisation.",
   "ability.awakenawakennomi.awaken_bomu_airburst.description.0": "Crée des déflagrations d'air autour de l'utilisateur pendant 30 secondes ; n'endommage pas les blocs.",
 
-  "awakenawakennomi.ability.ground_only": "Vous devez être au sol pour utiliser cette capacité."
+  "awakenawakennomi.ability.ground_only": "Vous devez être au sol pour utiliser cette capacité.",
+
+  "ability.message.need_suke_invisible": "Vous avez besoin de Suke Invisible pour utiliser cette capacité."
 }
