@@ -27,6 +27,7 @@ import java.util.function.Predicate;
 public class AwakenDekaAbility extends MorphAbility2 implements IAwakenable {
     private static final ITextComponent[] DESCRIPTION = AbilityHelper.registerDescriptionText("awakenawakennomi", "awaken_deka", new Pair[]{ImmutablePair.of("Allows the user to increase their size to that of a giant.", (Object)null)});
     public static final AbilityCore<AwakenDekaAbility> INSTANCE;
+    private static final AbilityAttributeModifier HEALTH_MODIFIER;
     private static final AbilityAttributeModifier SPEED_MODIFIER;
     private static final AbilityAttributeModifier JUMP_MODIFIER;
     private static final AbilityAttributeModifier ARMOR_MODIFIER;
@@ -41,6 +42,7 @@ public class AwakenDekaAbility extends MorphAbility2 implements IAwakenable {
         super(core);
         this.isNew = true;
         Predicate<LivingEntity> isActive = (entity) -> this.morphComponent.isMorphed();
+        this.statsComponent.addAttributeModifier(Attributes.MAX_HEALTH, HEALTH_MODIFIER,isActive);
         this.statsComponent.addAttributeModifier(Attributes.MOVEMENT_SPEED, SPEED_MODIFIER,isActive);
         this.statsComponent.addAttributeModifier(ModAttributes.JUMP_HEIGHT, JUMP_MODIFIER,isActive);
         this.statsComponent.addAttributeModifier(Attributes.ARMOR, ARMOR_MODIFIER,isActive);
@@ -75,14 +77,15 @@ public class AwakenDekaAbility extends MorphAbility2 implements IAwakenable {
                 .setUnlockCheck(AwakenDekaAbility::canUnlock)
                 .setIcon(new ResourceLocation("awakenawakennomi", "textures/abilities/awaken_deka.png"))
                 .build();
-        SPEED_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_MOVEMENT_SPEED_UUID, INSTANCE, "Mega Mega Speed Modifier", (double)1.02F, AttributeModifier.Operation.MULTIPLY_BASE);
-        JUMP_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_JUMP_BOOST_UUID, INSTANCE, "Mega Mega Jump Modifier", (double)2.0F, AttributeModifier.Operation.ADDITION);
-        ARMOR_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_ARMOR_UUID, INSTANCE, "Mega Mega Armor Modifier", (double)5.0F, AttributeModifier.Operation.ADDITION);
-        STRENGTH_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_STRENGTH_UUID, INSTANCE, "Mega Mega Strength Modifier", (double)3.0F, AttributeModifier.Operation.ADDITION);
-        REACH_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_ATTACK_REACH_UUID, INSTANCE, "Mega Mega Reach Modifier", (double)5.0F, AttributeModifier.Operation.ADDITION);
-        STEP_HEIGHT = new AbilityAttributeModifier(AttributeHelper.MORPH_STEP_HEIGHT_UUID, INSTANCE, "Mega Mega Step Height Modifier", (double)1.5F, AttributeModifier.Operation.ADDITION);
-        KNOCKBACK_RESISTANCE = new AbilityAttributeModifier(AttributeHelper.MORPH_KNOCKBACK_RESISTANCE_UUID, INSTANCE, "Mega Mega Knockback Resistance Modifier", (double)1.0F, AttributeModifier.Operation.ADDITION);
-        FALL_RESISTANCE_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_FALL_RESISTANCE_UUID, INSTANCE, "Mega Mega Fall Resistance Modifier", (double)10.0F, AttributeModifier.Operation.ADDITION);
-        TOUGHNESS_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_TOUGHNESS_UUID, INSTANCE, "Mega Mega Toughness Modifier", (double)4.0F, AttributeModifier.Operation.ADDITION);
+        HEALTH_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_HEALTH_UUID, INSTANCE, "Mega Mega Health Modifier", (double)0.5F, AttributeModifier.Operation.MULTIPLY_BASE);
+        SPEED_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_MOVEMENT_SPEED_UUID, INSTANCE, "Mega Mega Speed Modifier", (double)1.25F, AttributeModifier.Operation.MULTIPLY_BASE);
+        JUMP_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_JUMP_BOOST_UUID, INSTANCE, "Mega Mega Jump Modifier", (double)6.0F, AttributeModifier.Operation.ADDITION);
+        ARMOR_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_ARMOR_UUID, INSTANCE, "Mega Mega Armor Modifier", (double)20.0F, AttributeModifier.Operation.ADDITION);
+        STRENGTH_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_STRENGTH_UUID, INSTANCE, "Mega Mega Strength Modifier", (double)1.0F, AttributeModifier.Operation.MULTIPLY_BASE);
+        REACH_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_ATTACK_REACH_UUID, INSTANCE, "Mega Mega Reach Modifier", (double)25.0F, AttributeModifier.Operation.ADDITION);
+        STEP_HEIGHT = new AbilityAttributeModifier(AttributeHelper.MORPH_STEP_HEIGHT_UUID, INSTANCE, "Mega Mega Step Height Modifier", (double)6F, AttributeModifier.Operation.ADDITION);
+        KNOCKBACK_RESISTANCE = new AbilityAttributeModifier(AttributeHelper.MORPH_KNOCKBACK_RESISTANCE_UUID, INSTANCE, "Mega Mega Knockback Resistance Modifier", (double)5.0F, AttributeModifier.Operation.ADDITION);
+        FALL_RESISTANCE_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_FALL_RESISTANCE_UUID, INSTANCE, "Mega Mega Fall Resistance Modifier", (double)50.0F, AttributeModifier.Operation.ADDITION);
+        TOUGHNESS_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_TOUGHNESS_UUID, INSTANCE, "Mega Mega Toughness Modifier", (double)8.0F, AttributeModifier.Operation.ADDITION);
     }
 }

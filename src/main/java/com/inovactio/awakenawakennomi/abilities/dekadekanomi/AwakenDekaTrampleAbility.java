@@ -5,6 +5,7 @@ import com.inovactio.awakenawakennomi.init.ModMorphs;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
@@ -34,10 +35,10 @@ import java.util.List;
 
 public class AwakenDekaTrampleAbility extends PassiveAbility2 implements IAwakenable {
     private static final ITextComponent[] DESCRIPTION = AbilityHelper.registerDescriptionText("awakenawakennomi", "awaken_deka_trample", new Pair[]{ImmutablePair.of("Running speed increases with acceleration trampling any nearby entity.", (Object)null)});
-    private static final float TRAMPLE_AREA = 5.0F;
+    private static final float TRAMPLE_AREA = 10.0F;
     private static final int BLOCK_BREAKING_AREA = 7;
-    private static final float MAX_SPEED = 0.45F;
-    private static final float DAMAGE = 8.0F;
+    private static final float MAX_SPEED = 0.90F;
+    private static final float DAMAGE = 24.0F;
     public static final AbilityCore<AwakenDekaTrampleAbility> INSTANCE;
     private final RangeComponent rangeComponent = new RangeComponent(this);
     private final DealDamageComponent dealDamageComponent = new DealDamageComponent(this);
@@ -60,21 +61,21 @@ public class AwakenDekaTrampleAbility extends PassiveAbility2 implements IAwaken
                 if (!entity.isSprinting()) {
                     this.speed = 0.0F;
                 } else {
-                    List<LivingEntity> targets = this.rangeComponent.getTargetsInArea(entity, entity.blockPosition(), 5.0F);
+                    List<LivingEntity> targets = this.rangeComponent.getTargetsInArea(entity, entity.blockPosition(), TRAMPLE_AREA);
                     float acceleration = 0.004F;
-                    acceleration *= this.speed > 0.0F ? 1.0F - this.speed / 0.45F : 1.0F;
+                    acceleration *= this.speed > 0.0F ? 1.0F - this.speed / MAX_SPEED : 1.0F;
                     if (!(entity.zza > 0.0F) || entity.horizontalCollision) {
                         acceleration = -0.044999998F;
                     }
 
-                    this.speed = MathHelper.clamp(this.speed + acceleration, 0.2F, 0.45F);
+                    this.speed = MathHelper.clamp(this.speed + acceleration, 0.2F, MAX_SPEED);
                     int d2 = entity.zza > 0.0F ? 1 : 0;
                     Vector3d vec = entity.getLookAngle();
                     double x = vec.x * (double)this.speed * (double)d2;
                     double z = vec.z * (double)this.speed * (double)d2;
                     AbilityHelper.setDeltaMovement(entity, x, entity.getDeltaMovement().y, z);
                     if (!entity.level.isClientSide) {
-                        List<BlockPos> blocks = WyHelper.getNearbyBlocks(entity.blockPosition(), entity.level, 7, 7, 7, (state) -> !state.getMaterial().equals(Material.AIR) && FoliageBlockProtectionRule.INSTANCE.isApproved(state));
+                        List<BlockPos> blocks = WyHelper.getNearbyBlocks(entity.blockPosition(), entity.level, BLOCK_BREAKING_AREA, BLOCK_BREAKING_AREA, BLOCK_BREAKING_AREA, (state) -> !state.getMaterial().equals(Material.AIR) && FoliageBlockProtectionRule.INSTANCE.isApproved(state));
                         List<BlockPos> positions = new ArrayList();
 
                         for(BlockPos pos : blocks) {
@@ -89,7 +90,7 @@ public class AwakenDekaTrampleAbility extends PassiveAbility2 implements IAwaken
                         }
 
                         for(LivingEntity target : targets) {
-                            if (this.dealDamageComponent.hurtTarget(entity, target, 8.0F)) {
+                            if (this.dealDamageComponent.hurtTarget(entity, target, DAMAGE)) {
                                 Vector3d speed = WyHelper.propulsion(entity, (double)2.0F, (double)2.0F);
                                 AbilityHelper.setDeltaMovement(target, speed.x, 0.2, speed.z);
                             }
@@ -118,6 +119,7 @@ public class AwakenDekaTrampleAbility extends PassiveAbility2 implements IAwaken
                 .addAdvancedDescriptionLine(new AbilityDescriptionLine.IDescriptionLine[]{AbilityDescriptionLine.NEW_LINE, RangeComponent.getTooltip(5.0F, RangeComponent.RangeType.AOE), DealDamageComponent.getTooltip(8.0F)})
                 .setSourceHakiNature(SourceHakiNature.HARDENING).setSourceType(new SourceType[]{SourceType.FIST})
                 .setUnlockCheck(AwakenDekaTrampleAbility::canUnlock)
+                .setIcon(new ResourceLocation("awakenawakennomi", "textures/abilities/awaken_deka_trample.png"))
                 .build();
     }
 }

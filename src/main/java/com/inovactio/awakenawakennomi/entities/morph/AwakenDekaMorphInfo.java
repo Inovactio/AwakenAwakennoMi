@@ -2,6 +2,7 @@ package com.inovactio.awakenawakennomi.entities.morph;
 
 import com.google.common.collect.ImmutableMap;
 import com.inovactio.awakenawakennomi.abilities.dekadekanomi.AwakenDekaAbility;
+import com.inovactio.awakenawakennomi.renderers.morphs.DekaRenderer;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.AbstractClientPlayerEntity;
@@ -22,8 +23,8 @@ import xyz.pixelatedw.mineminenomi.renderers.morphs.MegaRenderer;
 import java.util.Map;
 
 public class AwakenDekaMorphInfo extends MorphInfo {
-    private static final EntitySize STANDING_SIZE = EntitySize.scalable(1.7F, 2.4F);
-    private static final EntitySize CROUCHING_SIZE = EntitySize.scalable(1.7F, 2.39F);
+    private static final EntitySize STANDING_SIZE = EntitySize.scalable(6.0F, 17F);
+    private static final EntitySize CROUCHING_SIZE = EntitySize.scalable(6.0F, 15.2F);
 
     @OnlyIn(Dist.CLIENT)
     public IRenderFactory getRendererFactory(LivingEntity entity) {
@@ -32,7 +33,7 @@ public class AwakenDekaMorphInfo extends MorphInfo {
             isSlim = ((AbstractClientPlayerEntity)entity).getModelName().equals("slim");
         }
 
-        return new MegaRenderer.Factory(this, isSlim);
+        return new DekaRenderer.Factory(this, isSlim);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -56,16 +57,16 @@ public class AwakenDekaMorphInfo extends MorphInfo {
     }
 
     public double getEyeHeight() {
-        return 8.45;
+        return 16.90;
     }
 
     public float getShadowSize() {
-        return 1.25F;
+        return 1.5F;
     }
 
     @OnlyIn(Dist.CLIENT)
     public double getCameraZoom(LivingEntity entity) {
-        return (double)8.0F;
+        return (double)32.0F;
     }
 
     public boolean canMount() {
@@ -81,8 +82,8 @@ public class AwakenDekaMorphInfo extends MorphInfo {
 
     public Map<Pose, EntitySize> getSizes() {
         return ImmutableMap.<Pose, EntitySize>builder()
-                .put(Pose.STANDING, EntitySize.scalable(4.0F, 8.5F))
-                .put(Pose.CROUCHING, EntitySize.scalable(4.0F, 7.6F))
+                .put(Pose.STANDING, STANDING_SIZE)
+                .put(Pose.CROUCHING, CROUCHING_SIZE)
                 .build();
     }
 }
