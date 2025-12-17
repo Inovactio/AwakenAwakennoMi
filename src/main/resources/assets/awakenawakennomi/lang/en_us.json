@@ -3,11 +3,13 @@
   "ability.mineminenomi.awakensukepunch": "Awaken Suke Punch",
   "ability.mineminenomi.awaken_suke_diffraction": "Awaken Suke Diffraction",
   "ability.mineminenomi.awakenbomuairburst": "Awaken Bomu Airburst",
+  "ability.mineminenomi.awakenblastjump": "Awaken Blast Jump",
 
   "ability.awakenawakennomi.awaken_suke_invisible_zone.description.0": "Creates a spherical zone where blocks gradually become invisible for nearby observers.",
   "ability.awakenawakennomi.awaken_suke_punch.description.0": "Turns a targeted block invisible after hitting it.",
   "ability.awakenawakennomi.awaken_suke_diffraction.description.0": "Diffract light to fire seven powerful rainbow explosions after a 5s channel.",
   "ability.awakenawakennomi.awaken_bomu_airburst.description.0": "Creates explosive bursts of air around the user for 30 seconds; non-destructive to blocks.",
+  "ability.awakenawakennomi.awaken_blast_jump.description.0": "The user detonates an explosion beneath their feet, launching themselves high into the air.",
 
   "awakenawakennomi.ability.ground_only": "You must be on the ground to use this ability.",
 
