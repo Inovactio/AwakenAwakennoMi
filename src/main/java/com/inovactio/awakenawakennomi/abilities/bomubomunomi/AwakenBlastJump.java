@@ -1,6 +1,7 @@
 package com.inovactio.awakenawakennomi.abilities.bomubomunomi;
 
 import com.inovactio.awakenawakennomi.api.abilities.IAwakenable;
+import com.inovactio.awakenawakennomi.util.ToolTipHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
@@ -20,6 +21,7 @@ import xyz.pixelatedw.mineminenomi.api.abilities.components.AbilityComponent;
 import xyz.pixelatedw.mineminenomi.api.abilities.components.DamageTakenComponent;
 import xyz.pixelatedw.mineminenomi.api.abilities.components.PoolComponent;
 import xyz.pixelatedw.mineminenomi.api.abilities.components.StackComponent;
+import xyz.pixelatedw.mineminenomi.api.damagesource.SourceElement;
 import xyz.pixelatedw.mineminenomi.api.helpers.AbilityHelper;
 import xyz.pixelatedw.mineminenomi.data.entity.devilfruit.DevilFruitCapability;
 import xyz.pixelatedw.mineminenomi.data.entity.entitystats.EntityStatsCapability;
@@ -186,7 +188,8 @@ public class AwakenBlastJump extends Ability implements IAwakenable {
         INSTANCE = new AbilityCore.Builder<>("AwakenBlastJump", AbilityCategory.DEVIL_FRUITS, AwakenBlastJump::new)
                 .addDescriptionLine(DESCRIPTION)
                 .addAdvancedDescriptionLine(new AbilityDescriptionLine.IDescriptionLine[]{AbilityDescriptionLine.NEW_LINE, AbilityHelper.createShortLongCooldownStat(10.0F, 50.0F), GEPPO_STACKS})
-                .addAdvancedDescriptionLine()
+                .addAdvancedDescriptionLine(ToolTipHelper.getExplosionTooltips((int)POWER, (int)EXPLOSION_SIZE, (int)STATIC_DAMAGE))
+                .setSourceElement(SourceElement.EXPLOSION)
                 .setUnlockCheck(AwakenBlastJump::canUnlock)
                 .setIcon(new ResourceLocation("awakenawakennomi", "textures/abilities/awaken_blast_jump.png"))
                 .build();

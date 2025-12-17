@@ -1,6 +1,7 @@
 package com.inovactio.awakenawakennomi.abilities.bomubomunomi;
 
 import com.inovactio.awakenawakennomi.api.abilities.IAwakenable;
+import com.inovactio.awakenawakennomi.util.ToolTipHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.server.ServerWorld;
@@ -9,6 +10,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.particles.ParticleTypes;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import xyz.pixelatedw.mineminenomi.api.abilities.*;
+import xyz.pixelatedw.mineminenomi.api.damagesource.SourceElement;
 import xyz.pixelatedw.mineminenomi.api.helpers.AbilityHelper;
 import xyz.pixelatedw.mineminenomi.api.abilities.ExplosionAbility;
 import net.minecraft.util.math.BlockPos;
@@ -31,9 +33,9 @@ public class AwakenBomuAirburstAbility extends Ability implements IAwakenable {
     private static final int TICK_INTERVAL = 20; // ticks between checks
     private static final double CHANCE_PER_TICK = 0.25; // chance to spawn an explosion each interval
     private static final double RADIUS = 24.0; // spawn radius
-    private static final float POWER = 2.0F; // explosion power
-    private static final float EXPLOSION_SIZE = 32.0F;
-    private static final float STATIC_DAMAGE = 30.0F;
+    private static final float POWER = 2; // explosion power
+    private static final float EXPLOSION_SIZE = 32;
+    private static final float STATIC_DAMAGE = 30;
     private static final double VERTICAL_RANGE = 6.0;
 
     private final ContinuousComponent continuousComponent = (new ContinuousComponent(this, true))
@@ -111,6 +113,8 @@ public class AwakenBomuAirburstAbility extends Ability implements IAwakenable {
                 .setUnlockCheck(AwakenBomuAirburstAbility::canUnlock)
                 .addDescriptionLine(DESCRIPTION)
                 .addAdvancedDescriptionLine(new AbilityDescriptionLine.IDescriptionLine[]{AbilityDescriptionLine.NEW_LINE, CooldownComponent.getTooltip(600.0F)})
+                .addAdvancedDescriptionLine(ToolTipHelper.getExplosionTooltips((int)POWER, (int)EXPLOSION_SIZE, (int)STATIC_DAMAGE))
+                .setSourceElement(SourceElement.EXPLOSION)
                 .setIcon(new ResourceLocation("awakenawakennomi", "textures/abilities/awaken_bomu_airburst.png"))
                 .build();
     }

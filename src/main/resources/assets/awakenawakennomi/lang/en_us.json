@@ -13,5 +13,9 @@
 
   "awakenawakennomi.ability.ground_only": "You must be on the ground to use this ability.",
 
-  "ability.message.need_suke_invisible": "You need Suke Invisible to use this ability."
+  "ability.message.need_suke_invisible": "You need Suke Invisible to use this ability.",
+
+  "ability.awakenawakennomi.stat.name.explosion": "Explosion",
+  "ability.awakenawakennomi.stat.name.power": "Power",
+  "ability.awakenawakennomi.stat.name.size": "Size"
 }
