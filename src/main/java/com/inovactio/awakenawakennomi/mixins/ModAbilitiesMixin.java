@@ -3,6 +3,7 @@ package com.inovactio.awakenawakennomi.mixins;
 import com.inovactio.awakenawakennomi.abilities.bomubomunomi.AwakenBlastJump;
 import com.inovactio.awakenawakennomi.abilities.bomubomunomi.AwakenPiercingBlast;
 import com.inovactio.awakenawakennomi.abilities.dekadekanomi.AwakenDekaAbility;
+import com.inovactio.awakenawakennomi.abilities.dekadekanomi.AwakenDekaTrampleAbility;
 import com.inovactio.awakenawakennomi.abilities.sukesukenomi.AwakenSukeDiffractionAbility;
 import com.inovactio.awakenawakennomi.abilities.sukesukenomi.AwakenSukeInvisibleZoneAbility;
 import com.inovactio.awakenawakennomi.abilities.sukesukenomi.AwakenSukePunchAbility;
@@ -41,7 +42,7 @@ public class ModAbilitiesMixin {
                 break;
 
             case "Deka Deka no Mi":
-                appendAbilities(fruit, AwakenDekaAbility.INSTANCE);
+                appendAbilities(fruit, AwakenDekaAbility.INSTANCE, AwakenDekaTrampleAbility.INSTANCE);
                 break;
 
             default:
@@ -83,6 +84,39 @@ public class ModAbilitiesMixin {
             String name = a.getClass().getSimpleName();
             sb.append(name);
             if (i < toAdd.size() - 1) sb.append(", ");
+        }
+        System.out.println(sb.toString());
+    }
+
+    private static void removeAbilities(AkumaNoMiItem fruit, AbilityCore<?>... abilities) {
+        if (fruit == null || abilities == null || abilities.length == 0) return;
+
+        AbilityCore<?>[] original = fruit.getAbilities();
+        if (original == null || original.length == 0) return;
+
+        ArrayList<AbilityCore<?>> toRemove = new ArrayList<>();
+        for (AbilityCore<?> a : abilities) {
+            if (a != null) toRemove.add(a);
+        }
+        if (toRemove.isEmpty()) return;
+
+        ArrayList<AbilityCore<?>> updatedList = new ArrayList<>();
+        for (AbilityCore<?> o : original) {
+            if (!toRemove.contains(o)) {
+                updatedList.add(o);
+            }
+        }
+
+        AbilityCore<?>[] updatedArray = updatedList.toArray(new AbilityCore<?>[0]);
+        fruit.setAbilities(updatedArray);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("[AwakenAwakenNoMi] Abilities supprimées pour ").append(fruit.getDevilFruitName()).append(" : ");
+        for (int i = 0; i < toRemove.size(); i++) {
+            AbilityCore<?> a = toRemove.get(i);
+            String name = a.getClass().getSimpleName();
+            sb.append(name);
+            if (i < toRemove.size() - 1) sb.append(", ");
         }
         System.out.println(sb.toString());
     }

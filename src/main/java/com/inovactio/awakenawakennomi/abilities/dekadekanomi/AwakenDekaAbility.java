@@ -1,6 +1,5 @@
 package com.inovactio.awakenawakennomi.abilities.dekadekanomi;
 
-import com.inovactio.awakenawakennomi.abilities.bomubomunomi.AwakenBlastJump;
 import com.inovactio.awakenawakennomi.api.abilities.IAwakenable;
 import com.inovactio.awakenawakennomi.init.ModMorphs;
 import net.minecraft.entity.LivingEntity;
@@ -23,9 +22,11 @@ import xyz.pixelatedw.mineminenomi.data.entity.devilfruit.DevilFruitCapability;
 import xyz.pixelatedw.mineminenomi.init.ModAbilities;
 import xyz.pixelatedw.mineminenomi.init.ModAttributes;
 
+import java.util.function.Predicate;
+
 public class AwakenDekaAbility extends MorphAbility2 implements IAwakenable {
     private static final ITextComponent[] DESCRIPTION = AbilityHelper.registerDescriptionText("awakenawakennomi", "awaken_deka", new Pair[]{ImmutablePair.of("Allows the user to increase their size to that of a giant.", (Object)null)});
-    public static final AbilityCore<DekaDekaAbility> INSTANCE;
+    public static final AbilityCore<AwakenDekaAbility> INSTANCE;
     private static final AbilityAttributeModifier SPEED_MODIFIER;
     private static final AbilityAttributeModifier JUMP_MODIFIER;
     private static final AbilityAttributeModifier ARMOR_MODIFIER;
@@ -36,19 +37,20 @@ public class AwakenDekaAbility extends MorphAbility2 implements IAwakenable {
     private static final AbilityAttributeModifier FALL_RESISTANCE_MODIFIER;
     private static final AbilityAttributeModifier TOUGHNESS_MODIFIER;
 
-    public AwakenDekaAbility(AbilityCore<DekaDekaAbility> core) {
+    public AwakenDekaAbility(AbilityCore<AwakenDekaAbility> core) {
         super(core);
         this.isNew = true;
-        this.statsComponent.addAttributeModifier(Attributes.MOVEMENT_SPEED, SPEED_MODIFIER);
-        this.statsComponent.addAttributeModifier(ModAttributes.JUMP_HEIGHT, JUMP_MODIFIER);
-        this.statsComponent.addAttributeModifier(Attributes.ARMOR, ARMOR_MODIFIER);
-        this.statsComponent.addAttributeModifier(ModAttributes.PUNCH_DAMAGE, STRENGTH_MODIFIER);
-        this.statsComponent.addAttributeModifier(ForgeMod.REACH_DISTANCE, REACH_MODIFIER);
-        this.statsComponent.addAttributeModifier(ModAttributes.ATTACK_RANGE, REACH_MODIFIER);
-        this.statsComponent.addAttributeModifier(ModAttributes.STEP_HEIGHT, STEP_HEIGHT);
-        this.statsComponent.addAttributeModifier(Attributes.KNOCKBACK_RESISTANCE, KNOCKBACK_RESISTANCE);
-        this.statsComponent.addAttributeModifier(ModAttributes.FALL_RESISTANCE, FALL_RESISTANCE_MODIFIER);
-        this.statsComponent.addAttributeModifier(ModAttributes.TOUGHNESS, TOUGHNESS_MODIFIER);
+        Predicate<LivingEntity> isActive = (entity) -> this.morphComponent.isMorphed();
+        this.statsComponent.addAttributeModifier(Attributes.MOVEMENT_SPEED, SPEED_MODIFIER,isActive);
+        this.statsComponent.addAttributeModifier(ModAttributes.JUMP_HEIGHT, JUMP_MODIFIER,isActive);
+        this.statsComponent.addAttributeModifier(Attributes.ARMOR, ARMOR_MODIFIER,isActive);
+        this.statsComponent.addAttributeModifier(ModAttributes.PUNCH_DAMAGE, STRENGTH_MODIFIER,isActive);
+        this.statsComponent.addAttributeModifier(ForgeMod.REACH_DISTANCE, REACH_MODIFIER,isActive);
+        this.statsComponent.addAttributeModifier(ModAttributes.ATTACK_RANGE, REACH_MODIFIER,isActive);
+        this.statsComponent.addAttributeModifier(ModAttributes.STEP_HEIGHT, STEP_HEIGHT,isActive);
+        this.statsComponent.addAttributeModifier(Attributes.KNOCKBACK_RESISTANCE, KNOCKBACK_RESISTANCE,isActive);
+        this.statsComponent.addAttributeModifier(ModAttributes.FALL_RESISTANCE, FALL_RESISTANCE_MODIFIER,isActive);
+        this.statsComponent.addAttributeModifier(ModAttributes.TOUGHNESS, TOUGHNESS_MODIFIER,isActive);
     }
 
     private static boolean canUnlock(LivingEntity user) {
@@ -67,7 +69,7 @@ public class AwakenDekaAbility extends MorphAbility2 implements IAwakenable {
     }
 
     static {
-        INSTANCE =new AbilityCore.Builder("Awaken Deka", AbilityCategory.DEVIL_FRUITS, AwakenDekaAbility::new)
+        INSTANCE =new AbilityCore.Builder<AwakenDekaAbility>("Awaken Deka", AbilityCategory.DEVIL_FRUITS, AwakenDekaAbility::new)
                 .addDescriptionLine(DESCRIPTION)
                 .addAdvancedDescriptionLine(new AbilityDescriptionLine.IDescriptionLine[]{AbilityDescriptionLine.NEW_LINE, CooldownComponent.getTooltip(10.0F), ContinuousComponent.getTooltip(), ChangeStatsComponent.getTooltip()})
                 .setUnlockCheck(AwakenDekaAbility::canUnlock)
