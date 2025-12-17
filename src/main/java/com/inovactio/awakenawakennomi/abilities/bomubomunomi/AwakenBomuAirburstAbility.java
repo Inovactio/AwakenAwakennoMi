@@ -109,7 +109,7 @@ public class AwakenBomuAirburstAbility extends Ability implements IAwakenable {
     }
 
     static {
-        INSTANCE = new AbilityCore.Builder<>("AwakenBomuAirburst", AbilityCategory.DEVIL_FRUITS, AwakenBomuAirburstAbility::new)
+        INSTANCE = new AbilityCore.Builder<>("Awaken Bomu Airburst", AbilityCategory.DEVIL_FRUITS, AwakenBomuAirburstAbility::new)
                 .setUnlockCheck(AwakenBomuAirburstAbility::canUnlock)
                 .addDescriptionLine(DESCRIPTION)
                 .addAdvancedDescriptionLine(new AbilityDescriptionLine.IDescriptionLine[]{AbilityDescriptionLine.NEW_LINE, CooldownComponent.getTooltip(600.0F)})
