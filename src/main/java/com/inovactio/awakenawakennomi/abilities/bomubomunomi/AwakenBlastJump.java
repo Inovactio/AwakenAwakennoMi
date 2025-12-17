@@ -185,7 +185,7 @@ public class AwakenBlastJump extends Ability implements IAwakenable {
 
 
     static {
-        INSTANCE = new AbilityCore.Builder<>("AwakenBlastJump", AbilityCategory.DEVIL_FRUITS, AwakenBlastJump::new)
+        INSTANCE = new AbilityCore.Builder<>("Awaken Blast Jump", AbilityCategory.DEVIL_FRUITS, AwakenBlastJump::new)
                 .addDescriptionLine(DESCRIPTION)
                 .addAdvancedDescriptionLine(new AbilityDescriptionLine.IDescriptionLine[]{AbilityDescriptionLine.NEW_LINE, AbilityHelper.createShortLongCooldownStat(10.0F, 50.0F), GEPPO_STACKS})
                 .addAdvancedDescriptionLine(ToolTipHelper.getExplosionTooltips((int)POWER, (int)EXPLOSION_SIZE, (int)STATIC_DAMAGE))
