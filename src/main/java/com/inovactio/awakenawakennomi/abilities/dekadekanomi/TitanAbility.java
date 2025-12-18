@@ -10,7 +10,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.ForgeMod;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import xyz.pixelatedw.mineminenomi.abilities.mega.DekaDekaAbility;
 import xyz.pixelatedw.mineminenomi.api.abilities.*;
 import xyz.pixelatedw.mineminenomi.api.abilities.components.ChangeStatsComponent;
 import xyz.pixelatedw.mineminenomi.api.abilities.components.ContinuousComponent;
@@ -24,9 +23,9 @@ import xyz.pixelatedw.mineminenomi.init.ModAttributes;
 
 import java.util.function.Predicate;
 
-public class AwakenDekaAbility extends MorphAbility2 implements IAwakenable {
-    private static final ITextComponent[] DESCRIPTION = AbilityHelper.registerDescriptionText("awakenawakennomi", "awaken_deka", new Pair[]{ImmutablePair.of("Allows the user to increase their size to that of a giant.", (Object)null)});
-    public static final AbilityCore<AwakenDekaAbility> INSTANCE;
+public class TitanAbility extends MorphAbility2 implements IAwakenable {
+    private static final ITextComponent[] DESCRIPTION = AbilityHelper.registerDescriptionText("awakenawakennomi", "titan", new Pair[]{ImmutablePair.of("Allows the user to increase their size to that of a titan.", (Object)null)});
+    public static final AbilityCore<TitanAbility> INSTANCE;
     private static final AbilityAttributeModifier HEALTH_MODIFIER;
     private static final AbilityAttributeModifier SPEED_MODIFIER;
     private static final AbilityAttributeModifier JUMP_MODIFIER;
@@ -38,7 +37,7 @@ public class AwakenDekaAbility extends MorphAbility2 implements IAwakenable {
     private static final AbilityAttributeModifier FALL_RESISTANCE_MODIFIER;
     private static final AbilityAttributeModifier TOUGHNESS_MODIFIER;
 
-    public AwakenDekaAbility(AbilityCore<AwakenDekaAbility> core) {
+    public TitanAbility(AbilityCore<TitanAbility> core) {
         super(core);
         this.isNew = true;
         Predicate<LivingEntity> isActive = (entity) -> this.morphComponent.isMorphed();
@@ -71,11 +70,11 @@ public class AwakenDekaAbility extends MorphAbility2 implements IAwakenable {
     }
 
     static {
-        INSTANCE =new AbilityCore.Builder<AwakenDekaAbility>("Awaken Deka", AbilityCategory.DEVIL_FRUITS, AwakenDekaAbility::new)
+        INSTANCE =new AbilityCore.Builder<TitanAbility>("Titan", AbilityCategory.DEVIL_FRUITS, TitanAbility::new)
                 .addDescriptionLine(DESCRIPTION)
                 .addAdvancedDescriptionLine(new AbilityDescriptionLine.IDescriptionLine[]{AbilityDescriptionLine.NEW_LINE, CooldownComponent.getTooltip(10.0F), ContinuousComponent.getTooltip(), ChangeStatsComponent.getTooltip()})
-                .setUnlockCheck(AwakenDekaAbility::canUnlock)
-                .setIcon(new ResourceLocation("awakenawakennomi", "textures/abilities/awaken_deka.png"))
+                .setUnlockCheck(TitanAbility::canUnlock)
+                .setIcon(new ResourceLocation("awakenawakennomi", "textures/abilities/deka/titan.png"))
                 .build();
         HEALTH_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_HEALTH_UUID, INSTANCE, "Mega Mega Health Modifier", (double)0.5F, AttributeModifier.Operation.MULTIPLY_BASE);
         SPEED_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_MOVEMENT_SPEED_UUID, INSTANCE, "Mega Mega Speed Modifier", (double)1.25F, AttributeModifier.Operation.MULTIPLY_BASE);

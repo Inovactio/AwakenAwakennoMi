@@ -33,20 +33,20 @@ import xyz.pixelatedw.mineminenomi.wypi.WyHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AwakenDekaTrampleAbility extends PassiveAbility2 implements IAwakenable {
-    private static final ITextComponent[] DESCRIPTION = AbilityHelper.registerDescriptionText("awakenawakennomi", "awaken_deka_trample", new Pair[]{ImmutablePair.of("Running speed increases with acceleration trampling any nearby entity.", (Object)null)});
+public class TitanTrampleAbility extends PassiveAbility2 implements IAwakenable {
+    private static final ITextComponent[] DESCRIPTION = AbilityHelper.registerDescriptionText("awakenawakennomi", "titan_trample", new Pair[]{ImmutablePair.of("Running speed increases with acceleration trampling any nearby entity.", (Object)null)});
     private static final float TRAMPLE_AREA = 10.0F;
     private static final int BLOCK_BREAKING_AREA = 7;
     private static final float MAX_SPEED = 0.90F;
     private static final float DAMAGE = 24.0F;
-    public static final AbilityCore<AwakenDekaTrampleAbility> INSTANCE;
+    public static final AbilityCore<TitanTrampleAbility> INSTANCE;
     private final RangeComponent rangeComponent = new RangeComponent(this);
     private final DealDamageComponent dealDamageComponent = new DealDamageComponent(this);
     private final RequireMorphComponent requireMorphComponent;
     private BreakingBlocksParticleEffect.Details details;
     public float speed;
 
-    public AwakenDekaTrampleAbility(AbilityCore<AwakenDekaTrampleAbility> ability) {
+    public TitanTrampleAbility(AbilityCore<TitanTrampleAbility> ability) {
         super(ability);
         this.requireMorphComponent = new RequireMorphComponent(this, (MorphInfo) ModMorphs.AWAKEN_DEKA.get(), new MorphInfo[0]);
         this.details = new BreakingBlocksParticleEffect.Details(100);
@@ -92,7 +92,7 @@ public class AwakenDekaTrampleAbility extends PassiveAbility2 implements IAwaken
                         for(LivingEntity target : targets) {
                             if (this.dealDamageComponent.hurtTarget(entity, target, DAMAGE)) {
                                 Vector3d speed = WyHelper.propulsion(entity, (double)2.0F, (double)2.0F);
-                                AbilityHelper.setDeltaMovement(target, speed.x, 0.2, speed.z);
+                                AbilityHelper.setDeltaMovement(target, speed.x, 1, speed.z);
                             }
                         }
                     }
@@ -113,13 +113,13 @@ public class AwakenDekaTrampleAbility extends PassiveAbility2 implements IAwaken
     }
 
     static {
-        INSTANCE = new AbilityCore.Builder<AwakenDekaTrampleAbility>("Awaken Deka Trample", AbilityCategory.DEVIL_FRUITS, AbilityType.PASSIVE, AwakenDekaTrampleAbility::new)
+        INSTANCE = new AbilityCore.Builder<TitanTrampleAbility>("Titan Trample", AbilityCategory.DEVIL_FRUITS, AbilityType.PASSIVE, TitanTrampleAbility::new)
                 .addDescriptionLine(DESCRIPTION)
                 .addDescriptionLine(new AbilityDescriptionLine.IDescriptionLine[]{AbilityDescriptionLine.NEW_LINE, RequireMorphComponent.getTooltip()})
                 .addAdvancedDescriptionLine(new AbilityDescriptionLine.IDescriptionLine[]{AbilityDescriptionLine.NEW_LINE, RangeComponent.getTooltip(5.0F, RangeComponent.RangeType.AOE), DealDamageComponent.getTooltip(8.0F)})
                 .setSourceHakiNature(SourceHakiNature.HARDENING).setSourceType(new SourceType[]{SourceType.FIST})
-                .setUnlockCheck(AwakenDekaTrampleAbility::canUnlock)
-                .setIcon(new ResourceLocation("awakenawakennomi", "textures/abilities/awaken_deka_trample.png"))
+                .setUnlockCheck(TitanTrampleAbility::canUnlock)
+                .setIcon(new ResourceLocation("awakenawakennomi", "textures/abilities/deka/titan_trample.png"))
                 .build();
     }
 }

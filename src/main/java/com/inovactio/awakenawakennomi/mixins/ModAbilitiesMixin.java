@@ -2,9 +2,9 @@ package com.inovactio.awakenawakennomi.mixins;
 
 import com.inovactio.awakenawakennomi.abilities.bomubomunomi.AwakenBlastJump;
 import com.inovactio.awakenawakennomi.abilities.bomubomunomi.AwakenPiercingBlast;
-import com.inovactio.awakenawakennomi.abilities.dekadekanomi.AwakenDekaAbility;
-import com.inovactio.awakenawakennomi.abilities.dekadekanomi.AwakenDekaTrampleAbility;
-import com.inovactio.awakenawakennomi.abilities.dekadekanomi.TitanSmash;
+import com.inovactio.awakenawakennomi.abilities.dekadekanomi.TitanAbility;
+import com.inovactio.awakenawakennomi.abilities.dekadekanomi.TitanTrampleAbility;
+import com.inovactio.awakenawakennomi.abilities.dekadekanomi.TitanSmashAbility;
 import com.inovactio.awakenawakennomi.abilities.sukesukenomi.AwakenSukeDiffractionAbility;
 import com.inovactio.awakenawakennomi.abilities.sukesukenomi.AwakenSukeInvisibleZoneAbility;
 import com.inovactio.awakenawakennomi.abilities.sukesukenomi.AwakenSukePunchAbility;
@@ -43,7 +43,7 @@ public class ModAbilitiesMixin {
                 break;
 
             case "Deka Deka no Mi":
-                appendAbilities(fruit, AwakenDekaAbility.INSTANCE, AwakenDekaTrampleAbility.INSTANCE, TitanSmash.INSTANCE);
+                appendAbilities(fruit, TitanAbility.INSTANCE, TitanTrampleAbility.INSTANCE, TitanSmashAbility.INSTANCE);
                 break;
 
             default:
