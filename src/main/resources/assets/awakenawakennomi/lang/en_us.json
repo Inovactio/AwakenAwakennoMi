@@ -5,6 +5,8 @@
   "ability.mineminenomi.awaken_bomu_airburst": "Awaken Bomu Airburst",
   "ability.mineminenomi.awaken_blast_jump": "Awaken Blast Jump",
   "ability.mineminenomi.awaken_piercing_blast": "Awaken Piercing Blast",
+  "ability.mineminenomi.awaken_deka": "Awaken Deka",
+  "ability.mineminenomi.awaken_deka_trample": "Awaken Deka Trample",
 
   "ability.awakenawakennomi.awaken_suke_invisible_zone.description.0": "Creates a spherical zone where blocks gradually become invisible for nearby observers.",
   "ability.awakenawakennomi.awaken_suke_punch.description.0": "Turns a targeted block invisible after hitting it.",
@@ -12,6 +14,8 @@
   "ability.awakenawakennomi.awaken_bomu_airburst.description.0": "Creates explosive bursts of air around the user for 30 seconds; non-destructive to blocks.",
   "ability.awakenawakennomi.awaken_blast_jump.description.0": "The user detonates an explosion beneath their feet, launching themselves high into the air.",
   "ability.awakenawakennomi.awaken_piercing_blast.description.0": "The user compresses air into a focused laser that pierces the target and detonates inside them, causing devastating internal damage.",
+  "ability.awakenawakennomi.awaken_deka.description.0": "Allows the user to increase their size to that of a titan.",
+  "ability.awakenawakennomi.awaken_deka_trample.description.0": "Running speed increases with acceleration trampling any nearby entity.",
 
   "awakenawakennomi.ability.ground_only": "You must be on the ground to use this ability.",
 
