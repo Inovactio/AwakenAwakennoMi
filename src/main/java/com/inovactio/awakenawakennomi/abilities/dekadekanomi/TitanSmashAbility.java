@@ -15,11 +15,10 @@ import xyz.pixelatedw.mineminenomi.api.abilities.components.CooldownComponent;
 import xyz.pixelatedw.mineminenomi.api.abilities.components.ProjectileComponent;
 import xyz.pixelatedw.mineminenomi.api.helpers.AbilityHelper;
 import xyz.pixelatedw.mineminenomi.data.entity.devilfruit.DevilFruitCapability;
-import xyz.pixelatedw.mineminenomi.entities.projectiles.pika.AmaterasuProjectile;
 import xyz.pixelatedw.mineminenomi.init.ModAbilities;
 
-public class TitanSmash extends Ability implements IAwakenable {
-    public static final AbilityCore<TitanSmash> INSTANCE;
+public class TitanSmashAbility extends Ability implements IAwakenable {
+    public static final AbilityCore<TitanSmashAbility> INSTANCE;
     private static final ITextComponent[] DESCRIPTION = AbilityHelper.registerDescriptionText("awakenawakennomi", "titan_smash", new Pair[]{ImmutablePair.of("Allows the user to smash as a Titan.", (Object)null)});
     private static final int COOLDOWN = 400;
     private static final int CHARGE_TIME = 80;
@@ -27,7 +26,7 @@ public class TitanSmash extends Ability implements IAwakenable {
     private static final int PROJECTILE_INACCURACY = 0;
     private final ChargeComponent chargeComponent = (new ChargeComponent(this)).addEndEvent(this::stopChargeEvent);
     private final ProjectileComponent projectileComponent = new ProjectileComponent(this, this::createProjectile);
-    public TitanSmash(AbilityCore<TitanSmash> core){
+    public TitanSmashAbility(AbilityCore<TitanSmashAbility> core){
         super(core);
         this.isNew = true;
         this.addComponents(new AbilityComponent[]{this.chargeComponent, this.projectileComponent});
@@ -59,13 +58,13 @@ public class TitanSmash extends Ability implements IAwakenable {
     }
 
     static {
-        INSTANCE = new AbilityCore.Builder<>("Titan Smash", AbilityCategory.DEVIL_FRUITS, TitanSmash::new)
+        INSTANCE = new AbilityCore.Builder<>("Titan Smash", AbilityCategory.DEVIL_FRUITS, TitanSmashAbility::new)
                 .addDescriptionLine(DESCRIPTION)
                 .addAdvancedDescriptionLine(new AbilityDescriptionLine.IDescriptionLine[]{CooldownComponent.getTooltip(COOLDOWN)})
                 .addAdvancedDescriptionLine(ChargeComponent.getTooltip(CHARGE_TIME))
                 .addAdvancedDescriptionLine(ProjectileComponent.getProjectileTooltips())
-                .setUnlockCheck(TitanSmash::canUnlock)
-                .setIcon(new ResourceLocation("awakenawakennomi", "textures/abilities/titan_smash.png"))
+                .setUnlockCheck(TitanSmashAbility::canUnlock)
+                .setIcon(new ResourceLocation("awakenawakennomi", "textures/abilities/deka/titan_smash.png"))
                 .build();
     }
 }

@@ -1,7 +1,7 @@
 package com.inovactio.awakenawakennomi.entities.morph;
 
 import com.google.common.collect.ImmutableMap;
-import com.inovactio.awakenawakennomi.abilities.dekadekanomi.AwakenDekaAbility;
+import com.inovactio.awakenawakennomi.abilities.dekadekanomi.TitanAbility;
 import com.inovactio.awakenawakennomi.renderers.morphs.DekaRenderer;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
@@ -13,12 +13,10 @@ import net.minecraft.entity.Pose;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
-import xyz.pixelatedw.mineminenomi.abilities.mega.DekaDekaAbility;
 import xyz.pixelatedw.mineminenomi.api.morph.MorphInfo;
 import xyz.pixelatedw.mineminenomi.api.morph.MorphModel;
 import xyz.pixelatedw.mineminenomi.init.ModAbilities;
 import xyz.pixelatedw.mineminenomi.items.AkumaNoMiItem;
-import xyz.pixelatedw.mineminenomi.renderers.morphs.MegaRenderer;
 
 import java.util.Map;
 
@@ -53,7 +51,7 @@ public class AwakenDekaMorphInfo extends MorphInfo {
     }
 
     public String getDisplayName() {
-        return AwakenDekaAbility.INSTANCE.getUnlocalizedName();
+        return TitanAbility.INSTANCE.getUnlocalizedName();
     }
 
     public double getEyeHeight() {
