@@ -26,7 +26,7 @@ public class PiercingBlastProjectile extends AbilityProjectileEntity {
     }
 
     public PiercingBlastProjectile(World world, LivingEntity player) {
-        super((EntityType) PikaProjectiles.AMATERASU.get(), world, player, AmaterasuAbility.INSTANCE);
+        super((EntityType) BomuProjectiles.PIERCING_BLAST.get(), world, player, AmaterasuAbility.INSTANCE);
         this.setDamage(ExplosionDamage);
         this.setArmorPiercing(ARMOR_PIERCING);
         this.onBlockImpactEvent = this::onBlockImpactEvent;
