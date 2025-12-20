@@ -23,11 +23,11 @@ import xyz.pixelatedw.mineminenomi.init.ModAbilities;
 import xyz.pixelatedw.mineminenomi.init.ModAnimations;
 import xyz.pixelatedw.mineminenomi.init.ModSounds;
 
-public class AwakenPiercingBlast extends Ability implements IAwakenable {
+public class PiercingBlastAbility extends Ability implements IAwakenable {
 
-    public static final AbilityCore<AwakenPiercingBlast> INSTANCE;
-    private static final ITextComponent[] DESCRIPTION = AbilityHelper.registerDescriptionText("awakenawakennomi", "awaken_piercing_blast",
-            ImmutablePair.of("Awaken Piercing Blast (placeholder)", null));
+    public static final AbilityCore<PiercingBlastAbility> INSTANCE;
+    private static final ITextComponent[] DESCRIPTION = AbilityHelper.registerDescriptionText("awakenawakennomi", "piercing_blast",
+            ImmutablePair.of("Piercing Blast (placeholder)", null));
     private final ChargeComponent chargeComponent = (new ChargeComponent(this)).addStartEvent(this::startChargeEvent).addEndEvent(this::stopChargeEvent);
     private final AnimationComponent animationComponent = new AnimationComponent(this);
     private final ProjectileComponent projectileComponent = new ProjectileComponent(this, this::createProjectile);
@@ -40,7 +40,7 @@ public class AwakenPiercingBlast extends Ability implements IAwakenable {
     private static final float EXPLOSION_MIN_SIZE = 1.0F;
     private static final float EXPLOSION_MAX_SIZE = 50.0F;
 
-    public AwakenPiercingBlast(AbilityCore<AwakenPiercingBlast> core) {
+    public PiercingBlastAbility(AbilityCore<PiercingBlastAbility> core) {
         super(core);
         this.isNew = true;
         this.addComponents(this.chargeComponent, this.animationComponent, this.projectileComponent);
@@ -87,15 +87,15 @@ public class AwakenPiercingBlast extends Ability implements IAwakenable {
     }
 
     static {
-        INSTANCE = new AbilityCore.Builder<>("Awaken Piercing Blast", AbilityCategory.DEVIL_FRUITS, AwakenPiercingBlast::new)
-                .setUnlockCheck(AwakenPiercingBlast::canUnlock)
+        INSTANCE = new AbilityCore.Builder<>("Piercing Blast", AbilityCategory.DEVIL_FRUITS, PiercingBlastAbility::new)
+                .setUnlockCheck(PiercingBlastAbility::canUnlock)
                 .addDescriptionLine(DESCRIPTION)
                 .addAdvancedDescriptionLine(AbilityDescriptionLine.NEW_LINE, CooldownComponent.getTooltip(MIN_COOLDOWN, MAX_COOLDOWN))
                 .addAdvancedDescriptionLine(ChargeComponent.getTooltip(0,CHARGE_TIME))
                 .addAdvancedDescriptionLine(ProjectileComponent.getProjectileTooltips())
                 .setSourceHakiNature(SourceHakiNature.SPECIAL)
                 .setSourceElement(SourceElement.EXPLOSION)
-                .setIcon(new ResourceLocation("awakenawakennomi", "textures/abilities/awaken_piercing_blast.png"))
+                .setIcon(new ResourceLocation("awakenawakennomi", "textures/abilities/bomu/piercing_blast.png"))
                 .build();
     }
 }
