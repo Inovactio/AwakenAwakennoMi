@@ -2,6 +2,7 @@ package com.inovactio.awakenawakennomi.abilities.dekadekanomi;
 
 import com.inovactio.awakenawakennomi.api.abilities.IAwakenable;
 import com.inovactio.awakenawakennomi.entities.projectiles.deka.TitanSmashProjectile;
+import com.inovactio.awakenawakennomi.init.ModMorphs;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
@@ -9,11 +10,9 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import xyz.pixelatedw.mineminenomi.api.abilities.*;
 
-import xyz.pixelatedw.mineminenomi.api.abilities.components.AbilityComponent;
-import xyz.pixelatedw.mineminenomi.api.abilities.components.ChargeComponent;
-import xyz.pixelatedw.mineminenomi.api.abilities.components.CooldownComponent;
-import xyz.pixelatedw.mineminenomi.api.abilities.components.ProjectileComponent;
+import xyz.pixelatedw.mineminenomi.api.abilities.components.*;
 import xyz.pixelatedw.mineminenomi.api.helpers.AbilityHelper;
+import xyz.pixelatedw.mineminenomi.api.morph.MorphInfo;
 import xyz.pixelatedw.mineminenomi.data.entity.devilfruit.DevilFruitCapability;
 import xyz.pixelatedw.mineminenomi.init.ModAbilities;
 
@@ -26,10 +25,11 @@ public class TitanSmashAbility extends Ability implements IAwakenable {
     private static final int PROJECTILE_INACCURACY = 0;
     private final ChargeComponent chargeComponent = (new ChargeComponent(this)).addEndEvent(this::stopChargeEvent);
     private final ProjectileComponent projectileComponent = new ProjectileComponent(this, this::createProjectile);
+    private final RequireMorphComponent requireMorphComponent = new RequireMorphComponent(this, (MorphInfo) ModMorphs.AWAKEN_DEKA.get());
     public TitanSmashAbility(AbilityCore<TitanSmashAbility> core){
         super(core);
         this.isNew = true;
-        this.addComponents(new AbilityComponent[]{this.chargeComponent, this.projectileComponent});
+        this.addComponents(new AbilityComponent[]{this.chargeComponent, this.projectileComponent, this.requireMorphComponent});
         this.addUseEvent(this::useEvent);
     }
 
