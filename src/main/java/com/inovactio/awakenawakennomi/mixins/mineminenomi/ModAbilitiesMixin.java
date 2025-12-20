@@ -1,4 +1,4 @@
-package com.inovactio.awakenawakennomi.mixins;
+package com.inovactio.awakenawakennomi.mixins.mineminenomi;
 
 import com.inovactio.awakenawakennomi.abilities.bomubomunomi.BlastJumpAbility;
 import com.inovactio.awakenawakennomi.abilities.bomubomunomi.PiercingBlastAbility;
