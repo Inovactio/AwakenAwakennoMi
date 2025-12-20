@@ -5,7 +5,7 @@ import com.inovactio.awakenawakennomi.abilities.bomubomunomi.AwakenPiercingBlast
 import com.inovactio.awakenawakennomi.abilities.dekadekanomi.TitanAbility;
 import com.inovactio.awakenawakennomi.abilities.dekadekanomi.TitanTrampleAbility;
 import com.inovactio.awakenawakennomi.abilities.dekadekanomi.TitanSmashAbility;
-import com.inovactio.awakenawakennomi.abilities.sukesukenomi.AwakenSukeDiffractionAbility;
+import com.inovactio.awakenawakennomi.abilities.sukesukenomi.DiffractionAbility;
 import com.inovactio.awakenawakennomi.abilities.sukesukenomi.AwakenSukeInvisibleZoneAbility;
 import com.inovactio.awakenawakennomi.abilities.sukesukenomi.AwakenSukePunchAbility;
 import com.inovactio.awakenawakennomi.abilities.bomubomunomi.AwakenBomuAirburstAbility;
@@ -14,12 +14,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import xyz.pixelatedw.mineminenomi.api.abilities.AbilityCore;
 import xyz.pixelatedw.mineminenomi.init.ModAbilities;
 import xyz.pixelatedw.mineminenomi.items.AkumaNoMiItem;
-
-import java.util.Arrays;
-import java.util.ArrayList;
 
 @Mixin({ModAbilities.class})
 public class ModAbilitiesMixin {
@@ -34,7 +30,7 @@ public class ModAbilitiesMixin {
     private static <T extends AkumaNoMiItem> void addAbilities(T fruit, CallbackInfoReturnable<T> info) {
         switch (fruit.getDevilFruitName()) {
             case "Suke Suke no Mi":
-                FruitInjectionHelper.appendAbilities(fruit, AwakenSukePunchAbility.INSTANCE, AwakenSukeInvisibleZoneAbility.INSTANCE, AwakenSukeDiffractionAbility.INSTANCE);
+                FruitInjectionHelper.appendAbilities(fruit, AwakenSukePunchAbility.INSTANCE, AwakenSukeInvisibleZoneAbility.INSTANCE, DiffractionAbility.INSTANCE);
                 break;
 
             case "Bomu Bomu no Mi":

@@ -21,10 +21,10 @@ import xyz.pixelatedw.mineminenomi.api.abilities.components.AnimationComponent;
 import xyz.pixelatedw.mineminenomi.api.helpers.AbilityHelper;
 import xyz.pixelatedw.mineminenomi.api.util.TargetsPredicate;
 import xyz.pixelatedw.mineminenomi.data.entity.devilfruit.DevilFruitCapability;
+import xyz.pixelatedw.mineminenomi.init.ModAnimations;
 import xyz.pixelatedw.mineminenomi.init.ModEffects;
 import xyz.pixelatedw.mineminenomi.init.ModAbilities;
 import com.inovactio.awakenawakennomi.util.PropagationHelper;
-import com.inovactio.awakenawakennomi.init.ModAnimations;
 import net.minecraft.world.server.ServerWorld;
 
 import java.util.ArrayList;
@@ -126,7 +126,7 @@ public class AwakenSukeInvisibleZoneAbility extends GroundAbility implements IAw
             world.playSound(null, zoneCenter, SoundEvents.ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1.0F, 1.0F);
 
             // Lancer l'animation KNEEL côté serveur (AnimationComponent gère la propagation)
-            this.animationComponent.start(entity, ModAnimations.KNEEL_PUNCH_GROUND, CHARGE_TIME);
+            this.animationComponent.start(entity, ModAnimations.RYU_NO_IBUKI, CHARGE_TIME);
         }
 
         // appliquer ralentissement initial si besoin (sera régulièrement rafraîchi pendant le chargement)
@@ -398,11 +398,11 @@ public class AwakenSukeInvisibleZoneAbility extends GroundAbility implements IAw
 
     static {
         INSTANCE = new AbilityCore.Builder<>(
-                "AwakenSukeInvisibleZone", AbilityCategory.DEVIL_FRUITS, AwakenSukeInvisibleZoneAbility::new)
+                "Awaken Suke Invisible Zone", AbilityCategory.DEVIL_FRUITS, AwakenSukeInvisibleZoneAbility::new)
                 .setUnlockCheck(AwakenSukeInvisibleZoneAbility::canUnlock)
                 .addDescriptionLine(DESCRIPTION)
                 .addAdvancedDescriptionLine()
-                .setIcon(new net.minecraft.util.ResourceLocation("awakenawakennomi", "textures/abilities/awaken_suke_invisible_zone.png"))
+                .setIcon(new net.minecraft.util.ResourceLocation("awakenawakennomi", "textures/abilities/suke/awaken_suke_invisible_zone.png"))
                 .build();
     }
 }
