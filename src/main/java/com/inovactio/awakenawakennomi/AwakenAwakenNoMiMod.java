@@ -5,6 +5,7 @@ import com.inovactio.awakenawakennomi.init.ModMorphs;
 import com.inovactio.awakenawakennomi.network.ModNetwork;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -32,5 +33,9 @@ public class AwakenAwakenNoMiMod
 
     private void setup(final FMLCommonSetupEvent event) {
         ModNetwork.register();
+    }
+
+    public static boolean hasCartAddonInstalled() {
+        return ModList.get().isLoaded("cartaddon");
     }
 }
