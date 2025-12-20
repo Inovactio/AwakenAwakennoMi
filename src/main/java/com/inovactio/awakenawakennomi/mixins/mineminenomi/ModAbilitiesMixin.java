@@ -5,6 +5,7 @@ import com.inovactio.awakenawakennomi.abilities.bomubomunomi.PiercingBlastAbilit
 import com.inovactio.awakenawakennomi.abilities.dekadekanomi.TitanAbility;
 import com.inovactio.awakenawakennomi.abilities.dekadekanomi.TitanTrampleAbility;
 import com.inovactio.awakenawakennomi.abilities.dekadekanomi.TitanSmashAbility;
+import com.inovactio.awakenawakennomi.abilities.hitohitonomi.AwakenHumanFormAbility;
 import com.inovactio.awakenawakennomi.abilities.sukesukenomi.DiffractionAbility;
 import com.inovactio.awakenawakennomi.abilities.sukesukenomi.InvisibleZoneAbility;
 import com.inovactio.awakenawakennomi.abilities.sukesukenomi.InvisibleTouchAbility;
@@ -41,11 +42,13 @@ public class ModAbilitiesMixin {
                 FruitInjectionHelper.appendAbilities(fruit, TitanAbility.INSTANCE, TitanTrampleAbility.INSTANCE, TitanSmashAbility.INSTANCE);
                 break;
 
+            case "Hito Hito no Mi":
+                FruitInjectionHelper.appendAbilities(fruit, AwakenHumanFormAbility.INSTANCE);
+                break;
+
             default:
                 // Aucun ajout particulier pour les autres fruits
                 break;
         }
     }
-
-
 }
