@@ -3,19 +3,13 @@ package com.inovactio.awakenawakennomi.abilities.bomubomunomi;
 import com.inovactio.awakenawakennomi.api.abilities.IAwakenable;
 import com.inovactio.awakenawakennomi.util.ToolTipHelper;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.server.ServerWorld;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import xyz.pixelatedw.mineminenomi.abilities.rokushiki.GeppoAbility;
 import xyz.pixelatedw.mineminenomi.api.abilities.*;
 import xyz.pixelatedw.mineminenomi.api.abilities.components.AbilityComponent;
 import xyz.pixelatedw.mineminenomi.api.abilities.components.DamageTakenComponent;
@@ -24,18 +18,13 @@ import xyz.pixelatedw.mineminenomi.api.abilities.components.StackComponent;
 import xyz.pixelatedw.mineminenomi.api.damagesource.SourceElement;
 import xyz.pixelatedw.mineminenomi.api.helpers.AbilityHelper;
 import xyz.pixelatedw.mineminenomi.data.entity.devilfruit.DevilFruitCapability;
-import xyz.pixelatedw.mineminenomi.data.entity.entitystats.EntityStatsCapability;
-import xyz.pixelatedw.mineminenomi.data.entity.entitystats.IEntityStats;
 import xyz.pixelatedw.mineminenomi.init.ModAbilities;
 import xyz.pixelatedw.mineminenomi.init.ModAbilityPools;
-import xyz.pixelatedw.mineminenomi.init.ModParticleEffects;
-import xyz.pixelatedw.mineminenomi.init.ModSounds;
 import xyz.pixelatedw.mineminenomi.particles.effects.CommonExplosionParticleEffect;
-import xyz.pixelatedw.mineminenomi.particles.effects.ParticleEffect;
 import xyz.pixelatedw.mineminenomi.wypi.WyHelper;
 
-public class AwakenBlastJump extends Ability implements IAwakenable {
-    private static final ITextComponent[] DESCRIPTION = AbilityHelper.registerDescriptionText("awakenawakennomi", "awaken_blast_jump", new Pair[]{ImmutablePair.of("The user kicks the air beneath them to launch themselves into the air", (Object)null)});
+public class BlastJumpAbility extends Ability implements IAwakenable {
+    private static final ITextComponent[] DESCRIPTION = AbilityHelper.registerDescriptionText("awakenawakennomi", "blast_jump", new Pair[]{ImmutablePair.of("The user kicks the air beneath them to launch themselves into the air", (Object)null)});
     private static final int MIN_JUMPS = 3;
     private static final int MAX_JUMPS = 6;
     private static final float SHORT_COOLDOWN_PER_STACK = 10.0F;
@@ -44,21 +33,21 @@ public class AwakenBlastJump extends Ability implements IAwakenable {
     private static final int EXPLOSION_SIZE = 10;
     private static final float STATIC_DAMAGE = 40.0F;
     private static final AbilityDescriptionLine.IDescriptionLine GEPPO_STACKS = (e, a) -> {
-        if (a instanceof AwakenBlastJump) {
-            AwakenBlastJump blastJump = (AwakenBlastJump)a;
+        if (a instanceof BlastJumpAbility) {
+            BlastJumpAbility blastJump = (BlastJumpAbility)a;
             AbilityStat.Builder statBuilder = new AbilityStat.Builder(StackComponent.STACKS_STAT, blastJump.getMaxJumps(e), blastJump.getMaxJumps(e));
             return statBuilder.build().getStatDescription();
         } else {
             return null;
         }
     };
-    public static final AbilityCore<AwakenBlastJump> INSTANCE;
+    public static final AbilityCore<BlastJumpAbility> INSTANCE;
     private final PoolComponent poolComponent;
     private final DamageTakenComponent damageTakenComponent;
     private final StackComponent stackComponent;
     private boolean hasFallDamage;
 
-    public AwakenBlastJump(AbilityCore<AwakenBlastJump> core) {
+    public BlastJumpAbility(AbilityCore<BlastJumpAbility> core) {
         super(core);
         this.poolComponent = new PoolComponent(this, ModAbilityPools.GEPPO_LIKE, new AbilityPool2[0]);
         this.damageTakenComponent = (new DamageTakenComponent(this)).addOnAttackEvent(this::onDamageTaken);
@@ -185,13 +174,13 @@ public class AwakenBlastJump extends Ability implements IAwakenable {
 
 
     static {
-        INSTANCE = new AbilityCore.Builder<>("Awaken Blast Jump", AbilityCategory.DEVIL_FRUITS, AwakenBlastJump::new)
+        INSTANCE = new AbilityCore.Builder<>("Blast Jump", AbilityCategory.DEVIL_FRUITS, BlastJumpAbility::new)
                 .addDescriptionLine(DESCRIPTION)
                 .addAdvancedDescriptionLine(new AbilityDescriptionLine.IDescriptionLine[]{AbilityDescriptionLine.NEW_LINE, AbilityHelper.createShortLongCooldownStat(10.0F, 50.0F), GEPPO_STACKS})
                 .addAdvancedDescriptionLine(ToolTipHelper.getExplosionTooltips((int)POWER, (int)EXPLOSION_SIZE, (int)STATIC_DAMAGE))
                 .setSourceElement(SourceElement.EXPLOSION)
-                .setUnlockCheck(AwakenBlastJump::canUnlock)
-                .setIcon(new ResourceLocation("awakenawakennomi", "textures/abilities/awaken_blast_jump.png"))
+                .setUnlockCheck(BlastJumpAbility::canUnlock)
+                .setIcon(new ResourceLocation("awakenawakennomi", "textures/abilities/bomu/blast_jump.png"))
                 .build();
     }
 }

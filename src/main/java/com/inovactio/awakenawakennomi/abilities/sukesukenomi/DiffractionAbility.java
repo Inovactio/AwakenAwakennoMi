@@ -118,7 +118,7 @@ public class DiffractionAbility extends Ability implements IAwakenable {
 
     static {
         INSTANCE = new AbilityCore.Builder<>("Diffraction", AbilityCategory.DEVIL_FRUITS, DiffractionAbility::new)
-                .setUnlockCheck(AwakenSukePunchAbility::canUnlock)
+                .setUnlockCheck(InvisibleTouchAbility::canUnlock)
                 .addDescriptionLine(DESCRIPTION)
                 .addAdvancedDescriptionLine(AbilityDescriptionLine.NEW_LINE, CooldownComponent.getTooltip(COOLDOWN))
                 .addAdvancedDescriptionLine(ChargeComponent.getTooltip(CHARGE_TIME))

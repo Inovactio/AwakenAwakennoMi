@@ -12,7 +12,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import xyz.pixelatedw.mineminenomi.api.abilities.*;
-import xyz.pixelatedw.mineminenomi.api.abilities.components.AbilityComponent;
 import xyz.pixelatedw.mineminenomi.api.abilities.components.ContinuousComponent;
 import xyz.pixelatedw.mineminenomi.api.abilities.components.SkinOverlayComponent;
 import xyz.pixelatedw.mineminenomi.api.helpers.AbilityHelper;
@@ -22,13 +21,13 @@ import net.minecraft.util.ResourceLocation;
 
 import java.util.function.Predicate;
 
-public class AwakenSukePunchAbility extends BlockUseAbility implements IAwakenable {
+public class InvisibleTouchAbility extends BlockUseAbility implements IAwakenable {
 
     private static final ITextComponent[] DESCRIPTION =
-            AbilityHelper.registerDescriptionText("awakenawakennomi", "awaken_suke_punch",
+            AbilityHelper.registerDescriptionText("awakenawakennomi", "invisible_touch",
                     ImmutablePair.of("Turns a block invisible after hitting it.", null));
 
-    public static final AbilityCore<AwakenSukePunchAbility> INSTANCE;
+    public static final AbilityCore<InvisibleTouchAbility> INSTANCE;
 
     private static final AbilityOverlay OVERLAY =
             new AbilityOverlay.Builder()
@@ -38,7 +37,7 @@ public class AwakenSukePunchAbility extends BlockUseAbility implements IAwakenab
 
     private final SkinOverlayComponent skinOverlayComponent;
 
-    public AwakenSukePunchAbility(AbilityCore<AwakenSukePunchAbility> core) {
+    public InvisibleTouchAbility(AbilityCore<InvisibleTouchAbility> core) {
         super(core);
         this.skinOverlayComponent = new SkinOverlayComponent(this, OVERLAY);
         super.continuousComponent
@@ -108,14 +107,14 @@ public class AwakenSukePunchAbility extends BlockUseAbility implements IAwakenab
     }
 
     static {
-        INSTANCE = new AbilityCore.Builder<AwakenSukePunchAbility>("Awaken Suke Punch", AbilityCategory.DEVIL_FRUITS, AwakenSukePunchAbility::new)
-                .setUnlockCheck(AwakenSukePunchAbility::canUnlock)
+        INSTANCE = new AbilityCore.Builder<InvisibleTouchAbility>("Invisible Touch", AbilityCategory.DEVIL_FRUITS, InvisibleTouchAbility::new)
+                .setUnlockCheck(InvisibleTouchAbility::canUnlock)
                 .addDescriptionLine(DESCRIPTION)
                 .addAdvancedDescriptionLine(new AbilityDescriptionLine.IDescriptionLine[]{
                         AbilityDescriptionLine.NEW_LINE,
                         ContinuousComponent.getTooltip()
                 })
-                .setIcon(new ResourceLocation("awakenawakennomi", "textures/abilities/suke/awaken_suke_punch.png"))
+                .setIcon(new ResourceLocation("awakenawakennomi", "textures/abilities/suke/invisible_touch.png"))
                 .build();
     }
 }

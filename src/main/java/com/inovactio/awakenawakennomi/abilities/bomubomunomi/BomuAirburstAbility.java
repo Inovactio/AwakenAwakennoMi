@@ -21,13 +21,13 @@ import xyz.pixelatedw.mineminenomi.init.ModAbilities;
 
 import java.util.Random;
 
-public class AwakenBomuAirburstAbility extends Ability implements IAwakenable {
+public class BomuAirburstAbility extends Ability implements IAwakenable {
 
     private static final ITextComponent[] DESCRIPTION =
-            AbilityHelper.registerDescriptionText("awakenawakennomi", "awaken_bomu_airburst",
+            AbilityHelper.registerDescriptionText("awakenawakennomi", "airburst",
                     ImmutablePair.of("Creates explosive bursts of air around the user.", null));
 
-    public static final AbilityCore<AwakenBomuAirburstAbility> INSTANCE;
+    public static final AbilityCore<BomuAirburstAbility> INSTANCE;
 
     // Parameters
     private static final int TICK_INTERVAL = 20; // ticks between checks
@@ -44,7 +44,7 @@ public class AwakenBomuAirburstAbility extends Ability implements IAwakenable {
 
     private final Random random = new Random();
 
-    public AwakenBomuAirburstAbility(AbilityCore<AwakenBomuAirburstAbility> core) {
+    public BomuAirburstAbility(AbilityCore<BomuAirburstAbility> core) {
         super(core);
         this.isNew = true;
         this.addComponents(this.continuousComponent);
@@ -109,13 +109,13 @@ public class AwakenBomuAirburstAbility extends Ability implements IAwakenable {
     }
 
     static {
-        INSTANCE = new AbilityCore.Builder<>("Awaken Bomu Airburst", AbilityCategory.DEVIL_FRUITS, AwakenBomuAirburstAbility::new)
-                .setUnlockCheck(AwakenBomuAirburstAbility::canUnlock)
+        INSTANCE = new AbilityCore.Builder<>("Airburst", AbilityCategory.DEVIL_FRUITS, BomuAirburstAbility::new)
+                .setUnlockCheck(BomuAirburstAbility::canUnlock)
                 .addDescriptionLine(DESCRIPTION)
                 .addAdvancedDescriptionLine(new AbilityDescriptionLine.IDescriptionLine[]{AbilityDescriptionLine.NEW_LINE, CooldownComponent.getTooltip(600.0F)})
                 .addAdvancedDescriptionLine(ToolTipHelper.getExplosionTooltips((int)POWER, (int)EXPLOSION_SIZE, (int)STATIC_DAMAGE))
                 .setSourceElement(SourceElement.EXPLOSION)
-                .setIcon(new ResourceLocation("awakenawakennomi", "textures/abilities/awaken_bomu_airburst.png"))
+                .setIcon(new ResourceLocation("awakenawakennomi", "textures/abilities/bomu/airburst.png"))
                 .build();
     }
 }

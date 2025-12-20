@@ -33,13 +33,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-public class AwakenSukeInvisibleZoneAbility extends GroundAbility implements IAwakenable {
+public class InvisibleZoneAbility extends GroundAbility implements IAwakenable {
 
     private static final ITextComponent[] DESCRIPTION =
-            AbilityHelper.registerDescriptionText("awakenawakennomi", "awaken_suke_invisible_zone",
-                    ImmutablePair.of("Crée une zone sphérique où les blocs deviennent invisibles progressivement.", null));
+            AbilityHelper.registerDescriptionText("awakenawakennomi", "invisible_zone",
+                    ImmutablePair.of("Creates an invisible zone that spreads invisibility to nearby blocks.", null));
 
-    public static final AbilityCore<AwakenSukeInvisibleZoneAbility> INSTANCE;
+    public static final AbilityCore<InvisibleZoneAbility> INSTANCE;
     private static final TargetsPredicate TARGETS_CHECK = (new TargetsPredicate()).testFriendlyFaction();
     private static final int CHARGE_TIME = 600;
     private static final int COOLDOWN_BASE = 200;            // cooldown minimal
@@ -76,7 +76,7 @@ public class AwakenSukeInvisibleZoneAbility extends GroundAbility implements IAw
     private boolean requestedStartContinuity = false;
     private boolean requestedKeepPartial = false;
 
-    public AwakenSukeInvisibleZoneAbility(AbilityCore<AwakenSukeInvisibleZoneAbility> core) {
+    public InvisibleZoneAbility(AbilityCore<InvisibleZoneAbility> core) {
         super(core);
         this.isNew = true;
         // ajouter animationComponent aux composants
@@ -398,11 +398,11 @@ public class AwakenSukeInvisibleZoneAbility extends GroundAbility implements IAw
 
     static {
         INSTANCE = new AbilityCore.Builder<>(
-                "Awaken Suke Invisible Zone", AbilityCategory.DEVIL_FRUITS, AwakenSukeInvisibleZoneAbility::new)
-                .setUnlockCheck(AwakenSukeInvisibleZoneAbility::canUnlock)
+                "Invisible Zone", AbilityCategory.DEVIL_FRUITS, InvisibleZoneAbility::new)
+                .setUnlockCheck(InvisibleZoneAbility::canUnlock)
                 .addDescriptionLine(DESCRIPTION)
                 .addAdvancedDescriptionLine()
-                .setIcon(new net.minecraft.util.ResourceLocation("awakenawakennomi", "textures/abilities/suke/awaken_suke_invisible_zone.png"))
+                .setIcon(new net.minecraft.util.ResourceLocation("awakenawakennomi", "textures/abilities/suke/invisible_zone.png"))
                 .build();
     }
 }
