@@ -1,7 +1,5 @@
 package com.inovactio.awakenawakennomi.abilities.bomubomunomi;
 
-import com.inovactio.awakenawakennomi.abilities.sukesukenomi.AwakenSukeDiffractionAbility;
-import com.inovactio.awakenawakennomi.abilities.sukesukenomi.AwakenSukePunchAbility;
 import com.inovactio.awakenawakennomi.api.abilities.IAwakenable;
 import com.inovactio.awakenawakennomi.entities.projectiles.bomu.PiercingBlastProjectile;
 import com.inovactio.awakenawakennomi.util.InoHelper;
@@ -10,11 +8,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import xyz.pixelatedw.mineminenomi.abilities.goro.ElThorAbility;
 import xyz.pixelatedw.mineminenomi.api.abilities.*;
 import xyz.pixelatedw.mineminenomi.api.abilities.components.AnimationComponent;
 import xyz.pixelatedw.mineminenomi.api.abilities.components.ChargeComponent;
@@ -23,16 +18,10 @@ import xyz.pixelatedw.mineminenomi.api.abilities.components.ProjectileComponent;
 import xyz.pixelatedw.mineminenomi.api.damagesource.SourceElement;
 import xyz.pixelatedw.mineminenomi.api.damagesource.SourceHakiNature;
 import xyz.pixelatedw.mineminenomi.api.helpers.AbilityHelper;
-import xyz.pixelatedw.mineminenomi.api.math.VectorHelper;
 import xyz.pixelatedw.mineminenomi.data.entity.devilfruit.DevilFruitCapability;
-import xyz.pixelatedw.mineminenomi.entities.projectiles.goro.LightningEntity;
-import xyz.pixelatedw.mineminenomi.entities.projectiles.pika.AmaterasuProjectile;
 import xyz.pixelatedw.mineminenomi.init.ModAbilities;
 import xyz.pixelatedw.mineminenomi.init.ModAnimations;
-import xyz.pixelatedw.mineminenomi.init.ModParticleEffects;
 import xyz.pixelatedw.mineminenomi.init.ModSounds;
-import xyz.pixelatedw.mineminenomi.particles.effects.ParticleEffect;
-import xyz.pixelatedw.mineminenomi.wypi.WyHelper;
 
 public class AwakenPiercingBlast extends Ability implements IAwakenable {
 

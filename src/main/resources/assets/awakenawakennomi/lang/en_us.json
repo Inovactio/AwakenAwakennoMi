@@ -1,7 +1,7 @@
 {
-  "ability.mineminenomi.awakensukeinvisiblezone": "Awaken Suke Invisible Zone",
-  "ability.mineminenomi.awakensukepunch": "Awaken Suke Punch",
-  "ability.mineminenomi.awaken_suke_diffraction": "Awaken Suke Diffraction",
+  "ability.mineminenomi.awaken_suke_invisible_zone": "Awaken Suke Invisible Zone",
+  "ability.mineminenomi.awaken_suke_punch": "Awaken Suke Punch",
+  "ability.mineminenomi.diffraction": "Diffraction",
   "ability.mineminenomi.awaken_bomu_airburst": "Awaken Bomu Airburst",
   "ability.mineminenomi.awaken_blast_jump": "Awaken Blast Jump",
   "ability.mineminenomi.awaken_piercing_blast": "Awaken Piercing Blast",
@@ -11,7 +11,7 @@
 
   "ability.awakenawakennomi.awaken_suke_invisible_zone.description.0": "Creates a spherical zone where blocks gradually become invisible for nearby observers.",
   "ability.awakenawakennomi.awaken_suke_punch.description.0": "Turns a targeted block invisible after hitting it.",
-  "ability.awakenawakennomi.awaken_suke_diffraction.description.0": "Diffract light to fire seven powerful rainbow explosions after a 5s channel.",
+  "ability.awakenawakennomi.diffraction.description.0": "Diffract light to fire seven powerful rainbow explosions after a 5s channel.",
   "ability.awakenawakennomi.awaken_bomu_airburst.description.0": "Creates explosive bursts of air around the user for 30 seconds; non-destructive to blocks.",
   "ability.awakenawakennomi.awaken_blast_jump.description.0": "The user detonates an explosion beneath their feet, launching themselves high into the air.",
   "ability.awakenawakennomi.awaken_piercing_blast.description.0": "The user compresses air into a focused laser that pierces the target and detonates inside them, causing devastating internal damage.",

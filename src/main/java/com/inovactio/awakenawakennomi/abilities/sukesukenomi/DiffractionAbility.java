@@ -16,15 +16,15 @@ import xyz.pixelatedw.mineminenomi.data.entity.devilfruit.DevilFruitCapability;
 import xyz.pixelatedw.mineminenomi.init.ModAbilities;
 import xyz.pixelatedw.mineminenomi.init.ModSounds;
 
-public class AwakenSukeDiffractionAbility extends Ability implements IAwakenable {
+public class DiffractionAbility extends Ability implements IAwakenable {
 
-    private static final ITextComponent[] DESCRIPTION = AbilityHelper.registerDescriptionText("awakenawakennomi", "awaken_suke_diffraction",
-            ImmutablePair.of("Awaken Diffraction (placeholder)", null));
+    private static final ITextComponent[] DESCRIPTION = AbilityHelper.registerDescriptionText("awakenawakennomi", "diffraction",
+            ImmutablePair.of("Diffraction (placeholder)", null));
     private static final float COOLDOWN = 200.0F;
     private static final float PROJECTILE_SPEED = 3.0F;
     private static final float PROJECTILE_INACCURACY = 0.25F;
     private static final int CHARGE_TIME = 25;
-    public static final AbilityCore<AwakenSukeDiffractionAbility> INSTANCE;
+    public static final AbilityCore<DiffractionAbility> INSTANCE;
     private final ChargeComponent chargeComponent = (new ChargeComponent(this)).addEndEvent(this::stopChargeEvent);
     private final ContinuousComponent continuousComponent = (new ContinuousComponent(this, true)).addStartEvent(this::onContinuityStart);
     private final RepeaterComponent repeaterComponent = (new RepeaterComponent(this)).addTriggerEvent(this::onRepeaterTrigger).addStopEvent(this::onRepeaterStop);
@@ -38,11 +38,11 @@ public class AwakenSukeDiffractionAbility extends Ability implements IAwakenable
 
     // functional interface to create projectiles while capturing 'this'
     private interface ProjectileFactory {
-        DiffractionProjectile create(LivingEntity entity, AwakenSukeDiffractionAbility ability);
+        DiffractionProjectile create(LivingEntity entity, DiffractionAbility ability);
     }
 
     @SuppressWarnings("deprecation")
-    public AwakenSukeDiffractionAbility(AbilityCore<AwakenSukeDiffractionAbility> core) {
+    public DiffractionAbility(AbilityCore<DiffractionAbility> core) {
         super(core);
         this.isNew = true;
         this.addComponents(this.chargeComponent, this.continuousComponent, this.repeaterComponent, this.projectileComponent);
@@ -117,7 +117,7 @@ public class AwakenSukeDiffractionAbility extends Ability implements IAwakenable
     }
 
     static {
-        INSTANCE = new AbilityCore.Builder<>("Awaken Suke Diffraction", AbilityCategory.DEVIL_FRUITS, AwakenSukeDiffractionAbility::new)
+        INSTANCE = new AbilityCore.Builder<>("Diffraction", AbilityCategory.DEVIL_FRUITS, DiffractionAbility::new)
                 .setUnlockCheck(AwakenSukePunchAbility::canUnlock)
                 .addDescriptionLine(DESCRIPTION)
                 .addAdvancedDescriptionLine(AbilityDescriptionLine.NEW_LINE, CooldownComponent.getTooltip(COOLDOWN))
@@ -125,7 +125,7 @@ public class AwakenSukeDiffractionAbility extends Ability implements IAwakenable
                 .addAdvancedDescriptionLine(ProjectileComponent.getProjectileTooltips())
                 .setSourceHakiNature(SourceHakiNature.SPECIAL)
                 .setSourceElement(SourceElement.LIGHT)
-                .setIcon(new ResourceLocation("awakenawakennomi", "textures/abilities/awaken_suke_diffraction.png"))
+                .setIcon(new ResourceLocation("awakenawakennomi", "textures/abilities/suke/diffraction.png"))
                 .build();
     }
 }
