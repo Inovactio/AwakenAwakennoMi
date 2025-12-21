@@ -7,6 +7,7 @@ import com.inovactio.awakenawakennomi.init.ModMorphs;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.ForgeMod;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -69,6 +70,7 @@ public class AwakenKameWalkPointAbility extends AwakenZoanAbility implements IAw
                 .setUnlockCheck(AwakenKameWalkPointAbility::canUnlock)
                 .addDescriptionLine(DESCRIPTION)
                 .addAdvancedDescriptionLine(new AbilityDescriptionLine.IDescriptionLine[]{AbilityDescriptionLine.NEW_LINE, ContinuousComponent.getTooltip(), ChangeStatsComponent.getTooltip()})
+                .setIcon(new ResourceLocation("awakenawakennomi", "textures/abilities/kame/awaken_kame_walk_point.png"))
                 .build();
         SPEED_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_MOVEMENT_SPEED_UUID, INSTANCE, "Awaken Kame Walk Point Modifier", (double)0.5F, AttributeModifier.Operation.MULTIPLY_TOTAL);
         ARMOR_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_ARMOR_UUID, INSTANCE, "Awaken Kame Walk Point Modifier", (double)30.0F, AttributeModifier.Operation.ADDITION);
