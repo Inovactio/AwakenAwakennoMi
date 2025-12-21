@@ -8,6 +8,7 @@
   "ability.mineminenomi.titan": "Titan",
   "ability.mineminenomi.titan_trample": "Titan Trample",
   "ability.mineminenomi.titan_smash": "Titan Smash",
+  "ability.mineminenomi.awaken_human_form": "Awaken Human Form",
 
   "ability.awakenawakennomi.invisible_zone.description.0": "Creates an invisible zone that spreads invisibility to nearby blocks.",
   "ability.awakenawakennomi.invisible_touch.description.0": "Turns a targeted block invisible after hitting it.",
@@ -18,6 +19,7 @@
   "ability.awakenawakennomi.titan.description.0": "Allows the user to increase their size to that of a titan.",
   "ability.awakenawakennomi.titan_trample.description.0": "Running speed increases with acceleration trampling any nearby entity.",
   "ability.awakenawakennomi.titan_smash.description.0": "Allows the user to smash as a Titan.",
+  "ability.awakenawakennomi.awaken_human_form.description.0": "Transforms the user into a awaken human, increasing its strength.",
 
   "awakenawakennomi.ability.ground_only": "You must be on the ground to use this ability.",
 

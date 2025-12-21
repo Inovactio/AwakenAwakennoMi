@@ -40,18 +40,17 @@ public class TitanAbility extends MorphAbility2 implements IAwakenable {
     public TitanAbility(AbilityCore<TitanAbility> core) {
         super(core);
         this.isNew = true;
-        Predicate<LivingEntity> isActive = (entity) -> this.morphComponent.isMorphed();
-        this.statsComponent.addAttributeModifier(Attributes.MAX_HEALTH, HEALTH_MODIFIER,isActive);
-        this.statsComponent.addAttributeModifier(Attributes.MOVEMENT_SPEED, SPEED_MODIFIER,isActive);
-        this.statsComponent.addAttributeModifier(ModAttributes.JUMP_HEIGHT, JUMP_MODIFIER,isActive);
-        this.statsComponent.addAttributeModifier(Attributes.ARMOR, ARMOR_MODIFIER,isActive);
-        this.statsComponent.addAttributeModifier(ModAttributes.PUNCH_DAMAGE, STRENGTH_MODIFIER,isActive);
-        this.statsComponent.addAttributeModifier(ForgeMod.REACH_DISTANCE, REACH_MODIFIER,isActive);
-        this.statsComponent.addAttributeModifier(ModAttributes.ATTACK_RANGE, REACH_MODIFIER,isActive);
-        this.statsComponent.addAttributeModifier(ModAttributes.STEP_HEIGHT, STEP_HEIGHT,isActive);
-        this.statsComponent.addAttributeModifier(Attributes.KNOCKBACK_RESISTANCE, KNOCKBACK_RESISTANCE,isActive);
-        this.statsComponent.addAttributeModifier(ModAttributes.FALL_RESISTANCE, FALL_RESISTANCE_MODIFIER,isActive);
-        this.statsComponent.addAttributeModifier(ModAttributes.TOUGHNESS, TOUGHNESS_MODIFIER,isActive);
+        this.statsComponent.addAttributeModifier(Attributes.MAX_HEALTH, HEALTH_MODIFIER);
+        this.statsComponent.addAttributeModifier(Attributes.MOVEMENT_SPEED, SPEED_MODIFIER);
+        this.statsComponent.addAttributeModifier(ModAttributes.JUMP_HEIGHT, JUMP_MODIFIER);
+        this.statsComponent.addAttributeModifier(Attributes.ARMOR, ARMOR_MODIFIER);
+        this.statsComponent.addAttributeModifier(ModAttributes.PUNCH_DAMAGE, STRENGTH_MODIFIER);
+        this.statsComponent.addAttributeModifier(ForgeMod.REACH_DISTANCE, REACH_MODIFIER);
+        this.statsComponent.addAttributeModifier(ModAttributes.ATTACK_RANGE, REACH_MODIFIER);
+        this.statsComponent.addAttributeModifier(ModAttributes.STEP_HEIGHT, STEP_HEIGHT);
+        this.statsComponent.addAttributeModifier(Attributes.KNOCKBACK_RESISTANCE, KNOCKBACK_RESISTANCE);
+        this.statsComponent.addAttributeModifier(ModAttributes.FALL_RESISTANCE, FALL_RESISTANCE_MODIFIER);
+        this.statsComponent.addAttributeModifier(ModAttributes.TOUGHNESS, TOUGHNESS_MODIFIER);
     }
 
     private static boolean canUnlock(LivingEntity user) {
