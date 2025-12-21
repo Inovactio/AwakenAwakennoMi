@@ -2,7 +2,7 @@ package com.inovactio.awakenawakennomi.abilities.hitohitonomi;
 
 import com.inovactio.awakenawakennomi.api.abilities.AwakenZoanAbility;
 import com.inovactio.awakenawakennomi.api.abilities.IAwakenable;
-import com.inovactio.awakenawakennomi.renderers.layers.AwakenZoanSmokeLayer;
+import com.inovactio.awakenawakennomi.init.ModMorphs;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
@@ -16,12 +16,12 @@ import xyz.pixelatedw.mineminenomi.api.damagesource.SourceElement;
 import xyz.pixelatedw.mineminenomi.api.damagesource.SourceHakiNature;
 import xyz.pixelatedw.mineminenomi.api.helpers.AbilityHelper;
 import xyz.pixelatedw.mineminenomi.api.helpers.AttributeHelper;
+import xyz.pixelatedw.mineminenomi.api.morph.MorphInfo;
 import xyz.pixelatedw.mineminenomi.data.entity.devilfruit.DevilFruitCapability;
 import xyz.pixelatedw.mineminenomi.init.ModAbilities;
 import xyz.pixelatedw.mineminenomi.init.ModAttributes;
-import xyz.pixelatedw.mineminenomi.wypi.WyHelper;
 
-import java.awt.*;
+import java.util.function.Predicate;
 
 public class AwakenHumanFormAbility extends AwakenZoanAbility implements IAwakenable {
 
@@ -40,13 +40,10 @@ public class AwakenHumanFormAbility extends AwakenZoanAbility implements IAwaken
     private static final AbilityAttributeModifier STEP_HEIGHT_MODIFIER;
     private static final AbilityAttributeModifier FALL_RESISTANCE_MODIFIER;
     private static final AbilityAttributeModifier TOUGHNESS_MODIFIER;
-    private final ContinuousComponent continuousComponent = (new ContinuousComponent(this, true)).addStartEvent(this::startContinuityEvent).addEndEvent(this::endContinuityEvent);
-    private final ChangeStatsComponent statsComponent = new ChangeStatsComponent(this);
+    private static final AbilityAttributeModifier REACH_MODIFIER;
 
-    public AwakenHumanFormAbility(AbilityCore core){
+    public AwakenHumanFormAbility(AbilityCore<AwakenHumanFormAbility> core){
         super(core);
-        this.isNew = true;
-        this.addComponents(new AbilityComponent[]{this.continuousComponent, this.statsComponent});
         this.statsComponent.addAttributeModifier(Attributes.MOVEMENT_SPEED, SPEED_MODIFIER);
         this.statsComponent.addAttributeModifier(ModAttributes.PUNCH_DAMAGE, STRENGTH_MODIFIER);
         this.statsComponent.addAttributeModifier(Attributes.ATTACK_SPEED, ATTACK_SPEED_MODIFIER);
@@ -59,24 +56,13 @@ public class AwakenHumanFormAbility extends AwakenZoanAbility implements IAwaken
         this.statsComponent.addAttributeModifier(ModAttributes.STEP_HEIGHT, STEP_HEIGHT_MODIFIER);
         this.statsComponent.addAttributeModifier(ModAttributes.FALL_RESISTANCE, FALL_RESISTANCE_MODIFIER);
         this.statsComponent.addAttributeModifier(ModAttributes.TOUGHNESS, TOUGHNESS_MODIFIER);
-        this.addUseEvent(this::useEvent);
+        this.statsComponent.addAttributeModifier(ForgeMod.REACH_DISTANCE, REACH_MODIFIER);
+        this.statsComponent.addAttributeModifier(ModAttributes.ATTACK_RANGE, REACH_MODIFIER);
     }
 
-    private void useEvent(LivingEntity entity, IAbility ability) {
-        if(continuousComponent.isContinuous()){
-            continuousComponent.stopContinuity(entity);
-        }else{
-            this.continuousComponent.triggerContinuity(entity, -1);
-        }
-
-    }
-
-    private void startContinuityEvent(LivingEntity entity, IAbility ability) {
-        this.statsComponent.applyModifiers(entity);
-    }
-
-    private void endContinuityEvent(LivingEntity entity, IAbility ability) {
-        this.statsComponent.removeModifiers(entity);
+    @Override
+    public MorphInfo getTransformation() {
+        return ModMorphs.AWAKEN_HUMAN.get();
     }
 
     protected static boolean canUnlock(LivingEntity user) {
@@ -90,16 +76,14 @@ public class AwakenHumanFormAbility extends AwakenZoanAbility implements IAwaken
     }
 
     static {
-        INSTANCE = new AbilityCore.Builder<>("Awaken Human Form", AbilityCategory.DEVIL_FRUITS, AwakenHumanFormAbility::new)
+        INSTANCE = new AbilityCore.Builder<AwakenHumanFormAbility>("Awaken Human Form", AbilityCategory.DEVIL_FRUITS, AwakenHumanFormAbility::new)
                 .setUnlockCheck(AwakenHumanFormAbility::canUnlock)
                 .addDescriptionLine(DESCRIPTION)
-                .addAdvancedDescriptionLine(new AbilityDescriptionLine.IDescriptionLine[]{AbilityDescriptionLine.NEW_LINE, CooldownComponent.getTooltip(10.0F), ContinuousComponent.getTooltip(), ChangeStatsComponent.getTooltip()})
-                .setSourceHakiNature(SourceHakiNature.SPECIAL)
-                .setSourceElement(SourceElement.LIGHT)
+                .addAdvancedDescriptionLine(new AbilityDescriptionLine.IDescriptionLine[]{AbilityDescriptionLine.NEW_LINE, ChangeStatsComponent.getTooltip()})
                 .setIcon(new ResourceLocation("awakenawakennomi", "textures/abilities/hito/awaken_human_form.png"))
                 .build();
-        SPEED_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_MOVEMENT_SPEED_UUID, INSTANCE, "Awaken Human Point Speed Modifier", (double)1F, AttributeModifier.Operation.MULTIPLY_BASE);
-        JUMP_BOOST_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_JUMP_BOOST_UUID, INSTANCE, "Awaken Human Jump Modifier", (double)6.0F, AttributeModifier.Operation.MULTIPLY_BASE);
+        SPEED_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_MOVEMENT_SPEED_UUID, INSTANCE, "Awaken Human Point Speed Modifier", (double)2F, AttributeModifier.Operation.MULTIPLY_TOTAL);
+        JUMP_BOOST_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_JUMP_BOOST_UUID, INSTANCE, "Awaken Human Jump Modifier", (double)6.0F, AttributeModifier.Operation.MULTIPLY_TOTAL);
         STRENGTH_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_STRENGTH_UUID, INSTANCE, "Awaken Human Strength Modifier", (double)10.0F, AttributeModifier.Operation.ADDITION);
         ATTACK_SPEED_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_ATTACK_SPEED_UUID, INSTANCE, "Awaken Human Attack Speed Modifier", (double)0.5F, AttributeModifier.Operation.MULTIPLY_BASE);
         ARMOR_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_ARMOR_UUID, INSTANCE, "Awaken Human Armor Modifier", (double)20.0F, AttributeModifier.Operation.ADDITION);
@@ -110,5 +94,6 @@ public class AwakenHumanFormAbility extends AwakenZoanAbility implements IAwaken
         STEP_HEIGHT_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_STEP_HEIGHT_UUID, INSTANCE, "Awaken Human Modifier", (double)1F, AttributeModifier.Operation.ADDITION);
         FALL_RESISTANCE_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_FALL_RESISTANCE_UUID, INSTANCE, "Awaken Human Fall Resistance Modifier", (double)14.0F, AttributeModifier.Operation.ADDITION);
         TOUGHNESS_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_TOUGHNESS_UUID, INSTANCE, "Awaken Human Toughness Modifier", (double)6.0F, AttributeModifier.Operation.ADDITION);
+        REACH_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_ATTACK_REACH_UUID, INSTANCE, "Awaken Human Reach Modifier", (double)0.25F, AttributeModifier.Operation.MULTIPLY_TOTAL);
     }
 }
