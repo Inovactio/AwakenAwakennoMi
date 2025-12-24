@@ -11,6 +11,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.ForgeMod;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import xyz.pixelatedw.mineminenomi.abilities.gomu.GomuGomuNoPistolAbility;
 import xyz.pixelatedw.mineminenomi.api.abilities.*;
 import xyz.pixelatedw.mineminenomi.api.abilities.components.ChangeStatsComponent;
 import xyz.pixelatedw.mineminenomi.api.abilities.components.ContinuousComponent;
@@ -18,6 +19,8 @@ import xyz.pixelatedw.mineminenomi.api.abilities.components.CooldownComponent;
 import xyz.pixelatedw.mineminenomi.api.helpers.AbilityHelper;
 import xyz.pixelatedw.mineminenomi.api.helpers.AttributeHelper;
 import xyz.pixelatedw.mineminenomi.api.morph.MorphInfo;
+import xyz.pixelatedw.mineminenomi.data.entity.ability.AbilityDataCapability;
+import xyz.pixelatedw.mineminenomi.data.entity.ability.IAbilityData;
 import xyz.pixelatedw.mineminenomi.data.entity.devilfruit.DevilFruitCapability;
 import xyz.pixelatedw.mineminenomi.init.ModAbilities;
 import xyz.pixelatedw.mineminenomi.init.ModAttributes;
@@ -57,6 +60,23 @@ public class AwakenGiraffeHeavyPointAbility extends AwakenZoanAbility implements
     protected static boolean canUnlock(LivingEntity user) {
         return DevilFruitCapability.get(user).hasAwakenedFruit()
                 && DevilFruitCapability.get(user).hasDevilFruit(ModAbilities.USHI_USHI_NO_MI_GIRAFFE);
+    }
+
+    @Override
+    protected void startContinuityEvent(LivingEntity entity, IAbility ability) {
+        super.startContinuityEvent(entity, ability);
+        IAbilityData props = AbilityDataCapability.get(entity);
+        ReworkedBiganAbility bigan = props.getEquippedAbility(ReworkedBiganAbility.INSTANCE);
+        if (bigan != null) bigan.switchAwakenHeavyPoint(entity);
+
+    }
+
+    @Override
+    protected void stopContinuityEvent(LivingEntity entity, IAbility ability) {
+        super.stopContinuityEvent(entity, ability);
+        IAbilityData props = AbilityDataCapability.get(entity);
+        ReworkedBiganAbility bigan = props.getEquippedAbility(ReworkedBiganAbility.INSTANCE);
+        if (bigan != null) bigan.switchNoPoint(entity);
     }
 
     @Override
