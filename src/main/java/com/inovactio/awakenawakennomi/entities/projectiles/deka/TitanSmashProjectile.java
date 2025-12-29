@@ -1,5 +1,6 @@
 package com.inovactio.awakenawakennomi.entities.projectiles.deka;
 
+import com.inovactio.awakenawakennomi.abilities.dekadekanomi.TitanSmashAbility;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.BlockPos;
@@ -22,7 +23,7 @@ public class TitanSmashProjectile extends AbilityProjectileEntity {
     }
 
     public TitanSmashProjectile(World world, LivingEntity player) {
-        super((EntityType) DekaProjectiles.TIMAN_SMASH.get(), world, player, AmaterasuAbility.INSTANCE);
+        super((EntityType) DekaProjectiles.TIMAN_SMASH.get(), world, player, TitanSmashAbility.INSTANCE);
         this.setDamage(DAMAGE);
         this.setPassThroughEntities();
         super.setFist();
