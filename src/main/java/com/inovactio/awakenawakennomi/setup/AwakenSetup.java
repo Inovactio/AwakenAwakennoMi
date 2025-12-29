@@ -1,5 +1,6 @@
 package com.inovactio.awakenawakennomi.setup;
 
+import com.inovactio.awakenawakennomi.init.ModI18nConfig;
 import com.inovactio.awakenawakennomi.renderers.layers.AwakenZoanSmokeLayer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -23,6 +24,7 @@ public class AwakenSetup {
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     public static void clientSetup(FMLClientSetupEvent event) {
+        ModI18nConfig.init();
         event.enqueueWork(() -> {
             Minecraft mc = Minecraft.getInstance();
 
