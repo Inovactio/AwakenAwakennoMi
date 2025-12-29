@@ -7,6 +7,7 @@ import com.inovactio.awakenawakennomi.init.ModMorphs;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.ForgeMod;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -26,7 +27,7 @@ import xyz.pixelatedw.mineminenomi.init.ModAbilities;
 import xyz.pixelatedw.mineminenomi.init.ModAttributes;
 
 public class AwakenGiraffeHeavyPointAbility extends AwakenZoanAbility implements IAwakenable {
-    private static final ITextComponent[] DESCRIPTION = AbilityHelper.registerDescriptionText("mineminenomi", "awaken_giraffe_heavy_point", new Pair[]{ImmutablePair.of("Transforms the user into a half-giraffe hybrid, which focuses on strength.", (Object)null)});
+    private static final ITextComponent[] DESCRIPTION = AbilityHelper.registerDescriptionText("awakenawakennomi", "awaken_giraffe_heavy_point", new Pair[]{ImmutablePair.of("Transforms the user into a half-giraffe hybrid, which focuses on strength.", (Object)null)});
     public static final AbilityCore<AwakenGiraffeHeavyPointAbility> INSTANCE;
     private static final AbilityAttributeModifier SPEED_MODIFIER;
     private static final AbilityAttributeModifier JUMP_BOOST_MODIFIER;
@@ -87,17 +88,18 @@ public class AwakenGiraffeHeavyPointAbility extends AwakenZoanAbility implements
     static {
         INSTANCE = new AbilityCore.Builder<>("Awaken Giraffe Heavy Point", AbilityCategory.DEVIL_FRUITS, AwakenGiraffeHeavyPointAbility::new)
                 .setUnlockCheck(AwakenGiraffeHeavyPointAbility::canUnlock)
+                .setIcon(new ResourceLocation("awakenawakennomi", "textures/abilities/ushi/giraffe/awaken_giraffe_heavy_point.png"))
                 .addDescriptionLine(DESCRIPTION)
                 .addAdvancedDescriptionLine(new AbilityDescriptionLine.IDescriptionLine[]{AbilityDescriptionLine.NEW_LINE, CooldownComponent.getTooltip(10.0F), ContinuousComponent.getTooltip(), ChangeStatsComponent.getTooltip()})
                 .build();
         SPEED_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_MOVEMENT_SPEED_UUID, INSTANCE, "Awaken Giraffe Heavy Point Speed Modifier", (double)1F, AttributeModifier.Operation.MULTIPLY_TOTAL);
         JUMP_BOOST_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_JUMP_BOOST_UUID, INSTANCE, "Awaken Giraffe Heavy Point Jump Modifier", (double)5.0F, AttributeModifier.Operation.ADDITION);
-        STRENGTH_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_STRENGTH_UUID, INSTANCE, "Awaken Giraffe Heavy Point Modifier", (double)10.0F, AttributeModifier.Operation.ADDITION);
-        ATTACK_SPEED_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_ATTACK_SPEED_UUID, INSTANCE, "Awaken Giraffe Heavy Point Modifier", (double)0.15F, AttributeModifier.Operation.ADDITION);
-        REACH_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_ATTACK_REACH_UUID, INSTANCE, "Awaken Giraffe Heavy Point Reach Modifier", (double)6.0F, AttributeModifier.Operation.ADDITION);
+        STRENGTH_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_STRENGTH_UUID, INSTANCE, "Awaken Giraffe Heavy Point Modifier", (double)8.0F, AttributeModifier.Operation.ADDITION);
+        ATTACK_SPEED_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_ATTACK_SPEED_UUID, INSTANCE, "Awaken Giraffe Heavy Point Modifier", (double)0.30F, AttributeModifier.Operation.ADDITION);
+        REACH_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_ATTACK_REACH_UUID, INSTANCE, "Awaken Giraffe Heavy Point Reach Modifier", (double)2.5F, AttributeModifier.Operation.ADDITION);
         ARMOR_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_ARMOR_UUID, INSTANCE, "Awaken Giraffe Heavy Point Modifier", (double)15.0F, AttributeModifier.Operation.ADDITION);
         TOUGHNESS_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_TOUGHNESS_UUID, INSTANCE, "Awaken Giraffe Heavy Point Toughness Modifier", (double)7.5F, AttributeModifier.Operation.ADDITION);
-        FALL_RESISTANCE_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_FALL_RESISTANCE_UUID, INSTANCE, "Awaken Giraffe Heavy Point Fall Resistance Modifier", (double)5F, AttributeModifier.Operation.ADDITION);
-        STEP_HEIGHT_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_STEP_HEIGHT_UUID, INSTANCE, "Awaken Giraffe Heavy Point Fall Resistance Modifier", (double)1F, AttributeModifier.Operation.ADDITION);
+        FALL_RESISTANCE_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_FALL_RESISTANCE_UUID, INSTANCE, "Awaken Giraffe Heavy Point Fall Resistance Modifier", (double)4F, AttributeModifier.Operation.ADDITION);
+        STEP_HEIGHT_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_STEP_HEIGHT_UUID, INSTANCE, "Awaken Giraffe Heavy Point Step Height Modifier", (double)1F, AttributeModifier.Operation.ADDITION);
     }
 }

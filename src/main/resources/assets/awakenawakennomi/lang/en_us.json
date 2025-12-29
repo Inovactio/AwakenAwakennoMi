@@ -11,6 +11,9 @@
   "ability.mineminenomi.awaken_human_form": "Awaken Human Form",
   "ability.mineminenomi.awaken_kame_walk_point": "Awaken Kame Walk Point",
   "ability.mineminenomi.spin": "Spin",
+  "ability.mineminenomi.awaken_giraffe_heavy_point": "Awaken Giraffe Heavy Point",
+  "ability.awakenawakennomi.bigan": "Bigan",
+  "ability.mineminenomi.awaken_bigan": "Awaken Bigan",
 
   "ability.awakenawakennomi.invisible_zone.description.0": "Creates an invisible zone that spreads invisibility to nearby blocks.",
   "ability.awakenawakennomi.invisible_touch.description.0": "Turns a targeted block invisible after hitting it.",
@@ -24,6 +27,8 @@
   "ability.awakenawakennomi.awaken_human_form.description.0": "Transforms the user into a awaken human, increasing its strength.",
   "ability.awakenawakennomi.awaken_kame_walk_point.description.0": "Transforms the user into the awaken version of kame walk point.",
   "ability.awakenawakennomi.spin.description.0": "The user retreats into their shell and spins rapidly, knocking back nearby enemies and deflecting attacks.",
+  "ability.awakenawakennomi.awaken_giraffe_heavy_point.description.0": "Transforms the user into the awaken version of giraffe heavy point.",
+  "ability.awakenawakennomi.reworked_bigan.description.0": "Hits using the hardened giraffe nose.",
 
   "awakenawakennomi.ability.ground_only": "You must be on the ground to use this ability.",
 
