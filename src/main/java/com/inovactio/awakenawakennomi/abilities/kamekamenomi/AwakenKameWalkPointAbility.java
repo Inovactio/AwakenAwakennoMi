@@ -74,11 +74,11 @@ public class AwakenKameWalkPointAbility extends AwakenZoanAbility implements IAw
                 .build();
         SPEED_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_MOVEMENT_SPEED_UUID, INSTANCE, "Awaken Kame Walk Point Modifier", (double)0.5F, AttributeModifier.Operation.MULTIPLY_TOTAL);
         ARMOR_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_ARMOR_UUID, INSTANCE, "Awaken Kame Walk Point Modifier", (double)30.0F, AttributeModifier.Operation.ADDITION);
-        KNOCKBACK_RESISTANCE_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_KNOCKBACK_RESISTANCE_UUID, INSTANCE, "Awaken Kame Walk Point Knockback Resistance Modifier", (double)5.0F, AttributeModifier.Operation.ADDITION);
-        JUMP_BOOST_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_JUMP_BOOST_UUID, INSTANCE, "Awaken Kame Walk Point Jump Modifier", (double)1F, AttributeModifier.Operation.ADDITION);
-        WATER_SPEED_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_SWIM_SPEED_UUID, INSTANCE, "Awaken Kame Walk Point Water Speed Modifier", (double)5.0F, AttributeModifier.Operation.ADDITION);
+        KNOCKBACK_RESISTANCE_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_KNOCKBACK_RESISTANCE_UUID, INSTANCE, "Awaken Kame Walk Point Knockback Resistance Modifier", (double)3.0F, AttributeModifier.Operation.ADDITION);
+        JUMP_BOOST_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_JUMP_BOOST_UUID, INSTANCE, "Awaken Kame Walk Point Jump Modifier", (double)2F, AttributeModifier.Operation.ADDITION);
+        WATER_SPEED_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_SWIM_SPEED_UUID, INSTANCE, "Awaken Kame Walk Point Water Speed Modifier", (double)2.5F, AttributeModifier.Operation.ADDITION);
         TOUGHNESS_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_TOUGHNESS_UUID, INSTANCE, "Awaken Kame Walk Point Toughness Modifier", (double)20.0F, AttributeModifier.Operation.ADDITION);
-        STRENGTH_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_STRENGTH_UUID, INSTANCE, "Awaken Kame Walk Point Strength Modifier", (double)10.0F, AttributeModifier.Operation.ADDITION);
+        STRENGTH_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_STRENGTH_UUID, INSTANCE, "Awaken Kame Walk Point Strength Modifier", (double)6.0F, AttributeModifier.Operation.ADDITION);
 
     }
 }

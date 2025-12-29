@@ -35,7 +35,6 @@ public class AwakenHumanFormAbility extends AwakenZoanAbility implements IAwaken
     private static final AbilityAttributeModifier ARMOR_MODIFIER;
     private static final AbilityAttributeModifier ARMOR_THOUGNESS_MODIFIER;
     private static final AbilityAttributeModifier KNOCKBACK_RESISTANCE_MODIFIER;
-    private static final AbilityAttributeModifier FALL_RESISTENCE_MODIFIER;
     private static final AbilityAttributeModifier HEALTH_BOOST_MODIFIER;
     private static final AbilityAttributeModifier STEP_HEIGHT_MODIFIER;
     private static final AbilityAttributeModifier FALL_RESISTANCE_MODIFIER;
@@ -51,7 +50,6 @@ public class AwakenHumanFormAbility extends AwakenZoanAbility implements IAwaken
         this.statsComponent.addAttributeModifier(Attributes.ARMOR_TOUGHNESS, ARMOR_THOUGNESS_MODIFIER);
         this.statsComponent.addAttributeModifier(Attributes.KNOCKBACK_RESISTANCE, KNOCKBACK_RESISTANCE_MODIFIER);
         this.statsComponent.addAttributeModifier(ModAttributes.JUMP_HEIGHT, JUMP_BOOST_MODIFIER);
-        this.statsComponent.addAttributeModifier(ModAttributes.FALL_RESISTANCE, FALL_RESISTENCE_MODIFIER);
         this.statsComponent.addAttributeModifier(Attributes.MAX_HEALTH, HEALTH_BOOST_MODIFIER);
         this.statsComponent.addAttributeModifier(ModAttributes.STEP_HEIGHT, STEP_HEIGHT_MODIFIER);
         this.statsComponent.addAttributeModifier(ModAttributes.FALL_RESISTANCE, FALL_RESISTANCE_MODIFIER);
@@ -84,15 +82,14 @@ public class AwakenHumanFormAbility extends AwakenZoanAbility implements IAwaken
                 .build();
         SPEED_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_MOVEMENT_SPEED_UUID, INSTANCE, "Awaken Human Point Speed Modifier", (double)2F, AttributeModifier.Operation.MULTIPLY_TOTAL);
         JUMP_BOOST_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_JUMP_BOOST_UUID, INSTANCE, "Awaken Human Jump Modifier", (double)6.0F, AttributeModifier.Operation.MULTIPLY_TOTAL);
-        STRENGTH_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_STRENGTH_UUID, INSTANCE, "Awaken Human Strength Modifier", (double)10.0F, AttributeModifier.Operation.ADDITION);
-        ATTACK_SPEED_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_ATTACK_SPEED_UUID, INSTANCE, "Awaken Human Attack Speed Modifier", (double)0.5F, AttributeModifier.Operation.MULTIPLY_BASE);
+        STRENGTH_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_STRENGTH_UUID, INSTANCE, "Awaken Human Strength Modifier", (double)12.0F, AttributeModifier.Operation.ADDITION);
+        ATTACK_SPEED_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_ATTACK_SPEED_UUID, INSTANCE, "Awaken Human Attack Speed Modifier", (double)0.30F, AttributeModifier.Operation.MULTIPLY_BASE);
         ARMOR_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_ARMOR_UUID, INSTANCE, "Awaken Human Armor Modifier", (double)20.0F, AttributeModifier.Operation.ADDITION);
-        ARMOR_THOUGNESS_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_ARMOR_TOUGHNESS_UUID, INSTANCE, "Awaken Human Armor Thougness Modifier", (double)20.0F, AttributeModifier.Operation.ADDITION);
-        KNOCKBACK_RESISTANCE_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_KNOCKBACK_RESISTANCE_UUID, INSTANCE, "Awaken Human Knockback Resistance Modifier", (double)2.0F, AttributeModifier.Operation.ADDITION);
-        FALL_RESISTENCE_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_FALL_RESISTANCE_UUID, INSTANCE, "Awaken Human Jump Resitance Modifier", (double)30.0F, AttributeModifier.Operation.ADDITION);
+        ARMOR_THOUGNESS_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_ARMOR_TOUGHNESS_UUID, INSTANCE, "Awaken Human Armor Thougness Modifier", (double)10.0F, AttributeModifier.Operation.ADDITION);
+        KNOCKBACK_RESISTANCE_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_KNOCKBACK_RESISTANCE_UUID, INSTANCE, "Awaken Human Knockback Resistance Modifier", (double)1.0F, AttributeModifier.Operation.ADDITION);
         HEALTH_BOOST_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_HEALTH_UUID, INSTANCE, "Awaken Human Health Modifier", (double)0.25F, AttributeModifier.Operation.MULTIPLY_TOTAL);
         STEP_HEIGHT_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_STEP_HEIGHT_UUID, INSTANCE, "Awaken Human Modifier", (double)1F, AttributeModifier.Operation.ADDITION);
-        FALL_RESISTANCE_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_FALL_RESISTANCE_UUID, INSTANCE, "Awaken Human Fall Resistance Modifier", (double)14.0F, AttributeModifier.Operation.ADDITION);
+        FALL_RESISTANCE_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_FALL_RESISTANCE_UUID, INSTANCE, "Awaken Human Fall Resistance Modifier", (double)10.0F, AttributeModifier.Operation.ADDITION);
         TOUGHNESS_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_TOUGHNESS_UUID, INSTANCE, "Awaken Human Toughness Modifier", (double)6.0F, AttributeModifier.Operation.ADDITION);
         REACH_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_ATTACK_REACH_UUID, INSTANCE, "Awaken Human Reach Modifier", (double)0.25F, AttributeModifier.Operation.MULTIPLY_TOTAL);
     }
