@@ -12,7 +12,8 @@
     "AbstractBlockStateMixin",
     "TileEntityRendererDispatcherMixin",
     "BlockShouldRenderMixin",
-    "cartaddon.ReworkAbilitiesMixin"
+    "cartaddon.ReworkAbilitiesMixin",
+    "mineminenomi.abilities.AbilityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

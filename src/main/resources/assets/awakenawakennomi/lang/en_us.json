@@ -14,6 +14,7 @@
   "ability.mineminenomi.awaken_giraffe_heavy_point": "Awaken Giraffe Heavy Point",
   "ability.awakenawakennomi.bigan": "Bigan",
   "ability.mineminenomi.awaken_bigan": "Awaken Bigan",
+  "ability.mineminenomi.awaken_mogu_heavy_point": "Awaken Mogu Heavy Point",
 
   "ability.awakenawakennomi.invisible_zone.description.0": "Creates an invisible zone that spreads invisibility to nearby blocks.",
   "ability.awakenawakennomi.invisible_touch.description.0": "Turns a targeted block invisible after hitting it.",
@@ -29,6 +30,7 @@
   "ability.awakenawakennomi.spin.description.0": "The user retreats into their shell and spins rapidly, knocking back nearby enemies and deflecting attacks.",
   "ability.awakenawakennomi.awaken_giraffe_heavy_point.description.0": "Transforms the user into the awaken version of giraffe heavy point.",
   "ability.awakenawakennomi.reworked_bigan.description.0": "Hits using the hardened giraffe nose.",
+  "ability.awakenawakennomi.awaken_mogu_heavy_point.description.0": "Transforms the user into the awaken version of mogu heavy point.",
 
   "awakenawakennomi.ability.ground_only": "You must be on the ground to use this ability.",
 

@@ -1,13 +1,9 @@
 package com.inovactio.awakenawakennomi.init;
 
-import com.inovactio.awakenawakennomi.entities.morph.AwakenDekaMorphInfo;
-import com.inovactio.awakenawakennomi.entities.morph.AwakenGiraffeHeavyMorphInfo;
-import com.inovactio.awakenawakennomi.entities.morph.AwakenHumanMorphInfo;
-import com.inovactio.awakenawakennomi.entities.morph.AwakenKameWalkMorphInfo;
+import com.inovactio.awakenawakennomi.entities.morph.*;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.RegistryObject;
 import xyz.pixelatedw.mineminenomi.api.morph.MorphInfo;
-import xyz.pixelatedw.mineminenomi.entities.zoan.MegaMorphInfo;
 import xyz.pixelatedw.mineminenomi.wypi.WyRegistry;
 
 public class ModMorphs {
@@ -15,6 +11,7 @@ public class ModMorphs {
     public static final RegistryObject<MorphInfo> AWAKEN_HUMAN = WyRegistry.registerMorph("awaken_human", AwakenHumanMorphInfo::new);
     public static final RegistryObject<MorphInfo> AWAKEN_KAME = WyRegistry.registerMorph("awaken_kame", AwakenKameWalkMorphInfo::new);
     public static final RegistryObject<MorphInfo> AWAKEN_USHI = WyRegistry.registerMorph("awaken_ushi", AwakenGiraffeHeavyMorphInfo::new);
+    public static final RegistryObject<MorphInfo> AWAKEN_MOGU = WyRegistry.registerMorph("awaken_mogu", AwakenMoguHeavyMorphInfo::new);
 
     public static void register(IEventBus eventBus) {
         WyRegistry.MORPHS.register(eventBus);
