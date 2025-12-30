@@ -8,6 +8,7 @@ import com.inovactio.awakenawakennomi.abilities.dekadekanomi.TitanSmashAbility;
 import com.inovactio.awakenawakennomi.abilities.hitohitonomi.AwakenHumanFormAbility;
 import com.inovactio.awakenawakennomi.abilities.kamekamenomi.AwakenKameWalkPointAbility;
 import com.inovactio.awakenawakennomi.abilities.kamekamenomi.SpinAbility;
+import com.inovactio.awakenawakennomi.abilities.mogumogunomi.AwakenMoguHeavyPointAbility;
 import com.inovactio.awakenawakennomi.abilities.sukesukenomi.DiffractionAbility;
 import com.inovactio.awakenawakennomi.abilities.sukesukenomi.InvisibleZoneAbility;
 import com.inovactio.awakenawakennomi.abilities.sukesukenomi.InvisibleTouchAbility;
@@ -58,6 +59,10 @@ public class ModAbilitiesMixin {
             case "Ushi Ushi no Mi, Model: Giraffe":
                 FruitInjectionHelper.removeAbilities(fruit, BiganAbility.INSTANCE);
                 FruitInjectionHelper.appendAbilities(fruit, AwakenGiraffeHeavyPointAbility.INSTANCE, ReworkedBiganAbility.INSTANCE);
+                break;
+
+            case "Mogu Mogu no Mi":
+                FruitInjectionHelper.appendAbilities(fruit, AwakenMoguHeavyPointAbility.INSTANCE);
                 break;
             default:
                 // Aucun ajout particulier pour les autres fruits
