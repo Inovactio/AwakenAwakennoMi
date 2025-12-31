@@ -9,6 +9,7 @@ import com.inovactio.awakenawakennomi.abilities.hitohitonomi.AwakenHumanFormAbil
 import com.inovactio.awakenawakennomi.abilities.kamekamenomi.AwakenKameWalkPointAbility;
 import com.inovactio.awakenawakennomi.abilities.kamekamenomi.SpinAbility;
 import com.inovactio.awakenawakennomi.abilities.mogumogunomi.AwakenMoguHeavyPointAbility;
+import com.inovactio.awakenawakennomi.abilities.mogumogunomi.MoguDigAbility;
 import com.inovactio.awakenawakennomi.abilities.sukesukenomi.DiffractionAbility;
 import com.inovactio.awakenawakennomi.abilities.sukesukenomi.InvisibleZoneAbility;
 import com.inovactio.awakenawakennomi.abilities.sukesukenomi.InvisibleTouchAbility;
@@ -62,7 +63,7 @@ public class ModAbilitiesMixin {
                 break;
 
             case "Mogu Mogu no Mi":
-                FruitInjectionHelper.appendAbilities(fruit, AwakenMoguHeavyPointAbility.INSTANCE);
+                FruitInjectionHelper.appendAbilities(fruit, AwakenMoguHeavyPointAbility.INSTANCE, MoguDigAbility.INSTANCE);
                 break;
             default:
                 // Aucun ajout particulier pour les autres fruits
