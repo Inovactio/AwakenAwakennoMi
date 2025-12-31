@@ -134,7 +134,7 @@ dependencies {
 	annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 	
 	implementation fg.deobf("curse.maven:mmnm-78726:7170763")
-	implementation fg.deobf("curse.maven:carts-1143743:7375535")
+	implementation fg.deobf("curse.maven:carts-1143743:7396968")
 	implementation fg.deobf("curse.maven:curios-309927:4419403")
 }
 

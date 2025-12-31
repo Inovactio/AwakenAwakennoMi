@@ -90,7 +90,7 @@ public class AwakenMoguHeavyPointAbility extends AwakenZoanAbility{
                 .addDescriptionLine(DESCRIPTION)
                 .addAdvancedDescriptionLine(new AbilityDescriptionLine.IDescriptionLine[]{AbilityDescriptionLine.NEW_LINE, CooldownComponent.getTooltip(10.0F), ContinuousComponent.getTooltip(), ChangeStatsComponent.getTooltip()})
                 .build();
-        SPEED_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_MOVEMENT_SPEED_UUID, INSTANCE, "Awaken Giraffe Heavy Point Speed Modifier", (double)0.75F, AttributeModifier.Operation.MULTIPLY_TOTAL);
+        SPEED_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_MOVEMENT_SPEED_UUID, INSTANCE, "Awaken Giraffe Heavy Point Speed Modifier", (double)0.5F, AttributeModifier.Operation.MULTIPLY_TOTAL);
         JUMP_BOOST_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_JUMP_BOOST_UUID, INSTANCE, "Awaken Giraffe Heavy Point Jump Modifier", (double)3.5F, AttributeModifier.Operation.ADDITION);
         STEP_HEIGHT_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_STEP_HEIGHT_UUID, INSTANCE, "Awaken Giraffe Heavy Point Step Height Modifier", (double)1F, AttributeModifier.Operation.ADDITION);
         ARMOR_MODIFIER = new AbilityAttributeModifier(AttributeHelper.MORPH_ARMOR_UUID, INSTANCE, "Mogu Heavy Point Modifier", (double)10.0F, AttributeModifier.Operation.ADDITION);
