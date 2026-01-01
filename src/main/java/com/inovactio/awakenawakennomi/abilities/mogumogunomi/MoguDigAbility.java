@@ -40,13 +40,13 @@ public class MoguDigAbility extends Ability implements IAwakenable {
     }
 
     private void tickContinuityEvent(LivingEntity entity, IAbility ability) {
-        if (!entity.hasEffect((Effect) ModEffects.GROUND_SWIM.get())) {
-            entity.addEffect(new EffectInstance((Effect) ModEffects.GROUND_SWIM.get(), Integer.MAX_VALUE, 0, false, false, true));
+        if (!MoguHelper.isDigging(entity)) {
+            entity.addEffect(new EffectInstance((Effect) ModEffects.GROUND_DIG.get(), Integer.MAX_VALUE, 0, false, false, true));
         }
     }
 
     private void endContinuityEvent(LivingEntity entity, IAbility ability) {
-        entity.removeEffect((Effect) ModEffects.GROUND_SWIM.get());
+        entity.removeEffect((Effect) ModEffects.GROUND_DIG.get());
         this.cooldownComponent.startCooldown(entity, 20.0F);
     }
 

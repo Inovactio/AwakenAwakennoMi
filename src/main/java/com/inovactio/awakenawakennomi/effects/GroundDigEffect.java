@@ -1,6 +1,5 @@
 package com.inovactio.awakenawakennomi.effects;
 
-
 import com.inovactio.awakenawakennomi.abilities.mogumogunomi.SubterraneanDashAbility;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
@@ -22,9 +21,9 @@ import xyz.pixelatedw.mineminenomi.api.protection.block.RestrictedBlockProtectio
 import xyz.pixelatedw.mineminenomi.data.entity.ability.AbilityDataCapability;
 import xyz.pixelatedw.mineminenomi.data.entity.ability.IAbilityData;
 
-public class GroundSwimEffect extends ModEffect {
+public class GroundDigEffect extends ModEffect {
 
-    public GroundSwimEffect() {
+    public GroundDigEffect() {
         super(EffectType.NEUTRAL, 8954814);
     }
 
@@ -47,17 +46,17 @@ public class GroundSwimEffect extends ModEffect {
         boolean isMidAir = entity.level.getBlockState(pos.above()).isAir() && entity.level.getBlockState(pos.below()).isAir();
         boolean groundCheck = entity.position().y - DevilFruitHelper.getFloorLevel(entity).y() > 0.0D && entity.level.getBlockState(pos.below()).isAir();
 
-        NekomimiPunchAbility nekomimiPunch = null;
+        SubterraneanDashAbility subterreanDash = null;
         if (props != null) {
-            IAbility a = props.getEquippedAbility(NekomimiPunchAbility.INSTANCE);
-            if (a instanceof NekomimiPunchAbility) nekomimiPunch = (NekomimiPunchAbility) a;
+            IAbility a = props.getEquippedAbility(SubterraneanDashAbility.INSTANCE);
+            if (a instanceof SubterraneanDashAbility) subterreanDash = (SubterraneanDashAbility) a;
         }
-        boolean isNekomimiPunchActive = nekomimiPunch != null && nekomimiPunch.isContinuous();
-        boolean isNekomimiFresh = nekomimiPunch != null && entity.level.getGameTime() - nekomimiPunch.getLastUseGametime() < 100L;
+        boolean isSubterreanDashActive = subterreanDash != null && subterreanDash.isContinuous();
+        boolean isSubterreanDashFresh = subterreanDash != null && entity.level.getGameTime() - subterreanDash.getLastUseGametime() < 100L;
         boolean canMove = AbilityHelper.canUseMomentumAbilities(entity);
 
         boolean isOutsideGround = false;
-        if (groundCheck && !isNekomimiPunchActive && !isNekomimiFresh && !isEntityInsideOpaqueBlock(entity)) {
+        if (groundCheck && !isSubterreanDashActive && !isSubterreanDashFresh && !isEntityInsideOpaqueBlock(entity)) {
             isOutsideGround = true;
         }
 
@@ -72,60 +71,51 @@ public class GroundSwimEffect extends ModEffect {
             entity.fallDistance = 0.0F;
         }
 
-        if (isMidAir && !isNekomimiPunchActive) {
+        if (isMidAir && !isSubterreanDashActive) {
             entity.noPhysics = true;
             return;
         }
+        entity.setSwimming(true);
+        boolean swimming = entity.getPose() == Pose.SWIMMING || isSubterreanDashActive;
 
-        NyanNyanSuplexAbility nyanSuplex = null;
-        if (props != null) {
-            IAbility a = props.getEquippedAbility(NyanNyanSuplexAbility.INSTANCE);
-            if (a instanceof NyanNyanSuplexAbility) nyanSuplex = (NyanNyanSuplexAbility) a;
-        }
+        if (swimming && (isInsideBlock || (isMidAir && isSubterreanDashActive))) {
+            double x = 0.0D, y = 0.0D, z = 0.0D;
+            double swimSpeed = entity.getAttribute(ForgeMod.SWIM_SPEED.get()).getValue() / 2.0D;
+            Vector3d lookVector = entity.getLookAngle();
 
-        if (nyanSuplex == null || !nyanSuplex.isCharging()) {
-            entity.setSwimming(true);
-            boolean swimming = entity.getPose() == Pose.SWIMMING || isNekomimiPunchActive;
-
-            if (swimming && (isInsideBlock || (isMidAir && isNekomimiPunchActive))) {
-                double x = 0.0D, y = 0.0D, z = 0.0D;
-                double swimSpeed = entity.getAttribute(ForgeMod.SWIM_SPEED.get()).getValue() / 2.0D;
-                Vector3d lookVector = entity.getLookAngle();
-
-                if (entity.zza != 0.0F && canMove) {
-                    double speed = Math.max(1.3D, Math.min(swimSpeed, 6.0D));
-                    x = lookVector.x * speed * entity.zza;
-                    y = lookVector.y * speed * entity.zza;
-                    z = lookVector.z * speed * entity.zza;
-                }
-
-                if (isNekomimiPunchActive) {
-                    double speed = 1.6D;
-                    x = lookVector.x * speed;
-                    y = lookVector.y * speed;
-                    z = lookVector.z * speed;
-                }
-
-                if (entity.isShiftKeyDown()) {
-                    y = -0.2D;
-                } else if (AbilityHelper.isJumping(entity) && !entity.level.getBlockState(pos.below()).isAir()) {
-                    y = 0.2D;
-                    if (entity.level.getBlockState(pos.above()).isAir()) y = 0.6D;
-                }
-
-                BlockPos frontPos = new BlockPos(entity.position().add(x, y + entity.getEyeHeight(), z));
-                BlockState frontBlock = entity.level.getBlockState(frontPos);
-                if (RestrictedBlockProtectionRule.INSTANCE.isBanned(frontBlock)) {
-                    Vector3d reversedLook = entity.zza < 0.0F ? lookVector : lookVector.reverse();
-                    x = reversedLook.x;
-                    y = reversedLook.y;
-                    z = reversedLook.z;
-                }
-
-                if (entity.getY() < 5.0D) y = 0.0D;
-
-                AbilityHelper.setDeltaMovement(entity, x, y, z);
+            if (entity.zza != 0.0F && canMove) {
+                double speed = Math.max(1.3D, Math.min(swimSpeed, 6.0D));
+                x = lookVector.x * speed * entity.zza;
+                y = lookVector.y * speed * entity.zza;
+                z = lookVector.z * speed * entity.zza;
             }
+
+            if (isSubterreanDashActive) {
+                double speed = 1.6D;
+                x = lookVector.x * speed;
+                y = lookVector.y * speed;
+                z = lookVector.z * speed;
+            }
+
+            if (entity.isShiftKeyDown()) {
+                y = -0.2D;
+            } else if (AbilityHelper.isJumping(entity) && !entity.level.getBlockState(pos.below()).isAir()) {
+                y = 0.2D;
+                if (entity.level.getBlockState(pos.above()).isAir()) y = 0.6D;
+            }
+
+            BlockPos frontPos = new BlockPos(entity.position().add(x, y + entity.getEyeHeight(), z));
+            BlockState frontBlock = entity.level.getBlockState(frontPos);
+            if (RestrictedBlockProtectionRule.INSTANCE.isBanned(frontBlock)) {
+                Vector3d reversedLook = entity.zza < 0.0F ? lookVector : lookVector.reverse();
+                x = reversedLook.x;
+                y = reversedLook.y;
+                z = reversedLook.z;
+            }
+
+            if (entity.getY() < 5.0D) y = 0.0D;
+
+            AbilityHelper.setDeltaMovement(entity, x, y, z);
         }
     }
 
