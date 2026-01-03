@@ -1,6 +1,7 @@
 package com.inovactio.awakenawakennomi.effects;
 
 
+import com.inovactio.awakenawakennomi.abilities.mogumogunomi.SubterraneanDashAbility;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Pose;
