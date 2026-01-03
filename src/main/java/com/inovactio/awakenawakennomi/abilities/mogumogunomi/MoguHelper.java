@@ -14,7 +14,7 @@ import xyz.pixelatedw.mineminenomi.init.ModI18n;
 public class MoguHelper {
     public static boolean isDigging(LivingEntity entity)
     {
-        return entity.hasEffect((Effect) ModEffects.GROUND_DIG.get());
+        return entity.hasEffect((Effect) ModEffects.GROUND_DIG.get()) ||entity.hasEffect((Effect) ModEffects.GROUND_DIG_BREAK.get());
     }
 
     public static AbilityUseResult isDigging(LivingEntity entity, IAbility ability) {
