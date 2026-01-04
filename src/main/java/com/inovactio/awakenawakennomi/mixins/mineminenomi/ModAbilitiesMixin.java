@@ -11,7 +11,8 @@ import com.inovactio.awakenawakennomi.abilities.kamekamenomi.SpinAbility;
 import com.inovactio.awakenawakennomi.abilities.mogumogunomi.AwakenMoguHeavyPointAbility;
 import com.inovactio.awakenawakennomi.abilities.mogumogunomi.MoguDigAbility;
 import com.inovactio.awakenawakennomi.abilities.mogumogunomi.SubterraneanDashAbility;
-import com.inovactio.awakenawakennomi.abilities.subesubenomi.SmoothWorld;
+import com.inovactio.awakenawakennomi.abilities.subesubenomi.SlickDisarmAbility;
+import com.inovactio.awakenawakennomi.abilities.subesubenomi.SmoothWorldAbility;
 import com.inovactio.awakenawakennomi.abilities.sukesukenomi.DiffractionAbility;
 import com.inovactio.awakenawakennomi.abilities.sukesukenomi.InvisibleZoneAbility;
 import com.inovactio.awakenawakennomi.abilities.sukesukenomi.InvisibleTouchAbility;
@@ -69,7 +70,7 @@ public class ModAbilitiesMixin {
                 break;
 
             case "Sube Sube No Mi":
-                FruitInjectionHelper.appendAbilities(fruit, SmoothWorld.INSTANCE);
+                FruitInjectionHelper.appendAbilities(fruit, SmoothWorldAbility.INSTANCE, SlickDisarmAbility.INSTANCE);
                 break;
             default:
                 // Aucun ajout particulier pour les autres fruits

@@ -20,6 +20,7 @@
   "ability.mineminenomi.mogu_dig.break_mode": "Break Mode",
   "ability.mineminenomi.subterranean_dash": "Subterranean Dash",
   "ability.mineminenomi.smooth_world": "Smooth World",
+  "ability.mineminenomi.slick_disarm": "Slick Disarm",
 
   "ability.awakenawakennomi.invisible_zone.description.0": "Creates an invisible zone that spreads invisibility to nearby blocks.",
   "ability.awakenawakennomi.invisible_touch.description.0": "Turns a targeted block invisible after hitting it.",
@@ -39,6 +40,7 @@
   "ability.awakenawakennomi.mogu_dig.description.0": "Lets the user dig trough blocks.",
   "ability.awakenawakennomi.subterranean_dash.description.0": "Dash forward quickly while burrowing.",
   "ability.awakenawakennomi.smooth_world.description.0": "Creates a smooth domain around the user. Creatures inside lose traction and slide uncontrollably, weakening their ability to fight effectively.",
+  "ability.awakenawakennomi.slick_disarm.description.0": "Coat your fists in slickness and strike your target. Their hands become too slippery to keep a grip, forcing them to drop items from both hands.",
 
   "awakenawakennomi.ability.ground_only": "You must be on the ground to use this ability.",
 
