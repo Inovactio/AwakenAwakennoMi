@@ -25,7 +25,7 @@ import xyz.pixelatedw.mineminenomi.wypi.WyRegistry;
 import java.util.function.Predicate;
 
 public class ReworkedBiganAbility extends Ability {
-    private static final TranslationTextComponent BIGAN_NAME = new TranslationTextComponent(WyRegistry.registerName("ability.mineminenomi.bigan", "Bigan"));
+    private static final TranslationTextComponent BIGAN_NAME = new TranslationTextComponent(WyRegistry.registerName("ability.mineminenomi.reworked_bigan", "Reworked Bigan"));
     private static final TranslationTextComponent AWAKEN_BIGAN_NAME = new TranslationTextComponent(WyRegistry.registerName("ability.mineminenomi.awaken_bigan", "Awaken Bigan"));
     private static final ITextComponent[] DESCRIPTION = AbilityHelper.registerDescriptionText("awakenawakennomi", "reworked_bigan", new Pair[]{ImmutablePair.of("Hits using the hardened giraffe nose.", (Object)null)});
     private static final AbilityDescriptionLine.IDescriptionLine BIGAN_DESC;
