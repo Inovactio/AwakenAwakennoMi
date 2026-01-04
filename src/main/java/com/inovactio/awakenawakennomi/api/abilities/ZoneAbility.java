@@ -50,8 +50,9 @@ import java.util.function.Predicate;
 public abstract class ZoneAbility extends Ability {
     private static final ITextComponent[] DESCRIPTION = AbilityHelper.registerDescriptionText("awakenawakennomi", "awaken_smooth_world", new Pair[]{ImmutablePair.of("Creates a spherical space around the user in which they can manipulate anything or use other skills", (Object)null)});
     private static final BlockProtectionRule GRIEF_RULE;
-    protected int minZoneSize = 8;
+    protected int minZoneSize = 0;
     protected int maxZoneSize = 128;
+    protected float minChargeTime = CHARGE_TIME / 4.0F;
     protected int chargeTime = CHARGE_TIME;
     protected float minCooldown = COOLDOWN;
     protected float maxCooldown = COOLDOWN;
@@ -86,6 +87,10 @@ public abstract class ZoneAbility extends Ability {
 
     private void onUseEvent(LivingEntity entity, IAbility ability) {
         if (this.chargeComponent.isCharging()) {
+            if (this.chargeComponent.getChargeTime() < this.minChargeTime) {
+                return;
+            }
+
             this.chargeComponent.stopCharging(entity);
         } else if (this.continuousComponent.isContinuous()) {
             if (CommonConfig.INSTANCE.isExperiementalSpheresEnabled()) {
@@ -169,39 +174,49 @@ public abstract class ZoneAbility extends Ability {
     }
 
     protected void chargeTickSphere(LivingEntity entity) {
-        if (CommonConfig.INSTANCE.isExperiementalSpheresEnabled()) {
-            if (this.zoneSphereEntity != null) {
-                float radius = 0.0F;
-                if (this.isShrinking) {
-                    radius = (float)this.zoneSize * (1.0F - this.chargeComponent.getChargePercentage()) / maxZoneSize;
-                    radius = EasingFunctionHelper.easeOutCubic(radius) * maxZoneSize;
-                } else {
-                    radius = maxZoneSize * this.chargeComponent.getChargePercentage() / maxZoneSize;
-                    radius = EasingFunctionHelper.easeInCubic(radius) * maxZoneSize;
-                }
+        if (!CommonConfig.INSTANCE.isExperiementalSpheresEnabled()) return;
+        if (this.zoneSphereEntity == null) return;
 
-                this.zoneSphereEntity.setRadius(radius);
-                this.zoneSize = (int)radius;
-            }
+        float pct = MathHelper.clamp(this.chargeComponent.getChargePercentage(), 0.0F, 1.0F);
+
+        if (this.isShrinking) {
+            // Shrink: on part d'un rayon "plein" (>= minZoneSize) vers 0
+            float easedPct = EasingFunctionHelper.easeOutCubic(1.0F - pct);
+            float radius = MathHelper.clamp(easedPct * this.maxZoneSize, 0.0F, (float) this.maxZoneSize);
+
+            this.zoneSphereEntity.setRadius(radius);
+            this.zoneSize = radius;
+            return;
         }
+
+        // Expand: on veut partir de 0.0F
+        float easedPct = EasingFunctionHelper.easeInCubic(pct);
+        float radius = MathHelper.clamp(easedPct * this.maxZoneSize, 0.0F, (float) this.maxZoneSize);
+
+        this.zoneSphereEntity.setRadius(radius);
+        this.zoneSize = radius;
     }
 
     protected void endChargeSphere(LivingEntity entity) {
-        if (CommonConfig.INSTANCE.isExperiementalSpheresEnabled()) {
-            if (!entity.level.isClientSide) {
-                if (this.isShrinking) {
-                    if (this.zoneSphereEntity != null) {
-                        this.zoneSphereEntity.remove();
-                    }
+        if (!CommonConfig.INSTANCE.isExperiementalSpheresEnabled()) return;
+        if (entity.level.isClientSide) return;
 
-                    this.zoneSphereEntity = null;
-                } else {
-                    float radius = MathHelper.clamp(maxZoneSize * this.chargeComponent.getChargePercentage(), minZoneSize, maxZoneSize);
-                    this.zoneSphereEntity.setRadius(radius);
-                    this.zoneSize = radius;
-                }
-            }
+        if (this.isShrinking) {
+            if (this.zoneSphereEntity != null) this.zoneSphereEntity.remove();
+            this.zoneSphereEntity = null;
+            return;
         }
+
+        if (this.zoneSphereEntity == null) return;
+
+        float pct = MathHelper.clamp(this.chargeComponent.getChargePercentage(), 0.0F, 1.0F);
+        float easedPct = EasingFunctionHelper.easeInCubic(pct);
+
+        // À la fin seulement, on impose le min pour la zone "effective"
+        float radius = MathHelper.clamp(easedPct * this.maxZoneSize, (float) this.minZoneSize, (float) this.maxZoneSize);
+
+        this.zoneSphereEntity.setRadius(radius);
+        this.zoneSize = radius;
     }
 
     protected boolean continuityTickSphere(LivingEntity entity) {
