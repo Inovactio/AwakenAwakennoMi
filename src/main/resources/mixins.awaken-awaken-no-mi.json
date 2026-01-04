@@ -4,8 +4,16 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "mixins.awaken-awaken-no-mi.refmap.json",
   "mixins": [
-    "ModAbilitiesMixin",
-    "BlockModelRendererMixin"
+    "mineminenomi.ModAbilitiesMixin",
+    "mineminenomi.GearFifthAbilityMixin",
+    "mineminenomi.GomuGomuNoDawnWhipAbilityMixin",
+    "mineminenomi.GomuGomuNoGiantAbilityMixin",
+    "BlockModelRendererMixin",
+    "AbstractBlockStateMixin",
+    "TileEntityRendererDispatcherMixin",
+    "BlockShouldRenderMixin",
+    "cartaddon.ReworkAbilitiesMixin",
+    "mineminenomi.abilities.AbilityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

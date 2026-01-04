@@ -1,14 +1,17 @@
 package com.inovactio.awakenawakennomi.renderers;
+
 import com.inovactio.awakenawakennomi.api.common.InvisibleBlockManager;
 import com.inovactio.awakenawakennomi.models.MyModelProperties;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.model.BakedQuad;
+import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.model.data.IModelData;
+import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -37,12 +40,32 @@ public class InvisibleModelWrapper implements IBakedModel {
                                     @Nullable Direction side,
                                     Random rand,
                                     IModelData extraData) {
+        BlockPos pos = null;
         if (extraData != null && extraData.hasProperty(MyModelProperties.POS)) {
-            BlockPos pos = extraData.getData(MyModelProperties.POS);
-            if (pos != null && InvisibleBlockManager.isInvisible(pos)) {
-                return Collections.emptyList(); // bloc invisible en monde
+            pos = extraData.getData(MyModelProperties.POS);
+        }
+
+        if (pos == null) {
+            // fallback via RenderPosHolder (défini par BlockModelRendererMixin)
+            pos = RenderPosHolder.get();
+        }
+
+        if (pos != null) {
+            Minecraft mc = Minecraft.getInstance();
+            if (mc != null) {
+                World world = mc.level;
+                if (world != null) {
+                    if (InvisibleBlockManager.isInvisible(world, pos)) {
+                        return Collections.emptyList(); // bloc invisible en monde
+                    }
+                } else if (mc.player != null) {
+                    if (InvisibleBlockManager.isInvisible(pos, mc.player.getUUID())) {
+                        return Collections.emptyList(); // invisibilité basée sur l'UUID client
+                    }
+                }
             }
         }
+
         return original.getQuads(state, side, rand, extraData);
     }
 
