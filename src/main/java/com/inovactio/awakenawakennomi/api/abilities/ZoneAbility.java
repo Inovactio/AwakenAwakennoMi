@@ -52,7 +52,7 @@ public abstract class ZoneAbility extends Ability {
     private static final BlockProtectionRule GRIEF_RULE;
     protected int minZoneSize = 0;
     protected int maxZoneSize = 128;
-    protected float minChargeTime = CHARGE_TIME / 4.0F;
+    protected float minChargeTime = MIN_CHARGE_TIME;
     protected int chargeTime = CHARGE_TIME;
     protected float minCooldown = COOLDOWN;
     protected float maxCooldown = COOLDOWN;
@@ -75,6 +75,7 @@ public abstract class ZoneAbility extends Ability {
     private Interval playSoundInterval = new Interval(18);
     private final Set<UUID> affectedEntities = new HashSet<>();
 
+    protected static final int MIN_CHARGE_TIME = 60;
     protected static final int CHARGE_TIME = 240;
     protected static final float COOLDOWN = 2400.0F;
 
@@ -180,17 +181,16 @@ public abstract class ZoneAbility extends Ability {
         float pct = MathHelper.clamp(this.chargeComponent.getChargePercentage(), 0.0F, 1.0F);
 
         if (this.isShrinking) {
-            // Shrink: on part d'un rayon "plein" (>= minZoneSize) vers 0
+            // Shrink: démarrage rapide puis ralentit vers 0
             float easedPct = EasingFunctionHelper.easeOutCubic(1.0F - pct);
             float radius = MathHelper.clamp(easedPct * this.maxZoneSize, 0.0F, (float) this.maxZoneSize);
-
             this.zoneSphereEntity.setRadius(radius);
             this.zoneSize = radius;
             return;
         }
 
-        // Expand: on veut partir de 0.0F
-        float easedPct = EasingFunctionHelper.easeInCubic(pct);
+        // Expand: démarrage rapide (au lieu de très lent avec easeInCubic)
+        float easedPct = EasingFunctionHelper.easeOutCubic(pct);
         float radius = MathHelper.clamp(easedPct * this.maxZoneSize, 0.0F, (float) this.maxZoneSize);
 
         this.zoneSphereEntity.setRadius(radius);
@@ -210,9 +210,10 @@ public abstract class ZoneAbility extends Ability {
         if (this.zoneSphereEntity == null) return;
 
         float pct = MathHelper.clamp(this.chargeComponent.getChargePercentage(), 0.0F, 1.0F);
-        float easedPct = EasingFunctionHelper.easeInCubic(pct);
 
-        // À la fin seulement, on impose le min pour la zone "effective"
+        // Même easing qu’en tick pour éviter tout “saut” en fin de charge
+        float easedPct = EasingFunctionHelper.easeOutCubic(pct);
+
         float radius = MathHelper.clamp(easedPct * this.maxZoneSize, (float) this.minZoneSize, (float) this.maxZoneSize);
 
         this.zoneSphereEntity.setRadius(radius);

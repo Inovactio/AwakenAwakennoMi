@@ -54,7 +54,7 @@ public class SmoothWorld extends ZoneAbility implements IAwakenable {
                 .setUnlockCheck(SmoothWorld::canUnlock)
                 .addDescriptionLine(DESCRIPTION)
                 .setIcon(new ResourceLocation("awakenawakennomi", "textures/abilities/sube/smooth_world.png"))
-                .addAdvancedDescriptionLine(new AbilityDescriptionLine.IDescriptionLine[]{AbilityDescriptionLine.NEW_LINE, CooldownComponent.getTooltip(COOLDOWN), ChargeComponent.getTooltip(CHARGE_TIME)})
+                .addAdvancedDescriptionLine(new AbilityDescriptionLine.IDescriptionLine[]{AbilityDescriptionLine.NEW_LINE, CooldownComponent.getTooltip(COOLDOWN), ChargeComponent.getTooltip(MIN_CHARGE_TIME,CHARGE_TIME)})
                 .build();
     }
 }
