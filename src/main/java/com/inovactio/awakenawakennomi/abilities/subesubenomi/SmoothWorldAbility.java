@@ -17,14 +17,13 @@ import xyz.pixelatedw.mineminenomi.api.helpers.AbilityHelper;
 import xyz.pixelatedw.mineminenomi.data.entity.devilfruit.DevilFruitCapability;
 import xyz.pixelatedw.mineminenomi.init.ModAbilities;
 
-public class SmoothWorld extends ZoneAbility implements IAwakenable {
+public class SmoothWorldAbility extends ZoneAbility implements IAwakenable {
     private static final ITextComponent[] DESCRIPTION = AbilityHelper.registerDescriptionText("awakenawakennomi", "smooth_world", new Pair[]{ImmutablePair.of("Creates a smooth domain around the user. Creatures inside lose traction and slide uncontrollably, weakening their ability to fight effectively.", (Object) null)});
-    public static final AbilityCore<SmoothWorld> INSTANCE;
+    public static final AbilityCore<SmoothWorldAbility> INSTANCE;
 
-    public SmoothWorld(AbilityCore<SmoothWorld> core) {
+    public SmoothWorldAbility(AbilityCore<SmoothWorldAbility> core) {
         super(core);
         zoneColor = SubeHelper.SUBE_COLOR;
-        applyEffectOnUser = true;
     }
 
     protected static boolean canUnlock(LivingEntity user) {
@@ -50,8 +49,8 @@ public class SmoothWorld extends ZoneAbility implements IAwakenable {
 
     static {
 
-        INSTANCE = new AbilityCore.Builder<>("Smooth World", AbilityCategory.DEVIL_FRUITS, SmoothWorld::new)
-                .setUnlockCheck(SmoothWorld::canUnlock)
+        INSTANCE = new AbilityCore.Builder<>("Smooth World", AbilityCategory.DEVIL_FRUITS, SmoothWorldAbility::new)
+                .setUnlockCheck(SmoothWorldAbility::canUnlock)
                 .addDescriptionLine(DESCRIPTION)
                 .setIcon(new ResourceLocation("awakenawakennomi", "textures/abilities/sube/smooth_world.png"))
                 .addAdvancedDescriptionLine(new AbilityDescriptionLine.IDescriptionLine[]{AbilityDescriptionLine.NEW_LINE, CooldownComponent.getTooltip(COOLDOWN), ChargeComponent.getTooltip(MIN_CHARGE_TIME,CHARGE_TIME)})
