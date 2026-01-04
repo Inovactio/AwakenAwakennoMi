@@ -52,7 +52,6 @@ public abstract class ZoneAbility extends Ability {
     private static final BlockProtectionRule GRIEF_RULE;
     protected int minZoneSize = 8;
     protected int maxZoneSize = 128;
-    protected int maxThreshold = 2;
     protected int chargeTime = CHARGE_TIME;
     protected float minCooldown = COOLDOWN;
     protected float maxCooldown = COOLDOWN;
@@ -68,7 +67,7 @@ public abstract class ZoneAbility extends Ability {
     private SphereEntity zoneSphereEntity;
     private List<BlockPos> blockList = new ArrayList();
     private List<BlockPos> placedBlockList = new ArrayList();
-    private int zoneSize = 0;
+    private float zoneSize = 0;
     private BlockPos centerPos;
     protected boolean isShrinking = false;
     private Interval checkPositionInterval = new Interval(chargeTime);
@@ -151,9 +150,8 @@ public abstract class ZoneAbility extends Ability {
         this.continuityEndSphere(entity);
         this.centerPos = null;
         entity.level.playSound((PlayerEntity)null, entity.blockPosition(), (SoundEvent)ModSounds.ROOM_CLOSE_SFX.get(), SoundCategory.PLAYERS, 5.0F, 1.0F);
-        float entityHpDebuff = maxThreshold - entity.getHealth() / entity.getMaxHealth();
         float roomSizeDebuff = (float)(this.zoneSize / maxZoneSize);
-        float cooldown = minCooldown * entityHpDebuff * roomSizeDebuff;
+        float cooldown = minCooldown * roomSizeDebuff;
         cooldown = MathHelper.clamp(cooldown, minCooldown, maxCooldown);
         super.cooldownComponent.startCooldown(entity, cooldown);
     }
@@ -200,7 +198,7 @@ public abstract class ZoneAbility extends Ability {
                 } else {
                     float radius = MathHelper.clamp(maxZoneSize * this.chargeComponent.getChargePercentage(), minZoneSize, maxZoneSize);
                     this.zoneSphereEntity.setRadius(radius);
-                    this.zoneSize = (int)radius;
+                    this.zoneSize = radius;
                 }
             }
         }
@@ -235,7 +233,7 @@ public abstract class ZoneAbility extends Ability {
             if (this.blockList.isEmpty()) {
                 this.zoneSize = Math.max(minZoneSize, (int)(maxZoneSize * this.chargeComponent.getChargeTime() / this.chargeComponent.getMaxChargeTime()));
                 this.centerPos = new BlockPos(entity.getX(), entity.getY(), entity.getZ());
-                this.blockList.addAll(AbilityHelper.createSphere(entity.level, entity.blockPosition(), this.zoneSize, true, (Block)ModBlocks.OPE.get(), 0, GRIEF_RULE));
+                this.blockList.addAll(AbilityHelper.createSphere(entity.level, entity.blockPosition(), (int)this.zoneSize, true, (Block)ModBlocks.OPE.get(), 0, GRIEF_RULE));
                 this.placedBlockList.addAll(this.blockList);
             }
         }
@@ -279,7 +277,7 @@ public abstract class ZoneAbility extends Ability {
         }
     }
 
-    public int getROOMSize() {
+    public float getZoneSize() {
         return this.zoneSize;
     }
 
