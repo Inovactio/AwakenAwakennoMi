@@ -18,7 +18,7 @@ import com.inovactio.awakenawakennomi.abilities.sukesukenomi.InvisibleZoneAbilit
 import com.inovactio.awakenawakennomi.abilities.sukesukenomi.InvisibleTouchAbility;
 import com.inovactio.awakenawakennomi.abilities.bomubomunomi.BomuAirburstAbility;
 import com.inovactio.awakenawakennomi.abilities.ushiushinomi.giraffe.AwakenGiraffeHeavyPointAbility;
-import com.inovactio.awakenawakennomi.abilities.ushiushinomi.giraffe.ReworkedBiganAbility;
+import com.inovactio.awakenawakennomi.abilities.ushiushinomi.giraffe.KirimanjaroAbility;
 import com.inovactio.awakenawakennomi.util.FruitInjectionHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -62,7 +62,7 @@ public class ModAbilitiesMixin {
 
             case "Ushi Ushi no Mi, Model: Giraffe":
                 FruitInjectionHelper.removeAbilities(fruit, BiganAbility.INSTANCE);
-                FruitInjectionHelper.appendAbilities(fruit, AwakenGiraffeHeavyPointAbility.INSTANCE, ReworkedBiganAbility.INSTANCE);
+                FruitInjectionHelper.appendAbilities(fruit, AwakenGiraffeHeavyPointAbility.INSTANCE, KirimanjaroAbility.INSTANCE);
                 break;
 
             case "Mogu Mogu no Mi":

@@ -1,10 +1,9 @@
 package com.inovactio.awakenawakennomi.entities.projectiles.ushi.giraffe;
 
-import com.inovactio.awakenawakennomi.abilities.ushiushinomi.giraffe.ReworkedBiganAbility;
+import com.inovactio.awakenawakennomi.abilities.ushiushinomi.giraffe.KirimanjaroAbility;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.world.World;
-import xyz.pixelatedw.mineminenomi.entities.projectiles.AbilityProjectileEntity;
 
 public class AwakenBiganProjectile extends BiganProjectile {
     public static final double PROJECTILE_SIZE = 1.25;
@@ -16,7 +15,7 @@ public class AwakenBiganProjectile extends BiganProjectile {
     }
 
     public AwakenBiganProjectile(World world, LivingEntity player) {
-        super((EntityType) UshiGiraffeProjectiles.AWAKEN_BIGAN.get(), world, player, ReworkedBiganAbility.INSTANCE);
+        super((EntityType) UshiGiraffeProjectiles.AWAKEN_BIGAN.get(), world, player, KirimanjaroAbility.INSTANCE);
         this.setDamage(DAMAGE);
         this.setArmorPiercing(ARMOR_PIERCING);
         this.setAffectedByHardening();

@@ -1,6 +1,5 @@
 package com.inovactio.awakenawakennomi.abilities.ushiushinomi.giraffe;
 
-import com.inovactio.awakenawakennomi.abilities.hitohitonomi.AwakenHumanFormAbility;
 import com.inovactio.awakenawakennomi.api.abilities.AwakenZoanAbility;
 import com.inovactio.awakenawakennomi.api.abilities.IAwakenable;
 import com.inovactio.awakenawakennomi.init.ModMorphs;
@@ -12,7 +11,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.ForgeMod;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import xyz.pixelatedw.mineminenomi.abilities.gomu.GomuGomuNoPistolAbility;
 import xyz.pixelatedw.mineminenomi.api.abilities.*;
 import xyz.pixelatedw.mineminenomi.api.abilities.components.ChangeStatsComponent;
 import xyz.pixelatedw.mineminenomi.api.abilities.components.ContinuousComponent;
@@ -55,7 +53,7 @@ public class AwakenGiraffeHeavyPointAbility extends AwakenZoanAbility implements
     }
 
     public MorphInfo getTransformation() {
-        return (MorphInfo) ModMorphs.AWAKEN_USHI.get();
+        return (MorphInfo) ModMorphs.AWAKEN_GIRAFFE.get();
     }
 
     protected static boolean canUnlock(LivingEntity user) {
@@ -67,7 +65,7 @@ public class AwakenGiraffeHeavyPointAbility extends AwakenZoanAbility implements
     protected void startContinuityEvent(LivingEntity entity, IAbility ability) {
         super.startContinuityEvent(entity, ability);
         IAbilityData props = AbilityDataCapability.get(entity);
-        ReworkedBiganAbility bigan = props.getEquippedAbility(ReworkedBiganAbility.INSTANCE);
+        KirimanjaroAbility bigan = props.getEquippedAbility(KirimanjaroAbility.INSTANCE);
         if (bigan != null) bigan.switchAwakenHeavyPoint(entity);
 
     }
@@ -76,7 +74,7 @@ public class AwakenGiraffeHeavyPointAbility extends AwakenZoanAbility implements
     protected void stopContinuityEvent(LivingEntity entity, IAbility ability) {
         super.stopContinuityEvent(entity, ability);
         IAbilityData props = AbilityDataCapability.get(entity);
-        ReworkedBiganAbility bigan = props.getEquippedAbility(ReworkedBiganAbility.INSTANCE);
+        KirimanjaroAbility bigan = props.getEquippedAbility(KirimanjaroAbility.INSTANCE);
         if (bigan != null) bigan.switchNoPoint(entity);
     }
 
