@@ -3,7 +3,6 @@ package com.inovactio.awakenawakennomi.abilities.mogumogunomi;
 import com.inovactio.awakenawakennomi.api.abilities.IAwakenable;
 import com.inovactio.awakenawakennomi.init.ModEffects;
 import com.inovactio.awakenawakennomi.init.ModMorphs;
-import net.MrMagicalCart.cartaddon.abilities.maguextra.NewDaiFunkaAbility;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectInstance;
