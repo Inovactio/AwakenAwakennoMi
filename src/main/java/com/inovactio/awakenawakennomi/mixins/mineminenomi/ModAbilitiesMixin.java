@@ -9,6 +9,7 @@ import com.inovactio.awakenawakennomi.abilities.hitohitonomi.AwakenHumanFormAbil
 import com.inovactio.awakenawakennomi.abilities.kamekamenomi.AwakenKameWalkPointAbility;
 import com.inovactio.awakenawakennomi.abilities.kamekamenomi.SpinAbility;
 import com.inovactio.awakenawakennomi.abilities.kobukobunomi.OneManArmyAbility;
+import com.inovactio.awakenawakennomi.abilities.minimininomi.GulliversNightmareAbility;
 import com.inovactio.awakenawakennomi.abilities.mogumogunomi.AwakenMoguHeavyPointAbility;
 import com.inovactio.awakenawakennomi.abilities.mogumogunomi.MoguDigAbility;
 import com.inovactio.awakenawakennomi.abilities.mogumogunomi.SubterraneanDashAbility;
@@ -40,6 +41,7 @@ public class ModAbilitiesMixin {
             cancellable = true
     )
     private static <T extends AkumaNoMiItem> void addAbilities(T fruit, CallbackInfoReturnable<T> info) {
+        System.out.println("[AwakenAwakenNoMi] registerFruit -> " + fruit.getDevilFruitName());
         switch (fruit.getDevilFruitName()) {
             case "Suke Suke no Mi":
                 FruitInjectionHelper.appendAbilities(fruit, InvisibleTouchAbility.INSTANCE, InvisibleZoneAbility.INSTANCE, DiffractionAbility.INSTANCE);
@@ -77,6 +79,11 @@ public class ModAbilitiesMixin {
             case "Kobu Kobu No Mi":
                 FruitInjectionHelper.appendAbilities(fruit, OneManArmyAbility.INSTANCE);
                 break;
+
+            case "Mini Mini No Mi":
+                FruitInjectionHelper.appendAbilities(fruit, GulliversNightmareAbility.INSTANCE);
+                break;
+
             default:
                 // Aucun ajout particulier pour les autres fruits
                 break;
