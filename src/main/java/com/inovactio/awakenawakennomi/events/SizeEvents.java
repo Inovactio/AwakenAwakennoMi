@@ -1,67 +1,95 @@
 package com.inovactio.awakenawakennomi.events;
 
+import com.inovactio.awakenawakennomi.AwakenAwakenNoMiMod;
 import com.inovactio.awakenawakennomi.init.AwakenAttributes;
 import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.Pose;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+
+
 @Mod.EventBusSubscriber(modid = "awakenawakennomi")
 public final class SizeEvents {
-    // Stocké sur l'entité pour détecter un changement de scale "effectif"
-    private static final String NBT_KEY_LAST_EFFECTIVE_SCALE = "awakenawakennomi:last_effective_size_scale";
-    private static final float EPSILON = 1.0E-4f;
 
-    @SubscribeEvent
-    public static void onEntitySize(EntityEvent.Size event) {
+    private SizeEvents() {}
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onHitboxRescaleLiving(EntityEvent.Size event) {
         if (!(event.getEntity() instanceof LivingEntity)) return;
-        LivingEntity living = (LivingEntity) event.getEntity();
 
-        // L'event peut arriver très tôt (constructeur), garder des gardes strictes
-        if (living.getAttributes() == null) return;
+        LivingEntity entity = (LivingEntity) event.getEntity();
 
-        if (living.getAttribute(AwakenAttributes.SIZE.get()) == null) return;
+        // Ne pas doubler le scaling du joueur si CartAddon est chargé (RaceEventsSmall le fait déjà)
+        if (AwakenAwakenNoMiMod.hasCartAddonInstalled() && entity instanceof PlayerEntity) return;
 
-        float scale = (float) living.getAttributeValue(AwakenAttributes.SIZE.get());
-        if (scale <= 0.0f) scale = 1.0f;
-        if (Math.abs(scale - 1.0f) <= EPSILON) return;
+        if (entity.getPersistentData().getBoolean("awaken_is_morphed")) return;
 
-        Pose pose = living.getPose();
+        double scale = 1.0;
+        try {
+            if (AwakenAttributes.SIZE.get() != null && entity.getAttributes() != null) {
+                scale = entity.getAttributeValue(AwakenAttributes.SIZE.get());
+            }
+        } catch (Throwable ignored) {}
 
-        // Important: event.getOldSize() correspond à la taille "vanilla" calculée par Minecraft pour ce pose
+        scale = safe(scale, 1.0, 0.05, 10.0);
+        float s = (float) scale;
+
+        // IMPORTANT: utiliser l’ancienne taille fournie par l’event comme base, pas entity.getDimensions(...)
         EntitySize base = event.getOldSize();
-        EntitySize scaled = EntitySize.scalable(base.width * scale, base.height * scale);
-        event.setNewSize(scaled);
+        event.setNewSize(base.scale(s), true);
 
-        float newEyeHeight = event.getOldEyeHeight() * scale;
-        if (newEyeHeight < 0.22f) newEyeHeight = 0.22f;
-        event.setNewEyeHeight(newEyeHeight);
+        float eye = Math.max(0.05F, base.height * s * 0.85F);
+        event.setNewEyeHeight(eye);
     }
 
     @SubscribeEvent
     public static void onLivingUpdate(LivingEvent.LivingUpdateEvent event) {
-        LivingEntity living = event.getEntityLiving();
-        if (living.getAttributes() == null) return;
-        if (living.getAttribute(AwakenAttributes.SIZE.get()) == null) return;
+        LivingEntity entity = event.getEntityLiving();
 
-        // Valeur "effective" (clamp) pour éviter refresh en boucle si l'attribut tombe à 0
-        float scale = (float) living.getAttributeValue(AwakenAttributes.SIZE.get());
-        if (scale <= 0.0f) scale = 1.0f;
+        // Optimisation : Ne rien faire si le monde est distant (client) car les attributs sont gérés par le serveur
+        // Cependant, pour la fluidité, refreshDimensions() doit souvent se produire des deux côtés.
+        // On laisse courir sur les deux sides pour éviter la désynchronisation.
 
-        CompoundNBT data = living.getPersistentData();
-        float last = data.contains(NBT_KEY_LAST_EFFECTIVE_SCALE) ? data.getFloat(NBT_KEY_LAST_EFFECTIVE_SCALE) : 1.0f;
+        if (shouldSkip(entity)) return;
 
-        if (Math.abs(scale - last) > EPSILON) {
-            data.putFloat(NBT_KEY_LAST_EFFECTIVE_SCALE, scale);
-
-            // C'est l'équivalent "apply runtime" façon ModAttributes:
-            // force le recalcul des dimensions => Forge reposte EntityEvent.Size => onEntitySize applique le scale
-            living.refreshDimensions();
-            living.ejectPassengers();
+        double targetScale = 1.0;
+        try {
+            if (AwakenAttributes.SIZE.get() != null && entity.getAttributes() != null) {
+                targetScale = entity.getAttributeValue(AwakenAttributes.SIZE.get());
+            }
+        } catch (Exception ignored) {
+            return;
         }
+
+        // On stocke la dernière échelle connue dans les données persistantes pour éviter de spammer refreshDimensions()
+        float lastScale = entity.getPersistentData().getFloat("awaken_last_scale");
+        if (lastScale == 0) lastScale = 1.0f;
+
+        // Si l'échelle a changé significativement (plus de 0.01 de différence)
+        if (Math.abs(targetScale - lastScale) > 0.01) {
+            entity.getPersistentData().putFloat("awaken_last_scale", (float) targetScale);
+            entity.refreshDimensions(); // C'est CELA qui déclenche l'event onHitboxRescaleLiving ci-dessous
+        }
+    }
+
+    private static boolean shouldSkip(LivingEntity entity) {
+        // Ne pas doubler le scaling du joueur si CartAddon est chargé
+        if (AwakenAwakenNoMiMod.hasCartAddonInstalled() && entity instanceof PlayerEntity) return true;
+        // Ignorer les entités morphées
+        if (entity.getPersistentData().getBoolean("awaken_is_morphed")) return true;
+
+        return false;
+    }
+
+    private static double safe(double v, double def, double min, double max) {
+        if (Double.isNaN(v) || Double.isInfinite(v)) v = def;
+        if (v < min) v = min;
+        if (v > max) v = max;
+        return v;
     }
 }

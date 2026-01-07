@@ -21,6 +21,9 @@ import xyz.pixelatedw.mineminenomi.api.helpers.AbilityHelper;
 import xyz.pixelatedw.mineminenomi.data.entity.devilfruit.DevilFruitCapability;
 import xyz.pixelatedw.mineminenomi.init.ModAbilities;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class GulliversNightmareAbility extends ZoneAbility implements IAwakenable {
     private static final ITextComponent[] DESCRIPTION = AbilityHelper.registerDescriptionText("awakenawakennomi", "gullivers_nightmare", new Pair[]{ImmutablePair.of("", (Object) null)});
     public static final AbilityCore<GulliversNightmareAbility> INSTANCE;
@@ -39,13 +42,20 @@ public class GulliversNightmareAbility extends ZoneAbility implements IAwakenabl
     @Override
     protected void applyEffectToEntityInZone(LivingEntity owner, LivingEntity target) {
         if(!target.hasEffect(ModEffects.GULLIVERS_NIGHTMARE_SHRINK.get())){
-            target.addEffect(new EffectInstance((Effect) ModEffects.GULLIVERS_NIGHTMARE_SHRINK.get(), 10, 0, false, true, true));
+            target.addEffect(new EffectInstance((Effect) ModEffects.GULLIVERS_NIGHTMARE_SHRINK.get(), Integer.MAX_VALUE, 0, false, true, true));
         }
     }
 
     @Override
     protected void onEntityLeavesZone(LivingEntity owner, LivingEntity target) {
         target.removeEffect(ModEffects.GULLIVERS_NIGHTMARE_SHRINK.get());
+    }
+
+    @Override
+    protected List<Effect> getZoneEffectsToClearOnEnd() {
+        List<Effect> effects = new ArrayList<>();
+        effects.add(ModEffects.GULLIVERS_NIGHTMARE_SHRINK.get());
+        return effects;
     }
 
 
