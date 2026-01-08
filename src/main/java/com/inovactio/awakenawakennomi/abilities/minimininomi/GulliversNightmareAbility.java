@@ -1,7 +1,5 @@
 package com.inovactio.awakenawakennomi.abilities.minimininomi;
 
-import com.inovactio.awakenawakennomi.abilities.subesubenomi.SmoothWorldAbility;
-import com.inovactio.awakenawakennomi.abilities.subesubenomi.SubeHelper;
 import com.inovactio.awakenawakennomi.api.abilities.IAwakenable;
 import com.inovactio.awakenawakennomi.api.abilities.ZoneAbility;
 import com.inovactio.awakenawakennomi.init.ModEffects;
@@ -31,7 +29,6 @@ public class GulliversNightmareAbility extends ZoneAbility implements IAwakenabl
     public GulliversNightmareAbility(AbilityCore<GulliversNightmareAbility> core) {
         super(core);
         zoneColor = MiniHelper.MINI_COLOR;
-        this.applyEffectOnUser = true;
     }
 
     protected static boolean canUnlock(LivingEntity user) {
@@ -42,7 +39,7 @@ public class GulliversNightmareAbility extends ZoneAbility implements IAwakenabl
     @Override
     protected void applyEffectToEntityInZone(LivingEntity owner, LivingEntity target) {
         if(!target.hasEffect(ModEffects.GULLIVERS_NIGHTMARE_SHRINK.get())){
-            target.addEffect(new EffectInstance((Effect) ModEffects.GULLIVERS_NIGHTMARE_SHRINK.get(), Integer.MAX_VALUE, 0, false, true, true));
+            target.addEffect(new EffectInstance((Effect) ModEffects.GULLIVERS_NIGHTMARE_SHRINK.get(), (int)this.zoneTime, 0, false, true, true));
         }
     }
 
