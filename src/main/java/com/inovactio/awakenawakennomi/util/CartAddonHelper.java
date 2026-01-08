@@ -1,6 +1,8 @@
 package com.inovactio.awakenawakennomi.util;
 
+import net.MrMagicalCart.cartaddon.init.CartAttributes;
 import net.MrMagicalCart.cartaddon.renderers.layers.*;
+import net.minecraft.entity.ai.attributes.Attribute;
 import top.theillusivec4.curios.client.render.CuriosLayer;
 import xyz.pixelatedw.mineminenomi.renderers.morphs.ZoanMorphRenderer;
 
@@ -56,5 +58,10 @@ public class CartAddonHelper {
     public static void AddCartCuriosLayer(ZoanMorphRenderer renderer)
     {
         renderer.addLayer(new CuriosLayer(renderer));
+    }
+
+    public static Attribute GetCartSizeAttribute()
+    {
+        return CartAttributes.SIZE;
     }
 }

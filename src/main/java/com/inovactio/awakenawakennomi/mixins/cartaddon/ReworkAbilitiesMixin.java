@@ -3,6 +3,7 @@ package com.inovactio.awakenawakennomi.mixins.cartaddon;
 import com.inovactio.awakenawakennomi.abilities.dekadekanomi.TitanAbility;
 import com.inovactio.awakenawakennomi.abilities.dekadekanomi.TitanSmashAbility;
 import com.inovactio.awakenawakennomi.abilities.dekadekanomi.TitanTrampleAbility;
+import com.inovactio.awakenawakennomi.abilities.minimininomi.GulliversNightmareAbility;
 import com.inovactio.awakenawakennomi.util.FruitInjectionHelper;
 import net.MrMagicalCart.cartaddon.init.ReworkAbilities;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,7 +25,9 @@ public class ReworkAbilitiesMixin {
             case "Deka Deka no Mi":
                 FruitInjectionHelper.appendAbilities(fruit, TitanAbility.INSTANCE, TitanTrampleAbility.INSTANCE, TitanSmashAbility.INSTANCE);
                 break;
-
+            case "Mini Mini No Mi":
+                FruitInjectionHelper.appendAbilities(fruit, GulliversNightmareAbility.INSTANCE);
+                break;
             default:
                 // Aucun ajout particulier pour les autres fruits
                 break;

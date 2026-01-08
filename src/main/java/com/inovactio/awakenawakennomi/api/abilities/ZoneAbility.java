@@ -14,6 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.RegistryObject;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -394,26 +395,13 @@ public abstract class ZoneAbility extends Ability {
     private LivingEntity findLivingEntityByUuid(LivingEntity owner, UUID id) {
         if (owner == null || owner.level == null || id == null) return null;
 
-        // Joueurs (lookup direct)
-        if (owner.level.getServer() != null) {
-            PlayerEntity p = owner.level.getServer().getPlayerList().getPlayer(id);
-            if (p != null) return p;
+        // Côté Serveur (Là où la logique des capacités doit s'exécuter)
+        if (owner.level instanceof ServerWorld) {
+            Entity entity = ((ServerWorld) owner.level).getEntity(id);
+            if (entity instanceof LivingEntity && entity.isAlive()) {
+                return (LivingEntity) entity;
+            }
         }
-
-        // Entités chargées autour de la zone (fallback)
-        if (this.centerPos == null || this.zoneSize <= 0) return null;
-
-        double r = this.zoneSize;
-        AxisAlignedBB box = new AxisAlignedBB(
-                this.centerPos.getX() - r, this.centerPos.getY() - r, this.centerPos.getZ() - r,
-                this.centerPos.getX() + r, this.centerPos.getY() + r, this.centerPos.getZ() + r
-        );
-
-        List<Entity> entities = owner.level.getEntitiesOfClass(Entity.class, box, e -> e != null && id.equals(e.getUUID()));
-        for (Entity e : entities) {
-            if (e instanceof LivingEntity) return (LivingEntity) e;
-        }
-
         return null;
     }
 

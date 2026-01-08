@@ -33,7 +33,7 @@ public class SmoothWorldAbility extends ZoneAbility implements IAwakenable {
 
     @Override
     protected void applyEffectToEntityInZone(LivingEntity owner, LivingEntity target) {
-        target.addEffect(new EffectInstance((Effect) ModEffects.SMOOTH_WORLD_SLIDING.get(), 10, 0, false, false, false));
+        target.addEffect(new EffectInstance((Effect) ModEffects.SMOOTH_WORLD_SLIDING.get(), (int)this.zoneTime, 0, false, false, false));
     }
 
     @Override
