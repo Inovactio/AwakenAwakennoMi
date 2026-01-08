@@ -40,7 +40,7 @@ public final class SizeEvents {
         float s = (float) scale;
 
         // IMPORTANT: utiliser l’ancienne taille fournie par l’event comme base, pas entity.getDimensions(...)
-        EntitySize base = event.getOldSize();
+        EntitySize base = event.getNewSize();
         event.setNewSize(base.scale(s), true);
 
         float eye = Math.max(0.05F, base.height * s * 0.85F);

@@ -29,18 +29,12 @@ public abstract class ShrinkEffect extends ModEffect {
     @Override
     public void addAttributeModifiers(LivingEntity entity, AttributeModifierManager map, int amp) {
         super.addAttributeModifiers(entity, map, amp);
-
-        if (!entity.level.isClientSide) {
-            entity.refreshDimensions();
-        }
+        entity.refreshDimensions();
     }
 
     @Override
     public void removeAttributeModifiers(LivingEntity entity, AttributeModifierManager map, int amp) {
         super.removeAttributeModifiers(entity, map, amp);
-
-        if (!entity.level.isClientSide) {
-            entity.refreshDimensions();
-        }
+        entity.refreshDimensions();
     }
 }
