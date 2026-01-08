@@ -39,7 +39,7 @@ public class GulliversNightmareAbility extends ZoneAbility implements IAwakenabl
     @Override
     protected void applyEffectToEntityInZone(LivingEntity owner, LivingEntity target) {
         if(!target.hasEffect(ModEffects.GULLIVERS_NIGHTMARE_SHRINK.get())){
-            target.addEffect(new EffectInstance((Effect) ModEffects.GULLIVERS_NIGHTMARE_SHRINK.get(), (int)this.zoneTime, 0, false, true, true));
+            target.addEffect(new EffectInstance((Effect) ModEffects.GULLIVERS_NIGHTMARE_SHRINK.get(), (int)this.zoneTime, 0, false, false, true));
         }
     }
 

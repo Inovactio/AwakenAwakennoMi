@@ -24,7 +24,6 @@ public final class SizeEvents {
 
         LivingEntity entity = (LivingEntity) event.getEntity();
 
-        // Ne pas doubler le scaling du joueur si CartAddon est chargé (RaceEventsSmall le fait déjà)
         if (AwakenAwakenNoMiMod.hasCartAddonInstalled() && entity instanceof PlayerEntity) return;
 
         if (entity.getPersistentData().getBoolean("awaken_is_morphed")) return;
@@ -39,7 +38,6 @@ public final class SizeEvents {
         scale = safe(scale, 1.0, 0.05, 10.0);
         float s = (float) scale;
 
-        // IMPORTANT: utiliser l’ancienne taille fournie par l’event comme base, pas entity.getDimensions(...)
         EntitySize base = event.getNewSize();
         event.setNewSize(base.scale(s), true);
 
@@ -50,10 +48,6 @@ public final class SizeEvents {
     @SubscribeEvent
     public static void onLivingUpdate(LivingEvent.LivingUpdateEvent event) {
         LivingEntity entity = event.getEntityLiving();
-
-        // Optimisation : Ne rien faire si le monde est distant (client) car les attributs sont gérés par le serveur
-        // Cependant, pour la fluidité, refreshDimensions() doit souvent se produire des deux côtés.
-        // On laisse courir sur les deux sides pour éviter la désynchronisation.
 
         if (shouldSkip(entity)) return;
 
@@ -66,11 +60,9 @@ public final class SizeEvents {
             return;
         }
 
-        // On stocke la dernière échelle connue dans les données persistantes pour éviter de spammer refreshDimensions()
         float lastScale = entity.getPersistentData().getFloat("awaken_last_scale");
         if (lastScale == 0) lastScale = 1.0f;
 
-        // Si l'échelle a changé significativement (plus de 0.01 de différence)
         if (Math.abs(targetScale - lastScale) > 0.01) {
             entity.getPersistentData().putFloat("awaken_last_scale", (float) targetScale);
             entity.refreshDimensions(); // C'est CELA qui déclenche l'event onHitboxRescaleLiving ci-dessous
@@ -78,12 +70,8 @@ public final class SizeEvents {
     }
 
     private static boolean shouldSkip(LivingEntity entity) {
-        // Ne pas doubler le scaling du joueur si CartAddon est chargé
         if (AwakenAwakenNoMiMod.hasCartAddonInstalled() && entity instanceof PlayerEntity) return true;
-        // Ignorer les entités morphées
-        if (entity.getPersistentData().getBoolean("awaken_is_morphed")) return true;
-
-        return false;
+        return entity.getPersistentData().getBoolean("awaken_is_morphed");
     }
 
     private static double safe(double v, double def, double min, double max) {
