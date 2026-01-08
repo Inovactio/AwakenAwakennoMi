@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GulliversNightmareAbility extends ZoneAbility implements IAwakenable {
-    private static final ITextComponent[] DESCRIPTION = AbilityHelper.registerDescriptionText("awakenawakennomi", "gullivers_nightmare", new Pair[]{ImmutablePair.of("", (Object) null)});
+    private static final ITextComponent[] DESCRIPTION = AbilityHelper.registerDescriptionText("awakenawakennomi", "gullivers_nightmare", new Pair[]{ImmutablePair.of("Miniaturize all nearby entities, drastically reducing their physical size and offensive power.", (Object) null)});
     public static final AbilityCore<GulliversNightmareAbility> INSTANCE;
 
     public GulliversNightmareAbility(AbilityCore<GulliversNightmareAbility> core) {
