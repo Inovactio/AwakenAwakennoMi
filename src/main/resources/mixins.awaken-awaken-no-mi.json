@@ -12,7 +12,6 @@
     "AbstractBlockStateMixin",
     "TileEntityRendererDispatcherMixin",
     "BlockShouldRenderMixin",
-    "LivingEntityEyeHeightMixin",
     "cartaddon.ReworkAbilitiesMixin",
     "mineminenomi.abilities.AbilityMixin"
   ],
