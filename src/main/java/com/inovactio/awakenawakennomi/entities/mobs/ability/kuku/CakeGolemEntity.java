@@ -16,10 +16,10 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.pathfinding.GroundPathNavigator;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.potion.Effects;
+import net.minecraft.util.*;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -72,6 +72,7 @@ public class CakeGolemEntity extends OPEntity implements ICommandReceiver, IEnti
     protected final float baseArmor = 2.0F;
     protected final float baseArmorToughness = 1.0F;
     protected final float baseStepHeight = 1.0F;
+    private float playerJumpPendingScale = 0.0F;
 
 
     public CakeGolemEntity(EntityType type, World world) {
@@ -104,12 +105,13 @@ public class CakeGolemEntity extends OPEntity implements ICommandReceiver, IEnti
             this.getAttribute(Attributes.ARMOR).setBaseValue((double) baseArmor * effectiveSize);
             this.getAttribute(Attributes.ARMOR_TOUGHNESS).setBaseValue((double) baseArmorToughness * effectiveSize);
             this.getAttribute((Attribute) ModAttributes.STEP_HEIGHT.get()).setBaseValue((double) baseStepHeight * effectiveSize);
+            this.maxUpStep = baseStepHeight * effectiveSize;
 
             ((GroundPathNavigator) this.getNavigation()).setCanOpenDoors(false);
 
             this.getAttribute(Attributes.MAX_HEALTH).setBaseValue((double) baseHealth * effectiveSize);
             this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue((double) baseAttackDamage * effectiveSize);
-            this.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue((double) 32);
+            this.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue((double) 64);
         }
     }
 
@@ -141,11 +143,29 @@ public class CakeGolemEntity extends OPEntity implements ICommandReceiver, IEnti
         return this.entityData.get(SCALE_SIZE);
     }
 
+    private void refreshStepHeightFromScale() {
+        // Recalcule à partir de tes constantes et du scale actuel
+        float effectiveSize = this.getScaleSize();
+        float step = this.baseStepHeight * effectiveSize;
+
+        // maxUpStep est le step réellement utilisé par la collision/move
+        this.maxUpStep = step;
+
+        // Si ton mod s’appuie aussi sur l’attribut, on le maintient cohérent
+        if (this.getAttribute((net.minecraft.entity.ai.attributes.Attribute) ModAttributes.STEP_HEIGHT.get()) != null) {
+            this.getAttribute((net.minecraft.entity.ai.attributes.Attribute) ModAttributes.STEP_HEIGHT.get())
+                    .setBaseValue((double) step);
+        }
+    }
+
     public void setScaleSize(float size) {
         float clamped = MathHelper.clamp(size, 0.1F, 20.0F);
         this.scaleSize = clamped;
         this.entityData.set(SCALE_SIZE, clamped);
         this.refreshDimensions();
+
+        // \=>\> important: garder maxUpStep cohérent après changement de taille
+        this.refreshStepHeightFromScale();
     }
 
     public void remove(boolean keepData) {
@@ -269,7 +289,10 @@ public class CakeGolemEntity extends OPEntity implements ICommandReceiver, IEnti
         }
 
         int count = Math.max(1, MathHelper.floor(this.getScaleSize())); // 1 * scaleSize
-        this.spawnAtLocation(new ItemStack(Items.CAKE, count), 0.0F);
+
+        for (int i = 0; i < count; i++) {
+            this.spawnAtLocation(new ItemStack(Items.CAKE, 1), 0.0F);
+        }
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -319,4 +342,159 @@ public class CakeGolemEntity extends OPEntity implements ICommandReceiver, IEnti
         return this.lastCommandTime;
     }
 
+    @Override
+    public ActionResultType mobInteract(PlayerEntity player, Hand hand) {
+        // Côté client: on renvoie SUCCESS si c’est le owner pour l’animation
+        if (this.level.isClientSide) {
+            LivingEntity owner = this.getOwner();
+            return (owner != null && owner.getUUID().equals(player.getUUID()))
+                    ? ActionResultType.SUCCESS
+                    : ActionResultType.PASS;
+        }
+
+        // Côté serveur: seul le owner peut monter
+        LivingEntity owner = this.getOwner();
+        if (owner != null && owner.getUUID().equals(player.getUUID())) {
+            if (!player.isPassenger()) {
+                player.startRiding(this, true);
+            }
+            return ActionResultType.CONSUME;
+        }
+
+        return super.mobInteract(player, hand);
+    }
+
+    @Override
+    protected boolean canAddPassenger(Entity passenger) {
+        if (!(passenger instanceof PlayerEntity)) return false;
+
+        LivingEntity owner = this.getOwner();
+        if (owner == null) return false;
+
+        return this.getPassengers().isEmpty()
+                && owner.getUUID().equals(((PlayerEntity) passenger).getUUID());
+    }
+
+    @Override
+    @Nullable
+    public LivingEntity getControllingPassenger() {
+        if (this.getPassengers().isEmpty()) return null;
+        Entity first = this.getPassengers().get(0);
+        return first instanceof LivingEntity ? (LivingEntity) first : null;
+    }
+
+    @Override
+    public boolean canBeControlledByRider() {
+        return true;
+    }
+
+    private boolean isOwnerRiding() {
+        LivingEntity rider = this.getControllingPassenger();
+        LivingEntity owner = this.getOwner();
+        return rider != null && owner != null && rider.getUUID().equals(owner.getUUID());
+    }
+
+    @Override
+    public void positionRider(Entity passenger) {
+        if (this.hasPassenger(passenger)) {
+            double y = this.getY() + (this.getBbHeight() * 0.75D);
+            passenger.setPos(this.getX(), y, this.getZ());
+            return;
+        }
+        super.positionRider(passenger);
+    }
+
+    public void handleStartJump(int jumpPower) {
+        int clamped = MathHelper.clamp(jumpPower, 0, 90);
+        this.playerJumpPendingScale = clamped / 90.0F;
+    }
+
+    private double getCustomJump() {
+        // Utilise ton attribut (dans ton createAttributes tu ajoutes ModAttributes.JUMP_HEIGHT)
+        // Ajuste si chez toi cet attribut n'existe pas ou porte un autre nom.
+        if (this.getAttribute((Attribute) ModAttributes.JUMP_HEIGHT.get()) != null) {
+            return this.getAttribute((Attribute) ModAttributes.JUMP_HEIGHT.get()).getValue();
+        }
+        return this.getJumpPower(); // fallback LivingEntity
+    }
+
+    @Override
+    public void travel(Vector3d travelVector) {
+        if (!this.isAlive()) return;
+
+        if (this.isVehicle() && this.canBeControlledByRider() && this.isOwnerRiding()) {
+            this.refreshStepHeightFromScale();
+
+            LivingEntity rider = this.getControllingPassenger();
+            if (rider == null) {
+                super.travel(travelVector);
+                return;
+            }
+
+            // Orientation "monture"
+            this.yRot = rider.yRot;
+            this.yRotO = this.yRot;
+            this.xRot = rider.xRot * 0.5F;
+            this.setRot(this.yRot, this.xRot);
+            this.yBodyRot = this.yRot;
+            this.yHeadRot = this.yBodyRot;
+
+            // Inputs façon cheval
+            float f = rider.xxa * 0.5F; // strafe
+            float f1 = rider.zza;       // forward
+            if (f1 <= 0.0F) {
+                f1 *= 0.25F; // nerf marche arrière
+            }
+
+            // Saut (si "pending" > 0 et onGround)
+            if (this.playerJumpPendingScale > 0.0F && !this.jumping && this.onGround) {
+                double d0 = this.getCustomJump() * (double) this.playerJumpPendingScale * (double) this.getBlockJumpFactor();
+                double d1 = d0;
+
+                if (this.hasEffect(Effects.JUMP)) {
+                    d1 = d0 + (double) ((float) (this.getEffect(Effects.JUMP).getAmplifier() + 1) * 0.1F);
+                }
+
+                Vector3d motion = this.getDeltaMovement();
+                this.setDeltaMovement(motion.x, d1, motion.z);
+
+                this.jumping = true;
+                this.hasImpulse = true;
+                net.minecraftforge.common.ForgeHooks.onLivingJump(this);
+
+                // Petit boost avant pendant le saut si on avance
+                if (f1 > 0.0F) {
+                    float s = MathHelper.sin(this.yRot * ((float) Math.PI / 180F));
+                    float c = MathHelper.cos(this.yRot * ((float) Math.PI / 180F));
+                    this.setDeltaMovement(this.getDeltaMovement().add(
+                            (double) (-0.4F * s * this.playerJumpPendingScale),
+                            0.0D,
+                            (double) (0.4F * c * this.playerJumpPendingScale)
+                    ));
+                }
+
+                this.playerJumpPendingScale = 0.0F;
+            }
+
+            this.flyingSpeed = this.getSpeed() * 0.1F;
+
+            if (this.isControlledByLocalInstance()) {
+                this.setSpeed((float) this.getAttributeValue(Attributes.MOVEMENT_SPEED));
+                super.travel(new Vector3d((double) f, travelVector.y, (double) f1));
+            } else if (rider instanceof PlayerEntity) {
+                this.setDeltaMovement(Vector3d.ZERO);
+            }
+
+            if (this.onGround) {
+                this.playerJumpPendingScale = 0.0F;
+                this.jumping = false;
+            }
+
+            this.calculateEntityAnimation(this, false);
+            return;
+        }
+
+        this.flyingSpeed = 0.02F;
+        super.travel(travelVector);
+    }
 }

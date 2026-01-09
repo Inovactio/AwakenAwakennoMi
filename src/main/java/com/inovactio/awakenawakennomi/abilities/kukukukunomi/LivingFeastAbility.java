@@ -25,8 +25,8 @@ import javax.annotation.Nullable;
 public class LivingFeastAbility extends Ability implements IAwakenable {
 
     private static final int CHARGE_TIME = 100;
-    private static final int MIN_COOLDOWN = 200;
-    private static final int MAX_COOLDOWN = 4000;
+    private static final int MIN_COOLDOWN = 1000;
+    private static final int MAX_COOLDOWN = 5000;
     private static final float MULTIPLIER_MIN = 0.0F;
     private static final float MULTIPLIER_MAX = 5.0F;
     private static final int MIN_FOOD_LEVEL = 6;
