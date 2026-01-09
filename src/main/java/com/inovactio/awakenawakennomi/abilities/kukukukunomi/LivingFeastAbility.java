@@ -2,46 +2,81 @@ package com.inovactio.awakenawakennomi.abilities.kukukukunomi;
 
 import com.inovactio.awakenawakennomi.api.abilities.IAwakenable;
 import com.inovactio.awakenawakennomi.entities.mobs.ability.kuku.CakeGolemEntity;
+import com.inovactio.awakenawakennomi.util.InoHelper;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.FoodStats;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import xyz.pixelatedw.mineminenomi.api.abilities.*;
-import xyz.pixelatedw.mineminenomi.api.abilities.components.AbilityComponent;
-import xyz.pixelatedw.mineminenomi.api.abilities.components.ContinuousComponent;
-import xyz.pixelatedw.mineminenomi.api.abilities.components.CooldownComponent;
-import xyz.pixelatedw.mineminenomi.api.abilities.components.StackComponent;
+import xyz.pixelatedw.mineminenomi.api.abilities.components.*;
 import xyz.pixelatedw.mineminenomi.api.helpers.AbilityHelper;
 import xyz.pixelatedw.mineminenomi.data.entity.devilfruit.DevilFruitCapability;
 import xyz.pixelatedw.mineminenomi.init.ModAbilities;
+import xyz.pixelatedw.mineminenomi.init.ModSounds;
 
 import javax.annotation.Nullable;
 
 public class LivingFeastAbility extends Ability implements IAwakenable {
-    private static final int HOLD_TIME = 12000;
-    private static final int MIN_COOLDOWN = 40;
-    private static final int MAX_COOLDOWN = 2000;
+
+    private static final int CHARGE_TIME = 100;
+    private static final int MIN_COOLDOWN = 200;
+    private static final int MAX_COOLDOWN = 4000;
+    private static final float MULTIPLIER_MIN = 0.0F;
+    private static final float MULTIPLIER_MAX = 5.0F;
+    private static final int MIN_FOOD_LEVEL = 6;
     private static final ITextComponent[] DESCRIPTION = AbilityHelper.registerDescriptionText("awakenawakennomi", "living_feast", new Pair[]{ImmutablePair.of("The user summons a genie that fights for them.", (Object)null)});
     public static final AbilityCore<LivingFeastAbility> INSTANCE;
     private final ContinuousComponent continuousComponent = (new ContinuousComponent(this, true)).addStartEvent(100, this::startContinuityEvent).addTickEvent(100, this::onTickEvent).addEndEvent(100, this::stopContinuityEvent);
     private final StackComponent stackComponent = new StackComponent(this);
+    private final ChargeComponent chargeComponent = (new ChargeComponent(this)).addStartEvent(this::startChargeEvent).addEndEvent(this::stopChargeEvent);
     private CakeGolemEntity cakeGolem = null;
 
     public LivingFeastAbility(AbilityCore<LivingFeastAbility> core) {
         super(core);
         this.isNew = true;
-        this.addComponents(new AbilityComponent[]{this.continuousComponent, this.stackComponent});
+        this.addComponents(new AbilityComponent[]{this.continuousComponent, this.stackComponent, this.chargeComponent});
         this.addUseEvent(this::onUseEvent);
     }
 
     private void onUseEvent(LivingEntity entity, IAbility ability) {
+        if(this.continuousComponent.isContinuous())
+        {
+            this.continuousComponent.stopContinuity(entity);
+            return;
+        }
+        if(this.chargeComponent.isCharging()){
+            return;
+        }
+        this.chargeComponent.startCharging(entity, CHARGE_TIME);
+    }
+
+    private void startChargeEvent(LivingEntity entity, IAbility ability){
+
+    }
+
+    private void stopChargeEvent(LivingEntity entity, IAbility ability) {
         this.continuousComponent.triggerContinuity(entity);
     }
 
+
+
     private void startContinuityEvent(LivingEntity entity, IAbility ability) {
-        this.cakeGolem = new CakeGolemEntity(entity.level, entity);
+        float multiplier = MULTIPLIER_MIN;
+
+        if (entity instanceof PlayerEntity) {
+            PlayerEntity player = (PlayerEntity) entity;
+
+            multiplier = getFoodMultiplier(player);
+            updateFoodLevel(player);
+        }
+
+        this.cakeGolem = new CakeGolemEntity(entity.level, entity, multiplier);
         this.cakeGolem.moveTo(entity.getX(), entity.getY(), entity.getZ(), entity.yRot, entity.xRot);
         entity.level.addFreshEntity(this.cakeGolem);
     }
@@ -55,7 +90,7 @@ public class LivingFeastAbility extends Ability implements IAwakenable {
 
     private void stopContinuityEvent(LivingEntity entity, IAbility ability) {
         if (this.cakeGolem != null) {
-            this.cakeGolem.remove();
+            this.cakeGolem.kill();
         }
 
         float cooldown = MathHelper.clamp(this.continuousComponent.getContinueTime(), MIN_COOLDOWN, MAX_COOLDOWN);
@@ -74,6 +109,36 @@ public class LivingFeastAbility extends Ability implements IAwakenable {
 
     public void load(CompoundNBT nbt) {
         super.load(nbt);
+    }
+
+    private float getFoodMultiplier(PlayerEntity player) {
+        if (player.abilities.instabuild) {
+            return MULTIPLIER_MAX;
+        }
+
+        FoodStats food = player.getFoodData();
+        int foodLevel = food.getFoodLevel();
+        float saturation = food.getSaturationLevel();
+
+        float foodNorm = foodLevel / 20.0F;
+        float satNorm = MathHelper.clamp(saturation / 20.0F, 0.0F, 1.0F);
+        float score = (foodNorm * 0.6F) + (satNorm * 0.4F); // 0..1
+
+        return MathHelper.lerp(score, MULTIPLIER_MIN, MULTIPLIER_MAX);
+    }
+
+    private void updateFoodLevel(PlayerEntity player) {
+        if (player.abilities.instabuild) {
+            return;
+        }
+
+        FoodStats food = player.getFoodData();
+        int foodLevel = food.getFoodLevel();
+
+        if (foodLevel >= MIN_FOOD_LEVEL) {
+            food.setSaturation(0.0F);
+            food.setFoodLevel(MIN_FOOD_LEVEL);
+        }
     }
 
     protected static boolean canUnlock(LivingEntity user) {

@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 import xyz.pixelatedw.mineminenomi.renderers.entities.GorillaRenderer;
@@ -32,6 +33,13 @@ public class CakeGolemRenderer extends MobRenderer<CakeGolemEntity, CakeGolemMod
             float f2 = (Math.abs(f1 % 13.0F - 6.5F) - 3.25F) / 3.25F;
             stack.mulPose(Vector3f.ZP.rotationDegrees(6.5F * f2));
         }
+    }
+
+    @Override
+    protected void scale(CakeGolemEntity entity, MatrixStack stack, float partialTickTime) {
+        float s = MathHelper.clamp(entity.getScaleSize(), 0.1F, 20.0F);
+        stack.scale(s, s, s);
+        super.scale(entity, stack, partialTickTime);
     }
 
     public static class Factory implements IRenderFactory<CakeGolemEntity> {

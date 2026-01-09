@@ -90,7 +90,7 @@ public class ModAbilitiesMixin {
                 FruitInjectionHelper.appendAbilities(fruit, EtherealWhisperAbility.INSTANCE);
                 break;
 
-            case "Kuku Kuku No Mi":
+            case "Kuku Kuku no Mi":
                 FruitInjectionHelper.appendAbilities(fruit, LivingFeastAbility.INSTANCE);
                 break;
 

@@ -7,12 +7,20 @@ import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.pathfinding.GroundPathNavigator;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -31,10 +39,9 @@ import xyz.pixelatedw.mineminenomi.data.entity.entitystats.IEntityStats;
 import xyz.pixelatedw.mineminenomi.data.entity.haki.HakiDataCapability;
 import xyz.pixelatedw.mineminenomi.data.entity.haki.IHakiData;
 import xyz.pixelatedw.mineminenomi.entities.mobs.OPEntity;
+import xyz.pixelatedw.mineminenomi.entities.mobs.ability.DoppelmanEntity;
 import xyz.pixelatedw.mineminenomi.entities.mobs.ability.NightmareSoldierEntity;
 import xyz.pixelatedw.mineminenomi.entities.mobs.bandits.AbstractBanditEntity;
-import xyz.pixelatedw.mineminenomi.entities.mobs.goals.DashDodgeProjectilesGoal;
-import xyz.pixelatedw.mineminenomi.entities.mobs.goals.DashDodgeTargetGoal;
 import xyz.pixelatedw.mineminenomi.entities.mobs.goals.FactionHurtByTargetGoal;
 import xyz.pixelatedw.mineminenomi.entities.mobs.goals.abilities.haki.BusoshokuHakiEmissionWrapperGoal;
 import xyz.pixelatedw.mineminenomi.entities.mobs.goals.abilities.haki.BusoshokuHakiHardeningWrapperGoal;
@@ -49,6 +56,7 @@ import java.util.UUID;
 import java.util.function.Predicate;
 
 public class CakeGolemEntity extends OPEntity implements ICommandReceiver, IEntityAdditionalSpawnData {
+    private static final DataParameter<Float> SCALE_SIZE = EntityDataManager.defineId(CakeGolemEntity.class, DataSerializers.FLOAT);
     @Nullable
     private UUID ownerId;
     @Nullable
@@ -57,16 +65,30 @@ public class CakeGolemEntity extends OPEntity implements ICommandReceiver, IEnti
     private LivingEntity lastCommandSender;
     private NPCCommand currentCommand;
     private int attackAnimationTick;
+    protected float scaleSize;
+    protected final float baseHealth = 100.0F;
+    protected final float baseAttackDamage = 5.0F;
+    protected final float baseToughness = 0.5F;
+    protected final float baseArmor = 2.0F;
+    protected final float baseArmorToughness = 1.0F;
+    protected final float baseStepHeight = 1.0F;
+
 
     public CakeGolemEntity(EntityType type, World world) {
         super(type, world);
         this.currentCommand = NPCCommand.IDLE;
+        this.scaleSize = 1.0F;
     }
 
     public CakeGolemEntity(World world, LivingEntity owner) {
+        this(world, owner, 1.0F);
+    }
+
+    public CakeGolemEntity(World world, LivingEntity owner, float size) {
         super((EntityType) KukuMobs.CAKE_GOLEM.get(), world);
         this.attackAnimationTick = 10;
         this.currentCommand = NPCCommand.IDLE;
+        this.setScaleSize(size);
         if (world != null && !world.isClientSide) {
             this.setOwner(owner);
             this.setDetails();
@@ -76,18 +98,18 @@ public class CakeGolemEntity extends OPEntity implements ICommandReceiver, IEnti
             IHakiData ownerHakiProps = HakiDataCapability.get(owner);
             IHakiData hakiProps = HakiDataCapability.get(this);
             hakiProps.setBusoshokuHakiExp(ownerHakiProps.getBusoshokuHakiExp());
-            this.getAttribute((Attribute) ModAttributes.TOUGHNESS.get()).setBaseValue((double)9.0F);
-            this.getAttribute(Attributes.ARMOR).setBaseValue((double)24.0F);
-            this.getAttribute(Attributes.ARMOR_TOUGHNESS).setBaseValue((double)13.0F);
-            this.getAttribute((Attribute)ModAttributes.STEP_HEIGHT.get()).setBaseValue((double)8.0F);
-            ((GroundPathNavigator)this.getNavigation()).setCanOpenDoors(false);
-            if (EntityStatsCapability.get(owner).getDoriki() < (double)10000.0F) {
-                this.getAttribute(Attributes.MAX_HEALTH).setBaseValue((double)150.0F + EntityStatsCapability.get(owner).getDoriki() / (double)50.0F);
-                this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue((double)12.0F + EntityStatsCapability.get(owner).getDoriki() / (double)1000.0F);
-            } else {
-                this.getAttribute(Attributes.MAX_HEALTH).setBaseValue((double)350.0F);
-                this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue((double)22.0F);
-            }
+
+            float effectiveSize = this.getScaleSize();
+            this.getAttribute((Attribute) ModAttributes.TOUGHNESS.get()).setBaseValue((double) baseToughness * effectiveSize);
+            this.getAttribute(Attributes.ARMOR).setBaseValue((double) baseArmor * effectiveSize);
+            this.getAttribute(Attributes.ARMOR_TOUGHNESS).setBaseValue((double) baseArmorToughness * effectiveSize);
+            this.getAttribute((Attribute) ModAttributes.STEP_HEIGHT.get()).setBaseValue((double) baseStepHeight * effectiveSize);
+
+            ((GroundPathNavigator) this.getNavigation()).setCanOpenDoors(false);
+
+            this.getAttribute(Attributes.MAX_HEALTH).setBaseValue((double) baseHealth * effectiveSize);
+            this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue((double) baseAttackDamage * effectiveSize);
+            this.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue((double) 32);
         }
     }
 
@@ -95,8 +117,6 @@ public class CakeGolemEntity extends OPEntity implements ICommandReceiver, IEnti
         CommandAbility.addCommandGoals(this);
         this.goalSelector.addGoal(0, new SwimGoal(this));
         this.goalSelector.addGoal(0, new OpenDoorGoal(this, false));
-        this.goalSelector.addGoal(0, new DashDodgeProjectilesGoal(this, 250.0F, 2.5F));
-        this.goalSelector.addGoal(0, new DashDodgeTargetGoal(this, 250.0F, 2.5F));
         this.goalSelector.addGoal(1, new MeleeAttackGoal(this, (double)1.0F, true));
         this.goalSelector.addGoal(3, new WaterAvoidingRandomWalkingGoal(this, 0.8));
         this.goalSelector.addGoal(5, new LookAtGoal(this, PlayerEntity.class, 8.0F));
@@ -108,11 +128,24 @@ public class CakeGolemEntity extends OPEntity implements ICommandReceiver, IEnti
     }
 
     public static AttributeModifierMap.MutableAttribute createAttributes() {
-        return OPEntity.createAttributes().add(Attributes.FOLLOW_RANGE, (double)64.0F).add(Attributes.MOVEMENT_SPEED, 0.65).add(Attributes.ATTACK_DAMAGE, (double)22.0F).add(Attributes.MAX_HEALTH, (double)650.0F).add(Attributes.KNOCKBACK_RESISTANCE, (double)3.0F);
+        return OPEntity.createAttributes().add(Attributes.FOLLOW_RANGE, (double)64.0F).add(Attributes.MOVEMENT_SPEED, 0.30).add(Attributes.ATTACK_DAMAGE, (double)22.0F).add(Attributes.MAX_HEALTH, (double)650.0F).add(Attributes.KNOCKBACK_RESISTANCE, (double)3.0F).add((Attribute)ModAttributes.JUMP_HEIGHT.get(), 4F);
     }
 
+    @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
+        this.entityData.define(SCALE_SIZE, 1.0F);
+    }
+
+    public float getScaleSize() {
+        return this.entityData.get(SCALE_SIZE);
+    }
+
+    public void setScaleSize(float size) {
+        float clamped = MathHelper.clamp(size, 0.1F, 20.0F);
+        this.scaleSize = clamped;
+        this.entityData.set(SCALE_SIZE, clamped);
+        this.refreshDimensions();
     }
 
     public void remove(boolean keepData) {
@@ -124,6 +157,7 @@ public class CakeGolemEntity extends OPEntity implements ICommandReceiver, IEnti
     }
 
     public boolean doHurtTarget(Entity target) {
+        this.attackAnimationTick = 10;
         float damage = (float)this.getAttribute(Attributes.ATTACK_DAMAGE).getValue();
         int knockback = 0;
         if (target instanceof LivingEntity) {
@@ -137,6 +171,7 @@ public class CakeGolemEntity extends OPEntity implements ICommandReceiver, IEnti
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.6, (double)1.0F, 0.6));
         }
 
+        this.playSound(SoundEvents.IRON_GOLEM_ATTACK, 1.0F, 1.0F);
         return flag;
     }
 
@@ -160,8 +195,22 @@ public class CakeGolemEntity extends OPEntity implements ICommandReceiver, IEnti
         super.tick();
     }
 
+    @Override
     public EntitySize getDimensions(Pose pose) {
-        return super.getDimensions(pose);
+        return super.getDimensions(pose).scale(this.getScaleSize());
+    }
+
+    @Override
+    public void writeSpawnData(PacketBuffer buffer) {
+        buffer.writeUUID(this.ownerId);
+        buffer.writeFloat(this.getScaleSize());
+    }
+
+
+    @Override
+    public void readSpawnData(PacketBuffer data) {
+        this.ownerId = data.readUUID();
+        this.setScaleSize(data.readFloat());
     }
 
     public void addAdditionalSaveData(CompoundNBT nbt) {
@@ -178,14 +227,6 @@ public class CakeGolemEntity extends OPEntity implements ICommandReceiver, IEnti
             this.ownerId = nbt.getUUID("ownerId");
         }
 
-    }
-
-    public void writeSpawnData(PacketBuffer buffer) {
-        buffer.writeUUID(this.ownerId);
-    }
-
-    public void readSpawnData(PacketBuffer data) {
-        this.ownerId = data.readUUID();
     }
 
     public IPacket<?> getAddEntityPacket() {
@@ -216,9 +257,34 @@ public class CakeGolemEntity extends OPEntity implements ICommandReceiver, IEnti
 
     }
 
+    @Override
+    protected void dropCustomDeathLoot(DamageSource source, int looting, boolean recentlyHit) {
+        super.dropCustomDeathLoot(source, looting, recentlyHit);
+
+        if (this.level.isClientSide) {
+            return;
+        }
+        if (!this.level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
+            return;
+        }
+
+        int count = Math.max(1, MathHelper.floor(this.getScaleSize())); // 1 * scaleSize
+        this.spawnAtLocation(new ItemStack(Items.CAKE, count), 0.0F);
+    }
+
     @OnlyIn(Dist.CLIENT)
     public int getAttackAnimationTick() {
         return this.attackAnimationTick;
+    }
+
+    @Override
+    protected SoundEvent getHurtSound(DamageSource damageSource) {
+        return SoundEvents.IRON_GOLEM_HURT;
+    }
+
+    @Override
+    protected SoundEvent getDeathSound() {
+        return SoundEvents.IRON_GOLEM_DEATH;
     }
 
     @Nullable
@@ -252,4 +318,5 @@ public class CakeGolemEntity extends OPEntity implements ICommandReceiver, IEnti
     public long getLastCommandTime() {
         return this.lastCommandTime;
     }
+
 }
