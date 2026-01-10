@@ -10,6 +10,7 @@ import com.inovactio.awakenawakennomi.abilities.hitohitonomi.AwakenHumanFormAbil
 import com.inovactio.awakenawakennomi.abilities.kamekamenomi.AwakenKameWalkPointAbility;
 import com.inovactio.awakenawakennomi.abilities.kamekamenomi.SpinAbility;
 import com.inovactio.awakenawakennomi.abilities.kobukobunomi.OneManArmyAbility;
+import com.inovactio.awakenawakennomi.abilities.kukukukunomi.LivingFeastAbility;
 import com.inovactio.awakenawakennomi.abilities.minimininomi.GulliversNightmareAbility;
 import com.inovactio.awakenawakennomi.abilities.mogumogunomi.AwakenMoguHeavyPointAbility;
 import com.inovactio.awakenawakennomi.abilities.mogumogunomi.MoguDigAbility;
@@ -87,6 +88,10 @@ public class ModAbilitiesMixin {
 
             case "Hiso Hiso No Mi":
                 FruitInjectionHelper.appendAbilities(fruit, EtherealWhisperAbility.INSTANCE);
+                break;
+
+            case "Kuku Kuku no Mi":
+                FruitInjectionHelper.appendAbilities(fruit, LivingFeastAbility.INSTANCE);
                 break;
 
             default:

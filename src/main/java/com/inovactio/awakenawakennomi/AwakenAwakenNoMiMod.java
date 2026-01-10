@@ -1,10 +1,7 @@
 package com.inovactio.awakenawakennomi;
 
 import com.inovactio.awakenawakennomi.config.CommonConfig;
-import com.inovactio.awakenawakennomi.init.AwakenAttributes;
-import com.inovactio.awakenawakennomi.init.ModAnimations;
-import com.inovactio.awakenawakennomi.init.ModEffects;
-import com.inovactio.awakenawakennomi.init.ModMorphs;
+import com.inovactio.awakenawakennomi.init.*;
 import com.inovactio.awakenawakennomi.network.ModNetwork;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -38,7 +35,9 @@ public class AwakenAwakenNoMiMod
         ModAnimations.clientInit();
         ModMorphs.register(modEventBus);
         ModEffects.register(modEventBus);
+        ModEntities.register(modEventBus);
         AwakenAttributes.register(modEventBus);
+
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, CommonConfig.SPEC);
         // Register ourselves for server and other game events we are interested in
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
