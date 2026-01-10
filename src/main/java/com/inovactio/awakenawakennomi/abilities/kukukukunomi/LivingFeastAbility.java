@@ -2,13 +2,11 @@ package com.inovactio.awakenawakennomi.abilities.kukukukunomi;
 
 import com.inovactio.awakenawakennomi.api.abilities.IAwakenable;
 import com.inovactio.awakenawakennomi.entities.mobs.ability.kuku.CakeGolemEntity;
-import com.inovactio.awakenawakennomi.util.InoHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.FoodStats;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -30,7 +28,7 @@ public class LivingFeastAbility extends Ability implements IAwakenable {
     private static final float MULTIPLIER_MIN = 0.0F;
     private static final float MULTIPLIER_MAX = 5.0F;
     private static final int MIN_FOOD_LEVEL = 6;
-    private static final ITextComponent[] DESCRIPTION = AbilityHelper.registerDescriptionText("awakenawakennomi", "living_feast", new Pair[]{ImmutablePair.of("The user summons a genie that fights for them.", (Object)null)});
+    private static final ITextComponent[] DESCRIPTION = AbilityHelper.registerDescriptionText("awakenawakennomi", "living_feast", new Pair[]{ImmutablePair.of("Sacrifice your own hunger and saturation to breathe life into a loyal Cake Golem. The more nourishment you surrender, the larger and more powerful your creation becomes.", (Object)null)});
     public static final AbilityCore<LivingFeastAbility> INSTANCE;
     private final ContinuousComponent continuousComponent = (new ContinuousComponent(this, true)).addStartEvent(100, this::startContinuityEvent).addTickEvent(100, this::onTickEvent).addEndEvent(100, this::stopContinuityEvent);
     private final StackComponent stackComponent = new StackComponent(this);
@@ -155,7 +153,8 @@ public class LivingFeastAbility extends Ability implements IAwakenable {
         INSTANCE = new AbilityCore.Builder<>("Living Feast", AbilityCategory.DEVIL_FRUITS, LivingFeastAbility::new)
                 .setUnlockCheck(LivingFeastAbility::canUnlock)
                 .addDescriptionLine(DESCRIPTION)
-                .addAdvancedDescriptionLine(new AbilityDescriptionLine.IDescriptionLine[]{AbilityDescriptionLine.NEW_LINE, ContinuousComponent.getTooltip(), CooldownComponent.getTooltip(40.0F, 2000.0F)})
+                .setIcon(new ResourceLocation("awakenawakennomi", "textures/abilities/kuku/living_feast.png"))
+                .addAdvancedDescriptionLine(new AbilityDescriptionLine.IDescriptionLine[]{AbilityDescriptionLine.NEW_LINE, ContinuousComponent.getTooltip(), CooldownComponent.getTooltip(MIN_COOLDOWN,MAX_COOLDOWN)})
                 .build();
     }
 }

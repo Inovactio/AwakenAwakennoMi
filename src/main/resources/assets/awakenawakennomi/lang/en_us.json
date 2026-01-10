@@ -23,6 +23,7 @@
   "ability.mineminenomi.one_man_army": "One Man Army",
   "ability.mineminenomi.gullivers_nightmare": "Gulliver's Nightmare",
   "ability.mineminenomi.ethereal_whisper": "Ethereal Whisper",
+  "ability.mineminenomi.living_feast": "Living Feast",
 
   "ability.awakenawakennomi.invisible_zone.description.0": "Creates an invisible zone that spreads invisibility to nearby blocks.",
   "ability.awakenawakennomi.invisible_touch.description.0": "Turns a targeted block invisible after hitting it.",
@@ -45,6 +46,7 @@
   "ability.awakenawakennomi.one_man_army.description.0": "Infuse the revolutionary spirit within yourself to transcend your limits and become an unstoppable one-man army for a brief duration.",
   "ability.awakenawakennomi.gullivers_nightmare.description.0": "Miniaturize all nearby entities, drastically reducing their physical size and offensive power.",
   "ability.awakenawakennomi.ethereal_whisper.description.0": "Launch a spectral whisper projectile that damages enemies and disorients their senses with haunting echoes.",
+  "ability.awakenawakennomi.living_feast.description.0": "Sacrifice your own hunger and saturation to breathe life into a loyal Cake Golem. The more nourishment you surrender, the larger and more powerful your creation becomes.",
 
   "awakenawakennomi.ability.ground_only": "You must be on the ground to use this ability.",
 
