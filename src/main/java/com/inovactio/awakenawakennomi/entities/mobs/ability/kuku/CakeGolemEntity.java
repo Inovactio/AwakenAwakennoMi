@@ -73,6 +73,7 @@ public class CakeGolemEntity extends OPEntity implements ICommandReceiver, IEnti
     protected final float baseArmorToughness = 1.0F;
     protected final float baseStepHeight = 1.0F;
     private float playerJumpPendingScale = 0.0F;
+    protected final double baseFollowRange = 64.0D;
 
 
     public CakeGolemEntity(EntityType type, World world) {
@@ -111,7 +112,7 @@ public class CakeGolemEntity extends OPEntity implements ICommandReceiver, IEnti
 
             this.getAttribute(Attributes.MAX_HEALTH).setBaseValue((double) baseHealth * effectiveSize);
             this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue((double) baseAttackDamage * effectiveSize);
-            this.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue((double) 64);
+            this.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue((double) baseFollowRange * (effectiveSize/2));
         }
     }
 
@@ -164,8 +165,11 @@ public class CakeGolemEntity extends OPEntity implements ICommandReceiver, IEnti
         this.entityData.set(SCALE_SIZE, clamped);
         this.refreshDimensions();
 
-        // \=>\> important: garder maxUpStep cohérent après changement de taille
+        // garder maxUpStep cohérent après changement de taille
         this.refreshStepHeightFromScale();
+
+        // mettre à jour la portée de détection en fonction de la taille
+        this.refreshFollowRangeFromScale();
     }
 
     public void remove(boolean keepData) {
@@ -496,5 +500,12 @@ public class CakeGolemEntity extends OPEntity implements ICommandReceiver, IEnti
 
         this.flyingSpeed = 0.02F;
         super.travel(travelVector);
+    }
+
+    private void refreshFollowRangeFromScale() {
+        double effectiveSize = Math.max(0.1D, (double)this.getScaleSize()); // éviter 0
+        if (this.getAttribute(Attributes.FOLLOW_RANGE) != null) {
+            this.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(this.baseFollowRange * (effectiveSize/2));
+        }
     }
 }
