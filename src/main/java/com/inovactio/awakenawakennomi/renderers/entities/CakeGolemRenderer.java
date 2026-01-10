@@ -10,7 +10,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
-import xyz.pixelatedw.mineminenomi.renderers.entities.GorillaRenderer;
 
 public class CakeGolemRenderer extends MobRenderer<CakeGolemEntity, CakeGolemModel<CakeGolemEntity>> {
     private final ResourceLocation texture;

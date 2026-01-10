@@ -39,7 +39,6 @@ import xyz.pixelatedw.mineminenomi.data.entity.entitystats.IEntityStats;
 import xyz.pixelatedw.mineminenomi.data.entity.haki.HakiDataCapability;
 import xyz.pixelatedw.mineminenomi.data.entity.haki.IHakiData;
 import xyz.pixelatedw.mineminenomi.entities.mobs.OPEntity;
-import xyz.pixelatedw.mineminenomi.entities.mobs.ability.DoppelmanEntity;
 import xyz.pixelatedw.mineminenomi.entities.mobs.ability.NightmareSoldierEntity;
 import xyz.pixelatedw.mineminenomi.entities.mobs.bandits.AbstractBanditEntity;
 import xyz.pixelatedw.mineminenomi.entities.mobs.goals.FactionHurtByTargetGoal;
@@ -145,14 +144,11 @@ public class CakeGolemEntity extends OPEntity implements ICommandReceiver, IEnti
     }
 
     private void refreshStepHeightFromScale() {
-        // Recalcule à partir de tes constantes et du scale actuel
         float effectiveSize = this.getScaleSize();
         float step = this.baseStepHeight * effectiveSize;
 
-        // maxUpStep est le step réellement utilisé par la collision/move
         this.maxUpStep = step;
 
-        // Si ton mod s’appuie aussi sur l’attribut, on le maintient cohérent
         if (this.getAttribute((net.minecraft.entity.ai.attributes.Attribute) ModAttributes.STEP_HEIGHT.get()) != null) {
             this.getAttribute((net.minecraft.entity.ai.attributes.Attribute) ModAttributes.STEP_HEIGHT.get())
                     .setBaseValue((double) step);
@@ -165,10 +161,8 @@ public class CakeGolemEntity extends OPEntity implements ICommandReceiver, IEnti
         this.entityData.set(SCALE_SIZE, clamped);
         this.refreshDimensions();
 
-        // garder maxUpStep cohérent après changement de taille
         this.refreshStepHeightFromScale();
 
-        // mettre à jour la portée de détection en fonction de la taille
         this.refreshFollowRangeFromScale();
     }
 

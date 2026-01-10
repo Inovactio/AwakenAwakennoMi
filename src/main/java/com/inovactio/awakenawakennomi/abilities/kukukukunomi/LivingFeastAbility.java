@@ -16,7 +16,6 @@ import xyz.pixelatedw.mineminenomi.api.abilities.components.*;
 import xyz.pixelatedw.mineminenomi.api.helpers.AbilityHelper;
 import xyz.pixelatedw.mineminenomi.data.entity.devilfruit.DevilFruitCapability;
 import xyz.pixelatedw.mineminenomi.init.ModAbilities;
-import xyz.pixelatedw.mineminenomi.init.ModSounds;
 
 import javax.annotation.Nullable;
 
