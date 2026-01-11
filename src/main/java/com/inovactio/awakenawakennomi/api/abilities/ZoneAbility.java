@@ -49,7 +49,6 @@ import java.util.UUID;
 import java.util.function.Predicate;
 
 public abstract class ZoneAbility extends Ability {
-    private static final ITextComponent[] DESCRIPTION = AbilityHelper.registerDescriptionText("awakenawakennomi", "awaken_smooth_world", new Pair[]{ImmutablePair.of("Creates a spherical space around the user in which they can manipulate anything or use other skills", (Object)null)});
     private static final BlockProtectionRule GRIEF_RULE;
     protected int minZoneSize = 0;
     protected int maxZoneSize = 128;
@@ -73,7 +72,7 @@ public abstract class ZoneAbility extends Ability {
     private BlockPos centerPos;
     protected boolean isShrinking = false;
     private Interval checkPositionInterval = new Interval(chargeTime);
-    private Interval playSoundInterval = new Interval(18);
+    protected Interval playSoundInterval = new Interval(18);
     private final Set<UUID> affectedEntities = new HashSet<>();
 
     protected static final int MIN_CHARGE_TIME = 60;
@@ -105,7 +104,7 @@ public abstract class ZoneAbility extends Ability {
         } else {
             if (onGroundOnly && !ensureOnGroundOrNotify(entity)) return;
             this.checkPositionInterval.restartIntervalToZero();
-            entity.level.playSound((PlayerEntity)null, entity.blockPosition(), (SoundEvent)ModSounds.ROOM_CREATE_SFX.get(), SoundCategory.PLAYERS, 5.0F, 1.0F);
+            playSoundOnCreate(entity);
             this.isShrinking = false;
             this.setupSphere(entity);
             this.chargeComponent.startCharging(entity, chargeTime);
@@ -123,9 +122,7 @@ public abstract class ZoneAbility extends Ability {
 
     protected void onChargeTick(LivingEntity entity, IAbility ability) {
         this.chargeTickSphere(entity);
-        if (this.playSoundInterval.canTick()) {
-            entity.level.playSound((PlayerEntity)null, entity.blockPosition(), (SoundEvent)ModSounds.ROOM_CHARGE_SFX.get(), SoundCategory.PLAYERS, 5.0F, 1.0F);
-        }
+        playSoundAtInterval(entity);
     }
 
     protected void onChargeEnd(LivingEntity entity, IAbility ability) {
@@ -134,7 +131,7 @@ public abstract class ZoneAbility extends Ability {
             this.endChargeBlocks(entity);
             animationComponent.stop(entity);
             entity.removeEffect(ModEffects.MOVEMENT_BLOCKED.get());
-            entity.level.playSound((PlayerEntity)null, entity.blockPosition(), (SoundEvent)ModSounds.ROOM_EXPAND_SFX.get(), SoundCategory.PLAYERS, 5.0F, 1.0F);
+            playSoundAtChargeEnd(entity);
             this.continuousComponent.startContinuity(entity, zoneTime);
         }
     }
@@ -150,13 +147,12 @@ public abstract class ZoneAbility extends Ability {
     }
 
     protected void onContinuityEnd(LivingEntity entity, IAbility ability) {
-        // Retire les effets sur toutes les entités encore marquées comme affectées
         this.clearEffectsWhenZoneEnds(entity);
 
         this.continuityEndBlocks(entity);
         this.continuityEndSphere(entity);
         this.centerPos = null;
-        entity.level.playSound((PlayerEntity)null, entity.blockPosition(), (SoundEvent)ModSounds.ROOM_CLOSE_SFX.get(), SoundCategory.PLAYERS, 5.0F, 1.0F);
+        playSoundAtEnd(entity);
         float roomSizeDebuff = (float)(this.zoneSize / maxZoneSize);
         float cooldown = minCooldown * roomSizeDebuff;
         cooldown = MathHelper.clamp(cooldown, minCooldown, maxCooldown);
@@ -182,7 +178,6 @@ public abstract class ZoneAbility extends Ability {
         float pct = MathHelper.clamp(this.chargeComponent.getChargePercentage(), 0.0F, 1.0F);
 
         if (this.isShrinking) {
-            // Shrink: démarrage rapide puis ralentit vers 0
             float easedPct = EasingFunctionHelper.easeOutCubic(1.0F - pct);
             float radius = MathHelper.clamp(easedPct * this.maxZoneSize, 0.0F, (float) this.maxZoneSize);
             this.zoneSphereEntity.setRadius(radius);
@@ -190,7 +185,6 @@ public abstract class ZoneAbility extends Ability {
             return;
         }
 
-        // Expand: démarrage rapide (au lieu de très lent avec easeInCubic)
         float easedPct = EasingFunctionHelper.easeOutCubic(pct);
         float radius = MathHelper.clamp(easedPct * this.maxZoneSize, 0.0F, (float) this.maxZoneSize);
 
@@ -212,7 +206,6 @@ public abstract class ZoneAbility extends Ability {
 
         float pct = MathHelper.clamp(this.chargeComponent.getChargePercentage(), 0.0F, 1.0F);
 
-        // Même easing qu’en tick pour éviter tout “saut” en fin de charge
         float easedPct = EasingFunctionHelper.easeOutCubic(pct);
 
         float radius = MathHelper.clamp(easedPct * this.maxZoneSize, (float) this.minZoneSize, (float) this.maxZoneSize);
@@ -372,6 +365,24 @@ public abstract class ZoneAbility extends Ability {
         // target.removeEffect(ModEffects.MOVEMENT_BLOCKED.get());
     }
 
+    protected void playSoundOnCreate(LivingEntity entity) {
+        entity.level.playSound((PlayerEntity)null, entity.blockPosition(), (SoundEvent)ModSounds.ROOM_CREATE_SFX.get(), SoundCategory.PLAYERS, 5.0F, 1.0F);
+    }
+
+    protected void playSoundAtInterval(LivingEntity entity) {
+        if (this.playSoundInterval.canTick()) {
+            entity.level.playSound((PlayerEntity)null, entity.blockPosition(), (SoundEvent)ModSounds.ROOM_CHARGE_SFX.get(), SoundCategory.PLAYERS, 5.0F, 1.0F);
+        }
+    }
+
+    protected void playSoundAtChargeEnd(LivingEntity entity) {
+        entity.level.playSound((PlayerEntity)null, entity.blockPosition(), (SoundEvent)ModSounds.ROOM_EXPAND_SFX.get(), SoundCategory.PLAYERS, 5.0F, 1.0F);
+    }
+
+    protected void playSoundAtEnd(LivingEntity entity) {
+        entity.level.playSound((PlayerEntity)null, entity.blockPosition(), (SoundEvent)ModSounds.ROOM_CLOSE_SFX.get(), SoundCategory.PLAYERS, 5.0F, 1.0F);
+    }
+
     protected List<Effect> getZoneEffectsToClearOnEnd() {
         return new ArrayList<>();
     }
@@ -395,7 +406,6 @@ public abstract class ZoneAbility extends Ability {
     private LivingEntity findLivingEntityByUuid(LivingEntity owner, UUID id) {
         if (owner == null || owner.level == null || id == null) return null;
 
-        // Côté Serveur (Là où la logique des capacités doit s'exécuter)
         if (owner.level instanceof ServerWorld) {
             Entity entity = ((ServerWorld) owner.level).getEntity(id);
             if (entity instanceof LivingEntity && entity.isAlive()) {
@@ -407,7 +417,6 @@ public abstract class ZoneAbility extends Ability {
 
     protected void applyOrRefresh(LivingEntity target, Effect effect, int durationTicks, int amplifier, boolean ambient, boolean showParticles) {
         if (target == null || effect == null) return;
-        // showIcon n’est pas dispo en 1\.16\.5, donc on gère juste particules + ambient
         target.addEffect(new EffectInstance(effect, durationTicks, amplifier, ambient, showParticles));
     }
 
