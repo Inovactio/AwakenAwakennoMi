@@ -1,5 +1,6 @@
 package com.inovactio.awakenawakennomi.mixins.mineminenomi;
 
+import com.inovactio.awakenawakennomi.abilities.awaawanomi.WorldWashAbility;
 import com.inovactio.awakenawakennomi.abilities.bomubomunomi.BlastJumpAbility;
 import com.inovactio.awakenawakennomi.abilities.bomubomunomi.PiercingBlastAbility;
 import com.inovactio.awakenawakennomi.abilities.dekadekanomi.TitanAbility;
@@ -92,6 +93,10 @@ public class ModAbilitiesMixin {
 
             case "Kuku Kuku no Mi":
                 FruitInjectionHelper.appendAbilities(fruit, LivingFeastAbility.INSTANCE);
+                break;
+
+            case "Awa Awa no Mi":
+                FruitInjectionHelper.appendAbilities(fruit, WorldWashAbility.INSTANCE);
                 break;
 
             default:
