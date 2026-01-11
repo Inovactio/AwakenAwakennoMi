@@ -17,6 +17,9 @@ import xyz.pixelatedw.mineminenomi.api.helpers.AbilityHelper;
 import xyz.pixelatedw.mineminenomi.data.entity.devilfruit.DevilFruitCapability;
 import xyz.pixelatedw.mineminenomi.init.ModAbilities;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SmoothWorldAbility extends ZoneAbility implements IAwakenable {
     private static final ITextComponent[] DESCRIPTION = AbilityHelper.registerDescriptionText("awakenawakennomi", "smooth_world", new Pair[]{ImmutablePair.of("Creates a smooth domain around the user. Creatures inside lose traction and slide uncontrollably, weakening their ability to fight effectively.", (Object) null)});
     public static final AbilityCore<SmoothWorldAbility> INSTANCE;
@@ -33,12 +36,19 @@ public class SmoothWorldAbility extends ZoneAbility implements IAwakenable {
 
     @Override
     protected void applyEffectToEntityInZone(LivingEntity owner, LivingEntity target) {
-        target.addEffect(new EffectInstance((Effect) ModEffects.SMOOTH_WORLD_SLIDING.get(), (int)this.zoneTime, 0, false, false, false));
+        target.addEffect(new EffectInstance((Effect) ModEffects.SMOOTH_WORLD_SLIDING.get(), (int)this.zoneTime+ 10, 0, false, false, false));
     }
 
     @Override
     protected void onEntityLeavesZone(LivingEntity owner, LivingEntity target) {
         target.removeEffect(ModEffects.SMOOTH_WORLD_SLIDING.get());
+    }
+
+    @Override
+    protected List<Effect> getZoneEffectsToClearOnEnd() {
+        List<Effect> effects = new ArrayList<>();
+        effects.add(ModEffects.SMOOTH_WORLD_SLIDING.get());
+        return effects;
     }
 
 
