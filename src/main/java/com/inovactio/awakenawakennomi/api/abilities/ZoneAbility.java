@@ -12,19 +12,13 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.RegistryObject;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import xyz.pixelatedw.mineminenomi.api.abilities.Ability;
 import xyz.pixelatedw.mineminenomi.api.abilities.AbilityCore;
 import xyz.pixelatedw.mineminenomi.api.abilities.IAbility;
-import xyz.pixelatedw.mineminenomi.api.abilities.components.AbilityComponent;
-import xyz.pixelatedw.mineminenomi.api.abilities.components.AnimationComponent;
-import xyz.pixelatedw.mineminenomi.api.abilities.components.ChargeComponent;
-import xyz.pixelatedw.mineminenomi.api.abilities.components.ContinuousComponent;
+import xyz.pixelatedw.mineminenomi.api.abilities.components.*;
 import xyz.pixelatedw.mineminenomi.api.helpers.AbilityHelper;
 import xyz.pixelatedw.mineminenomi.api.math.EasingFunctionHelper;
 import xyz.pixelatedw.mineminenomi.api.protection.BlockProtectionRule;
@@ -32,6 +26,7 @@ import xyz.pixelatedw.mineminenomi.api.protection.block.AirBlockProtectionRule;
 import xyz.pixelatedw.mineminenomi.api.protection.block.FoliageBlockProtectionRule;
 import xyz.pixelatedw.mineminenomi.api.protection.block.LiquidBlockProtectionRule;
 import xyz.pixelatedw.mineminenomi.api.util.Interval;
+import xyz.pixelatedw.mineminenomi.api.util.TargetsPredicate;
 import xyz.pixelatedw.mineminenomi.config.CommonConfig;
 import xyz.pixelatedw.mineminenomi.entities.SphereEntity;
 import xyz.pixelatedw.mineminenomi.init.ModAnimations;
@@ -75,6 +70,7 @@ public abstract class ZoneAbility extends Ability {
     protected Interval playSoundInterval = new Interval(18);
     private final Set<UUID> affectedEntities = new HashSet<>();
 
+    protected TargetsPredicate targetsCheck = (new TargetsPredicate()).testEnemyFaction();
     protected static final int MIN_CHARGE_TIME = 60;
     protected static final int CHARGE_TIME = 240;
     protected static final float COOLDOWN = 2400.0F;
@@ -350,8 +346,10 @@ public abstract class ZoneAbility extends Ability {
         }
 
         for (LivingEntity target : targets) {
-            this.affectedEntities.add(target.getUUID());
-            this.applyEffectToEntityInZone(owner, target);
+            if(targetsCheck.test(owner, target)){
+                this.affectedEntities.add(target.getUUID());
+                this.applyEffectToEntityInZone(owner, target);
+            }
         }
     }
 
